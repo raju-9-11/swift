@@ -31,4 +31,7 @@ for year in 2008...2021 {
     }
     myMinutes[year] = minutes
 }
-print(myMinutes)
+
+for ( year, _ ) in myMinutes {
+    print (" \(year) : Minutes in Year \(myMinutes[year]!) ")
+}
