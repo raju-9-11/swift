@@ -1,0 +1,1 @@
+var myString = "asdfghebt zq yui"
