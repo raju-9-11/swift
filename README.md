@@ -17,7 +17,7 @@
 > 2. Remove Duplicate characters (Without Inbuilt functions)
 
 **Question 5**
-> Repeating Characters
+> Palindrome Numbers
 
 **Question 6**
 > Pythagorean triplets
