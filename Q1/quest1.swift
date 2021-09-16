@@ -32,8 +32,7 @@ for year in 2008...2021 {
     myMinutes[year] = minutes
 }
 
-let sortedMinutes = myMinutes.sorted( by: { $0.0 < $1.0 })
 
-for ( year, _ ) in sortedMinutes {
+for  year in 2008...2021 {
     print (" \(year) : Minutes in Year \(myMinutes[year]!) ")
 }
