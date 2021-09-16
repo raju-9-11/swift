@@ -23,8 +23,13 @@ func countMinutes(_ month: Int, _ year: Int) -> Int {
     return minInDay * (month % 2 == 0 ? 30 : 31)
     
 }
+
 var myMinutes:[Int:[Int]] = [:]
-for year in 2008...2021 {
+
+var start: Int = 2008
+var end: Int = 2021
+
+for year in start...end {
     var minutes: [Int] = []
     for month in 1...12 {
         minutes.append(countMinutes(month,year))
@@ -33,6 +38,6 @@ for year in 2008...2021 {
 }
 
 
-for  year in 2008...2021 {
+for  year in start...end {
     print (" \(year) : Minutes in Year \(myMinutes[year]!) ")
 }

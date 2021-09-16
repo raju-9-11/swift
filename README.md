@@ -20,7 +20,7 @@
 > Palindrome Numbers
 
 **Question 6**
-> Pythagorean triplets
+> Closure as parameter
 
 **Question 7**
-> Pythagorean triplets
+> Student Class
