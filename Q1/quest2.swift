@@ -6,7 +6,7 @@ var input:String? = readLine()
 if let val = input {
     if let cutApples = Int(val), cutApples <= myApples {
         myApples -= cutApples
-        print("Oranges: \(myApples/7)")
+        print("Oranges: \((myApples/5)*7)")
         print("Apples: \(myApples%7 + cutApples)")
     } else {
         print("Invalid input!!")
