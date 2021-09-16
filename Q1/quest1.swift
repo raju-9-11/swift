@@ -35,5 +35,5 @@ for year in 2008...2021 {
 let sortedMinutes = myMinutes.sorted( by: { $0.0 < $1.0 })
 
 for ( year, _ ) in sortedMinutes {
-    print (" \(year) : Minutes in Year \(myMinutes[year]) ")
+    print (" \(year) : Minutes in Year \(myMinutes[year]!) ")
 }
