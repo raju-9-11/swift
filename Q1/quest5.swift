@@ -1,15 +1,33 @@
 func palindrome(_ num: Int) -> Bool {
-    return String(num) == String(String(num).reversed())
+    var lst: [Int] = []
+    var num = num
+    while num > 0 {
+        lst.append(num%10)
+        num /= 10
+    }
+    
+    for index in 0..<lst.count/2 {
+        if lst[index] != lst[lst.count - index - 1] {
+            return false
+        }
+    }
+
+    return true
 }
 
-func numOfDigits(_ num: String) -> (numCount: Int, word: String) {
+func numOfDigits(_ num: Int) -> (numCount: Int, word: String) {
     let words: [String] = ["Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"]
     var myWord: String = ""
-    let length = num.count 
-    for char in num {
+    var length = 0 
+    for char in String(num) {
         if let charToNum = char.wholeNumberValue {
             myWord += words[charToNum ]
         }
+    }
+    var num = num
+    while num > 0 {
+        length += 1
+        num /= 10
     }
     return (length, myWord)
 }
@@ -22,5 +40,5 @@ let test = "test"
 
 var myArr = palindromesInRange(from: 100,to: 8000)
 for num in myArr {
-    print(numOfDigits(String(num)))
+    print(numOfDigits(num))
 }
