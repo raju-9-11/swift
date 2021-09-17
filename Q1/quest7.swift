@@ -16,7 +16,7 @@ class Student {
     }
 
     func getAverage() -> Int {
-        return marks.values.reduce(0, + )
+        return marks.values.reduce(0, + ) / marks.count
     }
 
 
@@ -46,8 +46,9 @@ for sub in subj {
 }
 print()
 
-let totalAverage: Int = myClass.map{ stud in stud.avg! }.reduce(0, +)
-print("Total Class Average is \(totalAverage / myClass.count)") 
+for stud in myClass {
+    print("Average of \(stud.name!) is \(stud.avg!)")
+}
 
 print()
 
