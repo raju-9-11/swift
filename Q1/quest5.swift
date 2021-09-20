@@ -5,15 +5,10 @@ func palindrome(_ num: Int) -> Bool {
         lst.append(num%10)
         num /= 10
     }
-    
-    for index in 0..<lst.count/2 {
-        if lst[index] != lst[lst.count - index - 1] {
-            return false
-        }
-    }
 
-    return true
+    return lst == Array(lst.reversed())
 }
+
 
 func numOfDigits(_ num: Int) -> (numCount: Int, word: String) {
     let words: [String] = ["Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"]
@@ -35,7 +30,6 @@ func numOfDigits(_ num: Int) -> (numCount: Int, word: String) {
 func palindromesInRange(from: Int, to: Int) -> [Int] {
     return Array(from...to).filter{ palindrome($0) }
 }
-let test = "test"
 
 
 var myArr = palindromesInRange(from: 100,to: 8000)
