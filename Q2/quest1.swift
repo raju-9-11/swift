@@ -4,6 +4,7 @@ class Player {
     var playerNumber: Int?
     var diceRolls: [Int] = []
     var points = 0
+    var positionConsidered: Bool = true
 
     init(_ playerNumber: Int , _ diceRolls: [Int]) {
         self.playerNumber = playerNumber
@@ -21,12 +22,13 @@ players.append(Player(3,[1,2,3,5]))
 players.append(Player(4,[1,2,3,6]))
 
 var roll: Int = 0
+var p: Int = 170
 
 while Array(players.map{ player in player.completed}).contains(false) {
     for player in players {
         if !player.completed  {
             player.position += player.diceRolls[roll]
-            if player.position >= 170 {
+            if player.position >= p {
                 player.completed = true
                 continue
             } else {
@@ -34,6 +36,7 @@ while Array(players.map{ player in player.completed}).contains(false) {
                     if player.position % 5 == 0 {
                         player.points -= 4 
                         player.position -= 2  
+                        player.positionConsidered = false
                     }
                     else if player.position % 2 == 0 {
                         player.points += player.position / 6
@@ -43,12 +46,17 @@ while Array(players.map{ player in player.completed}).contains(false) {
                 else if player.position % 5 == 0 { 
                     player.points += player.position / 5 + 7
                 }
+                else if player.position % 11 == 0 {
+                    player.points += 12
+                    player.position += 2
+                    player.positionConsidered = false
+                }
             }
         }
     }
-    let playerPositions: [Int] = Array(players.map{ myPlayer in myPlayer.position})
-    for index in 0..<4 {
-        if Array(playerPositions[..<index] + playerPositions[(index + 1)...]).contains(players[index].position) {
+    let playerPositions: [Int] = Array(players.map{ myPlayer in  myPlayer.positionConsidered ? myPlayer.position : -1 * myPlayer.playerNumber! })
+    for index in 0..<players.count {
+        if players[index].positionConsidered && Array(playerPositions[..<index] + playerPositions[(index + 1)...]).contains(players[index].position) {
             players[index].points += 5
         }
     }
@@ -56,6 +64,9 @@ while Array(players.map{ player in player.completed}).contains(false) {
     print("Points of players are \(Array(players.map{ myPlayer in myPlayer.points}))")
     roll += 1
     roll %= 4
+    for player in players {
+        player.positionConsidered = true
+    }
 }
 
 players = players.sorted(by: { $0.points > $1.points })
