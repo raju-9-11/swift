@@ -24,10 +24,18 @@ var roll = 0
 
 while Array(players.map{ player in player.completed}).contains(false) {
     for player in players {
-        if player.position < 170  {
-        player.position += 
-
-        
+        if player.completed == false  {
+            player.position += player.diceRolls[roll]
+            print(" Player \(player.playerNumber) : : \(player.position)")
+            if player.position >= 170 {
+                player.completed = true
+            }
         }
     }
+    roll += 1
+    roll %= 4
+}
+
+for player in players {
+    print("Player \(player.playerNumber) has \(player.points) at \(player.position)")
 }
