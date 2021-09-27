@@ -168,7 +168,6 @@ print("A: \(a) B: \(b)")
 
 // Create a function that takes 2 closures as arguments. The function must have a trailing closure
 print()
-var checkEven = {(num: Int) -> Bool in  return num % 2 == 0 }
 
 var getSquare = {(num: Int) -> Int in return num * num}
 
@@ -179,7 +178,10 @@ func getTuple(_ f1: @escaping (Int)->(Int),_ f2: @escaping (Int)->(Bool)) -> (In
     return closureFunction
 }
 
-let calc = getTuple(getSquare, checkEven)
+let calc = getTuple(getSquare) {
+    (num: Int) -> Bool in 
+        return num % 2 == 0
+}
 
 print(calc(10))
 
