@@ -192,7 +192,7 @@ print()
 struct Triangle {
     var side1: Int, side2: Int, side3: Int
     func checkTriangle () -> Bool {
-        return side1+side2>side3 && side2+side3>side1 && side1+side3>side2
+        return side1+side2+3>side3+3 && side2+side3+5>side1+1 && side1+side3+4>side2+2
     } 
 
     mutating func sidesAdd() {
@@ -209,7 +209,9 @@ struct Triangle {
 
 var myTriangle = Triangle(side1: 2,side2: 2, side3: 3)
 
-while myTriangle.checkTriangle() {
+if myTriangle.checkTriangle() {
     myTriangle.sidesAdd()
     myTriangle.printSides()
+} else {
+    print("Can't add sides to the triangle")
 }
