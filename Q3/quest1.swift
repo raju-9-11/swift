@@ -187,23 +187,29 @@ print(calc(10))
 
 // Create a mutating function, which modifies the 3 sides of a triangle by adding 1,2,3 to each side. If the triangle sides no longer form a side (sum of 2 sides of a triangle should be greater than 3rd side), don't add any value.
 print()
-var x = 2, y = 3, z = 4
 
-var checkTriangle = { (side1: Int, side2: Int, side3: Int) -> Bool in return side1+side2>side3 && side2+side3>side1 && side1+side3>side2}
 
-func addVal(_ x: inout Int, _ y: inout Int, _ z: inout Int) -> Bool {
-    if checkTriangle(x + 1, y + 2, z + 3) {
-        x += 1
-        y += 2
-        z += 3
-        return true
+struct Triangle {
+    var side1: Int, side2: Int, side3: Int
+    func checkTriangle () -> Bool {
+        return side1+side2>side3 && side2+side3>side1 && side1+side3>side2
+    } 
+
+    mutating func sidesAdd() {
+        side1 += 1
+        side2 += 2
+        side3 += 3
     }
-    return false
+
+    func printSides() {
+        print("sides of traingle are", side1, side2, side3)
+    }
+
 }
 
+var myTriangle = Triangle(side1: 2,side2: 2, side3: 3)
 
-while addVal(&x, &y, &z) {
-    print("Adding ",x,y,z,checkTriangle(x,y,z))
+while myTriangle.checkTriangle() {
+    myTriangle.sidesAdd()
+    myTriangle.printSides()
 }
-
-print(x, y, z)
