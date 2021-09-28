@@ -209,9 +209,7 @@ struct Triangle {
 
 var myTriangle = Triangle(side1: 2,side2: 2, side3: 3)
 
-if myTriangle.checkTriangle() {
+while myTriangle.checkTriangle() {
     myTriangle.sidesAdd()
     myTriangle.printSides()
-} else {
-    print("Can't add sides to the triangle")
-}
+} 
