@@ -10,20 +10,55 @@ import UIKit
 class ViewController: UIViewController {
     
     
-    @IBOutlet weak var myTextField: UITextField!
+    var myTextField: UITextField!
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        // Do any additional setup after loading the view.
+    override func loadView() {
+        view = UIView()
+        view.backgroundColor = .white
+        
+//      TextField initialization
+        myTextField = UITextField()
+        myTextField.translatesAutoresizingMaskIntoConstraints = false
+        myTextField.placeholder = "Test"
+        myTextField.borderStyle = .roundedRect
+        myTextField.textAlignment = .center
+        view.addSubview(myTextField)
+        
+//      Menu Initialization
+        UIMenuController.shared.menuItems = [  UIMenuItem(title: "Yellow", action: #selector(onYellow)),
+                                               UIMenuItem(title: "Green", action: #selector(onGreen)),
+                                               UIMenuItem(title: "Blue", action: #selector(onBlue)),
+                                               UIMenuItem(title: "Red", action: #selector(onRed)),
+                                            ]
+    
+        NSLayoutConstraint.activate([
+            myTextField.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            myTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            myTextField.widthAnchor.constraint(equalTo: view.layoutMarginsGuide.widthAnchor, multiplier: 0.8, constant: -100),
+        ])
+        
     }
     
-    @IBAction func onTextEnter() {
-        let alert = UIAlertController(title: "String Entered", message: myTextField.text ?? "Unknown" , preferredStyle: .alert)
-        let action = UIAlertAction(title: "Okay", style: .cancel, handler: nil)
-        alert.addAction(action)
-        present(alert, animated: true, completion: nil)
+    @objc
+    func onYellow() {
+        myTextField.selectedTextRange?.replacementObject(for: <#T##NSKeyedArchiver#>)
+        myTextField.textColor = .yellow
     }
-
-
+    
+    @objc
+    func onRed() {
+        myTextField.textColor = .red
+    }
+    
+    @objc
+    func onGreen() {
+        myTextField.textColor = .green
+    }
+    
+    @objc
+    func onBlue() {
+        myTextField.textColor = .blue
+    }
+    
 }
 
