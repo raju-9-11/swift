@@ -20,19 +20,33 @@
                                 <rect key="frame" x="142.5" y="431" width="129.5" height="34"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
+                                <connections>
+                                    <action selector="onTextEnter" destination="BYZ-38-t0r" eventType="editingDidEnd" id="M7a-bp-pmG"/>
+                                    <action selector="onTextEnter" destination="BYZ-38-t0r" eventType="editingChanged" id="YqI-FU-5dv"/>
+                                </connections>
+                            </textField>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="wpG-xC-m4F">
+                                <rect key="frame" x="191" y="506" width="32" height="34"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
                             </textField>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
+                            <constraint firstItem="wpG-xC-m4F" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="7e1-mw-arA"/>
+                            <constraint firstItem="wpG-xC-m4F" firstAttribute="top" secondItem="uIu-Yz-hAw" secondAttribute="bottom" constant="41" id="I1O-K4-DFT"/>
                             <constraint firstItem="uIu-Yz-hAw" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="OAg-KG-JAP"/>
                             <constraint firstItem="uIu-Yz-hAw" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="zHc-I0-kdi"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="myTextField" destination="uIu-Yz-hAw" id="PWT-of-Zkc"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="122" y="105"/>
+            <point key="canvasLocation" x="121.73913043478262" y="104.46428571428571"/>
         </scene>
     </scenes>
     <resources>
