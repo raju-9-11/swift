@@ -7,10 +7,12 @@
 
 import UIKit
 
+
 class ViewController: UIViewController {
     
     
     var myTextField: UITextField!
+    
 
     override func loadView() {
         view = UIView()
@@ -41,24 +43,40 @@ class ViewController: UIViewController {
     
     @objc
     func onYellow() {
-        myTextField.selectedTextRange?.replacementObject(for: <#T##NSKeyedArchiver#>)
-        myTextField.textColor = .yellow
+        myTextField.attributedText = getAttributedText(input: myTextField.attributedText, range: myTextField.selectedRange, color: .yellow)
     }
     
     @objc
     func onRed() {
-        myTextField.textColor = .red
+        myTextField.attributedText = getAttributedText(input: myTextField.attributedText, range: myTextField.selectedRange, color: .red)
     }
     
     @objc
     func onGreen() {
-        myTextField.textColor = .green
+        myTextField.attributedText = getAttributedText(input: myTextField.attributedText, range: myTextField.selectedRange, color: .green)
     }
     
     @objc
     func onBlue() {
-        myTextField.textColor = .blue
+        myTextField.attributedText = getAttributedText(input: myTextField.attributedText, range: myTextField.selectedRange, color: .blue)
     }
+    
+    func getAttributedText(input: NSAttributedString?, range: NSRange? , color: UIColor) -> NSMutableAttributedString {
+        let mutableString = NSMutableAttributedString.init(attributedString: input ?? NSAttributedString(string: "Unknown text") )
+        let range = myTextField.selectedRange
+        mutableString.addAttribute(NSAttributedString.Key.foregroundColor , value: color, range: range ?? NSRange(location: 0, length: 0))
+        return mutableString
+    }
+    
     
 }
 
+
+extension UITextField {
+    var selectedRange: NSRange? {
+        guard let range = selectedTextRange else { return nil }
+        let location = offset(from: beginningOfDocument, to: range.start)
+        let length = offset(from: range.start, to: range.end)
+        return NSRange(location: location, length: length)
+    }
+}
