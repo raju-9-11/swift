@@ -15,32 +15,9 @@
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ZUt-me-MnD">
-                                <rect key="frame" x="182.5" y="432.5" width="51" height="31"/>
-                                <connections>
-                                    <action selector="onToggle" destination="BYZ-38-t0r" eventType="valueChanged" id="Wun-VS-FE7"/>
-                                </connections>
-                            </switch>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Switch background" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="oza-jx-1fn">
-                                <rect key="frame" x="133.5" y="500" width="147" height="21"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                        </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                        <constraints>
-                            <constraint firstItem="ZUt-me-MnD" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="2mP-MY-EYx"/>
-                            <constraint firstItem="oza-jx-1fn" firstAttribute="top" secondItem="ZUt-me-MnD" secondAttribute="bottom" constant="36.5" id="eGa-Sy-PNN"/>
-                            <constraint firstItem="ZUt-me-MnD" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="f0I-cr-n0R"/>
-                            <constraint firstItem="oza-jx-1fn" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="qCn-cX-6fs"/>
-                        </constraints>
                     </view>
-                    <connections>
-                        <outlet property="mySwitch" destination="ZUt-me-MnD" id="JBx-rB-9Q8"/>
-                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
