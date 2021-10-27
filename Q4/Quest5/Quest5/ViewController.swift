@@ -31,8 +31,15 @@ class ViewController: UIViewController, UITextFieldDelegate {
     var foodLabel: UILabel!
     var song: UITextField!
     var songLabel: UILabel!
+    var titleLabel: UILabel!
+    var totalContactsLabel: UILabel!
     
-    var myContacts: [Contact] = []
+    
+    var myContacts: [Contact] = [] {
+        didSet {
+            totalContactsLabel.text = "Total Contacts Entered: \(myContacts.count)"
+        }
+    }
     
     var stack: UIStackView!
     
@@ -48,6 +55,13 @@ class ViewController: UIViewController, UITextFieldDelegate {
         scrollView = UIScrollView()
         scrollView.isScrollEnabled = true
         scrollView.translatesAutoresizingMaskIntoConstraints = false
+        
+//      TtielLabel
+        titleLabel = newLabel("Create Contact")
+        titleLabel.font = .boldSystemFont(ofSize: 16)
+        
+//      Contacts label
+        totalContactsLabel = newLabel("Total Contacts Entered: \(myContacts.count)")
 
         
 //      person name
@@ -111,48 +125,42 @@ class ViewController: UIViewController, UITextFieldDelegate {
         submit = UIButton(type: .system)
         submit.setTitle("Done", for: .normal)
         submit.addTarget(self, action: #selector(onSubmit), for: .touchUpInside)
+        submit.contentHorizontalAlignment = .right
         
         
 //      Clear
         clear = UIButton(type: .system)
         clear.setTitle("Clear", for: .normal)
         clear.addTarget(self, action: #selector(onClear), for: .touchUpInside)
-        
-        
-        stack = UIStackView(arrangedSubviews: [ newContainer(elements: [personNameLabel, personName], axis: .horizontal, spacing: 0) ,
-                                                newContainer(elements: [addressLabel, address], axis: .horizontal, spacing: 0),
-                                                newContainer(elements: [dateOfBirthLabel, dateOfBirth], axis: .horizontal, spacing: 0),
-                                                newContainer(elements: [phLabel, ph], axis: .horizontal, spacing: 0),
-                                                newContainer(elements: [emailLabel, email], axis: .horizontal, spacing: 0),
-                                                newContainer(elements: [jobLabel, job], axis: .horizontal, spacing: 0),
-                                                newContainer(elements: [deptLabel, dept], axis: .horizontal, spacing: 0),
-                                                newContainer(elements: [companyLabel, company], axis: .horizontal, spacing: 0),
-                                                newContainer(elements: [songLabel, song], axis: .horizontal, spacing: 0),
-                                                newContainer(elements: [foodLabel, food], axis: .horizontal, spacing: 0),
-                                              ])
+        clear.contentHorizontalAlignment = .left
+
+
+        stack = UIStackView(arrangedSubviews: [
+            newContainer(elements: [clear, titleLabel, submit], axis: .horizontal, spacing: 0, alignment: .fill),
+            newContainer(elements: [personNameLabel, personName], axis: .vertical, spacing: 0),
+            newContainer(elements: [addressLabel, address], axis: .vertical, spacing: 0),
+            newContainer(elements: [dateOfBirthLabel, dateOfBirth], axis: .vertical, spacing: 0),
+            newContainer(elements: [phLabel, ph], axis: .vertical, spacing: 0),
+            newContainer(elements: [emailLabel, email], axis: .vertical, spacing: 0),
+            newContainer(elements: [jobLabel, job], axis: .vertical, spacing: 0),
+            newContainer(elements: [deptLabel, dept], axis: .vertical, spacing: 0),
+            newContainer(elements: [companyLabel, company], axis: .vertical, spacing: 0),
+            newContainer(elements: [songLabel, song], axis: .vertical, spacing: 0),
+            newContainer(elements: [foodLabel, food], axis: .vertical, spacing: 0),
+            newContainer(elements: [totalContactsLabel], axis: .vertical, spacing: 0)
+        ])
         stack.axis = .vertical
         stack.translatesAutoresizingMaskIntoConstraints = false
         stack.alignment = .fill
-        stack.spacing = 5
+        stack.spacing = 3
         stack.distribution = .fillEqually
         
-        stack.addArrangedSubview(newContainer(elements: [clear, submit], axis: .horizontal, spacing: 3))
         
         scrollView.addSubview(stack)
         view.addSubview(scrollView)
-        scrollView.contentInset = UIEdgeInsets(top: 20, left: 10, bottom: 10, right: 10)
         
-        NSLayoutConstraint.activate([
-            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
-            scrollView.widthAnchor.constraint(equalTo: view.widthAnchor),
-            scrollView.heightAnchor.constraint(equalTo: view.heightAnchor),
-            stack.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
-            stack.centerYAnchor.constraint(equalTo: scrollView.centerYAnchor),
-            stack.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
-            stack.rightAnchor.constraint(equalTo: scrollView.rightAnchor, constant: -40)
-        ])
         
+        setUpLayout()
         
         
     }
@@ -169,21 +177,40 @@ class ViewController: UIViewController, UITextFieldDelegate {
         return true
     }
     
+    
+    func setUpLayout() {
+        //Scrollview constraints
+        NSLayoutConstraint.activate([
+            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            scrollView.widthAnchor.constraint(equalTo: view.widthAnchor),
+        ])
+        //Stackview Constraints
+        NSLayoutConstraint.activate([
+            stack.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            stack.widthAnchor.constraint(equalTo: scrollView.widthAnchor, multiplier: 0.85),
+            stack.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
+            stack.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor)
+        ])
+    }
+    
+    
+    
     func newLabel(_ name: String) -> UILabel {
         let myLabel = UILabel()
         myLabel.text = name
-        myLabel.font = .systemFont(ofSize: 12)
+        myLabel.font = .boldSystemFont(ofSize: 14)
         return myLabel
     }
     
     func newTextField(_ placeholder: String) -> UITextField {
         let myTextField = UITextField()
         myTextField.placeholder = placeholder
-        myTextField.font = .systemFont(ofSize: 14)
+        myTextField.font = .systemFont(ofSize: 16)
         return myTextField
     }
     
-    func newContainer(elements: [UIView], axis: NSLayoutConstraint.Axis, spacing: CGFloat, alignment: UIStackView.Alignment = .fill) -> UIStackView {
+    func newContainer(elements: [UIView], axis: NSLayoutConstraint.Axis, spacing: CGFloat, alignment: UIStackView.Alignment = .leading) -> UIStackView {
         let subStack = UIStackView(arrangedSubviews: elements)
         subStack.axis = axis
         subStack.spacing = spacing
@@ -194,29 +221,41 @@ class ViewController: UIViewController, UITextFieldDelegate {
     
     @objc
     func onSubmit() {
-        let alert = UIAlertController(title: "Submitted", message: "Data submitted", preferredStyle: .alert)
-        let action = UIAlertAction(title: "Okay", style: .default, handler: {
-            _ in
-            self.onClear()
-        })
-        alert.addAction(action)
-        present(alert, animated: true)
+        
+        let newContact = Contact(name: personName.text!, address: address.text!, dob: dateOfBirth.date, color: color.text!, dept: dept.text!, company: company.text!, food: food.text!, song: song.text!, email: email.text!)
+        if newContact.isValid() {
+            let alert = UIAlertController(title: "Submitted", message: "Contact added", preferredStyle: .alert)
+            let action = UIAlertAction(title: "Okay", style: .default, handler: {
+                _ in
+                self.onClear()
+            })
+            alert.addAction(action)
+            present(alert, animated: true)
+            myContacts.append(newContact)
+        }
+        else {
+            let alert = UIAlertController(title: "Error adding contact", message: "Error in form", preferredStyle: .alert)
+            let action = UIAlertAction(title: "Okay ! Let me Check", style: .default, handler: nil)
+            alert.addAction(action)
+            present(alert, animated: true, completion: nil)
+        }
     }
     
     @objc
     func onClear() {
-        
+        ph.text = ""
+        song.text = ""
+        food.text = ""
+        email.text = ""
+        color.text = ""
+        job.text = ""
+        dept.text = ""
+        company.text = ""
+        address.text = ""
+        personName.text = ""
         
     }
 
 
 }
 
-
-extension String {
-    func isEmail() -> Bool{
-        let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
-        let emailPred = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
-        return emailPred.evaluate(with: self)
-    }
-}
