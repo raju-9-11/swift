@@ -7,28 +7,28 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class HomeViewController: UIViewController {
     
-    var layer1: [UIView] = []
-    var layer2: [UIView] = []
-    var layer3: [UIView] = []
-
+    
+    var myElements: [UIView] = []
+    var myInnerElements = [UIView]()
+    
+    var radius = 50.0
     
     override func loadView() {
         view = UIView()
         view.backgroundColor = .white
         
-        var myElements: [UIView] = []
-        var myInnerElements: [UIView] = []
         
-        for i in 1...9 {
+        for index  in 1...9 {
             let element = UIView()
             let innerElement = getCircleView()
-            innerElement.frame.size.height = 50
-            innerElement.frame.size.width = 50
+            innerElement.frame.size.height = radius
+            innerElement.frame.size.width = radius
             innerElement.layer.cornerRadius = innerElement.frame.size.width / 2
+            let tap = UITapGestureRecognizer(target: self, action: #selector(increaseRadius))
+            innerElement.addGestureRecognizer(tap)
             element.addSubview(innerElement)
-//            element.backgroundColor = i%2 !=0 ? .green : .gray
             myElements.append(element)
             myInnerElements.append(innerElement)
         }
@@ -43,7 +43,6 @@ class ViewController: UIViewController {
         outerContainer.addArrangedSubview(testContainer2)
         outerContainer.addArrangedSubview(testContainer3)
         outerContainer.translatesAutoresizingMaskIntoConstraints = false
-//        outerContainer.backgroundColor = .red
         
         view.addSubview(outerContainer)
         
@@ -64,10 +63,14 @@ class ViewController: UIViewController {
         return circle
     }
     
+    @objc
+    func increaseRadius(_ sender: UIView) {
+        print(sender == myInnerElements[0])
+    }
+    
     func newContainer(elements: [UIView], spacing: CGFloat, axis: NSLayoutConstraint.Axis)  -> UIStackView {
         let container = UIStackView(arrangedSubviews: elements)
         container.axis = axis
-//        container.backgroundColor = .blue
         container.spacing = spacing
         container.distribution = .fillEqually
         container.translatesAutoresizingMaskIntoConstraints = false
@@ -75,5 +78,7 @@ class ViewController: UIViewController {
     }
 
 
+
 }
+
 
