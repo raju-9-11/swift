@@ -9,76 +9,94 @@ import UIKit
 
 class HomeViewController: UIViewController {
     
-    
-    var myElements: [UIView] = []
-    var myInnerElements = [UIView]()
-    
-    var radius = 50.0
+    var circles: [UIView] = []
+    var radius = 30.0
     
     override func loadView() {
         view = UIView()
         view.backgroundColor = .white
         
         
-        for index  in 1...9 {
-            let element = UIView()
-            let innerElement = getCircleView()
-            innerElement.frame.size.height = radius
-            innerElement.frame.size.width = radius
-            innerElement.layer.cornerRadius = innerElement.frame.size.width / 2
-            let tap = UITapGestureRecognizer(target: self, action: #selector(increaseRadius))
-            innerElement.addGestureRecognizer(tap)
-            element.addSubview(innerElement)
-            myElements.append(element)
-            myInnerElements.append(innerElement)
-        }
+        //Setup stackView
         
-        let testContainer1 = newContainer(elements: [myElements[0], myElements[1], myElements[2]], spacing: 2, axis: .horizontal)
-        let testContainer2 = newContainer(elements: [myElements[3], myElements[4], myElements[5]], spacing: 2, axis: .horizontal)
-        let testContainer3 = newContainer(elements: [myElements[6], myElements[7], myElements[8]], spacing: 2, axis: .horizontal)
+
+        //Setup circles
+        let circle_1 = newCircle(radius)
+        let circle_2 = newCircle(radius)
+        let circle_3 = newCircle(radius)
+        let circle_4 = newCircle(radius)
+        let circle_5 = newCircle(radius)
+        let circle_6 = newCircle(radius)
+        let circle_7 = newCircle(radius)
+        let circle_8 = newCircle(radius)
+        let circle_9 = newCircle(radius)
+        circles = [circle_1, circle_2, circle_3, circle_4, circle_5, circle_6, circle_7, circle_8, circle_9 ]
         
+        let top = newStackView([circle_1, circle_2, circle_3])
+        let middle = newStackView([circle_4, circle_5, circle_6])
+        let bottom = newStackView([circle_7, circle_8, circle_9])
         
-        let outerContainer = newContainer(elements: [testContainer1, testContainer2], spacing: 3, axis: .vertical)
-        outerContainer.addArrangedSubview(testContainer1)
-        outerContainer.addArrangedSubview(testContainer2)
-        outerContainer.addArrangedSubview(testContainer3)
+        let outerContainer = UIStackView(arrangedSubviews: [top, middle, bottom])
+        outerContainer.axis = .vertical
+        outerContainer.alignment = .center
+        outerContainer.spacing = 10
         outerContainer.translatesAutoresizingMaskIntoConstraints = false
-        
+        outerContainer.distribution = .fillEqually
         view.addSubview(outerContainer)
         
         NSLayoutConstraint.activate([
-            outerContainer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            outerContainer.leftAnchor.constraint(equalTo: view.layoutMarginsGuide.leftAnchor),
+            outerContainer.rightAnchor.constraint(equalTo: view.layoutMarginsGuide.rightAnchor),
+            outerContainer.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor),
             outerContainer.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor),
-            outerContainer.widthAnchor.constraint(equalTo: view.layoutMarginsGuide.widthAnchor),
-            outerContainer.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            top.widthAnchor.constraint(equalTo: outerContainer.layoutMarginsGuide.widthAnchor),
+            middle.widthAnchor.constraint(equalTo: outerContainer.layoutMarginsGuide.widthAnchor),
+            bottom.widthAnchor.constraint(equalTo: outerContainer.layoutMarginsGuide.widthAnchor),
         ])
         
     }
     
-    func getCircleView() -> UIView {
+    
+    func newStackView(_ elements: [UIView]) -> UIStackView {
+        let myStackView = UIStackView(arrangedSubviews: elements)
+        myStackView.axis = .horizontal
+        myStackView.alignment = .center
+        myStackView.distribution = .equalCentering
+        myStackView.spacing = 10
+        myStackView.translatesAutoresizingMaskIntoConstraints = false
+        return myStackView
+    }
+    
+    
+    func newCircle(_ rad: CGFloat) -> UIView {
+        
         let circle = UIView()
         circle.backgroundColor = .red
-        circle.layer.borderWidth = 1
+        circle.layer.cornerRadius = rad
+        circle.layer.masksToBounds = true
+        circle.layer.borderColor = UIColor.orange.cgColor
+        circle.layer.borderWidth = 3.0
+        let tap = UITapGestureRecognizer(target: self, action: #selector(circleTapped))
+        circle.addGestureRecognizer(tap)
         circle.translatesAutoresizingMaskIntoConstraints = false
+        circle.widthAnchor.constraint(equalToConstant: rad*2).isActive = true
+        circle.heightAnchor.constraint(equalToConstant: rad*2).isActive = true
+
         return circle
     }
     
     @objc
-    func increaseRadius(_ sender: UIView) {
-        print(sender == myInnerElements[0])
+    func circleTapped() {
+        print(" Circle Tapped")
+        radius += 1
+//        circles.map{ circle in
+//            circle.frame.size.width = radius
+//            circle.frame.size.height = radius
+//            circle.widthAnchor.constraint(equalToConstant: radius*2).isActive = true
+//            circle.heightAnchor.constraint(equalToConstant: radius*2).isActive = true
+//            circle.layer.cornerRadius = radius
+//        }
     }
-    
-    func newContainer(elements: [UIView], spacing: CGFloat, axis: NSLayoutConstraint.Axis)  -> UIStackView {
-        let container = UIStackView(arrangedSubviews: elements)
-        container.axis = axis
-        container.spacing = spacing
-        container.distribution = .fillEqually
-        container.translatesAutoresizingMaskIntoConstraints = false
-        return container
-    }
-
-
-
 }
 
 
