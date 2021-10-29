@@ -12,13 +12,13 @@ import UIKit
 class Circle {
     var circleView: UIButton!
     
-    var circleWidthConstraint: NSLayoutConstraint!
+    var circleWidthConstraint: NSLayoutConstraint! 
     var circleHeightConstraint: NSLayoutConstraint!
     var radius: CGFloat! {
         willSet {
-            circleWidthConstraint.constant = newValue
-            circleHeightConstraint.constant = newValue
-            circleView.layer.cornerRadius = newValue / 2.0
+            self.circleWidthConstraint.constant = newValue
+            self.circleHeightConstraint.constant = newValue
+            self.circleView.layer.cornerRadius = newValue / 2.0
         }
     }
     
