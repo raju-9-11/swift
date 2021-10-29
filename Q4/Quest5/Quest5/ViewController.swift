@@ -35,9 +35,13 @@ class ViewController: UIViewController, UITextFieldDelegate {
     var totalContactsLabel: UILabel!
     
     
-    var myContacts: [Contact] = [] {
+    var myContacts: [Contact] = []{
         didSet {
             totalContactsLabel.text = "Total Contacts Entered: \(myContacts.count)"
+            myContacts = myContacts.sorted(by: { x, y in return x.name < y.name})
+            for contact in myContacts {
+                contact.printDetails()
+            }
         }
     }
     
@@ -222,7 +226,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
     @objc
     func onSubmit() {
         
-        let newContact = Contact(name: personName.text!, address: address.text!, dob: dateOfBirth.date, color: color.text!, dept: dept.text!, company: company.text!, food: food.text!, song: song.text!, email: email.text!)
+        let newContact = Contact(name: personName.text!, address: address.text!, dob: dateOfBirth.date, color: color.text!, dept: dept.text!, company: company.text!, food: food.text!, song: song.text!, email: email.text!, ph: ph.text!)
         if newContact.isValid() {
             let alert = UIAlertController(title: "Submitted", message: "Contact added", preferredStyle: .alert)
             let action = UIAlertAction(title: "Okay", style: .default, handler: {
