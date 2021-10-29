@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		9D787A05272BB67C00C43F97 /* Circle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D787A04272BB67C00C43F97 /* Circle.swift */; };
+		9D787A07272BEE7400C43F97 /* ZigzagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D787A06272BEE7400C43F97 /* ZigzagView.swift */; };
 		9DF15ED5272972B300B542E6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DF15ED4272972B300B542E6 /* AppDelegate.swift */; };
 		9DF15ED7272972B300B542E6 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DF15ED6272972B300B542E6 /* SceneDelegate.swift */; };
 		9DF15ED9272972B400B542E6 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DF15ED8272972B400B542E6 /* HomeViewController.swift */; };
@@ -16,6 +17,7 @@
 
 /* Begin PBXFileReference section */
 		9D787A04272BB67C00C43F97 /* Circle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Circle.swift; sourceTree = "<group>"; };
+		9D787A06272BEE7400C43F97 /* ZigzagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZigzagView.swift; sourceTree = "<group>"; };
 		9DF15ED1272972B300B542E6 /* Quest7.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Quest7.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9DF15ED4272972B300B542E6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		9DF15ED6272972B300B542E6 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -57,6 +59,7 @@
 				9DF15ED4272972B300B542E6 /* AppDelegate.swift */,
 				9DF15ED6272972B300B542E6 /* SceneDelegate.swift */,
 				9DF15ED8272972B400B542E6 /* HomeViewController.swift */,
+				9D787A06272BEE7400C43F97 /* ZigzagView.swift */,
 				9D787A04272BB67C00C43F97 /* Circle.swift */,
 				9DF15EDD272972B500B542E6 /* Assets.xcassets */,
 				9DF15EE2272972B500B542E6 /* Info.plist */,
@@ -133,6 +136,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9D787A07272BEE7400C43F97 /* ZigzagView.swift in Sources */,
 				9DF15ED9272972B400B542E6 /* HomeViewController.swift in Sources */,
 				9D787A05272BB67C00C43F97 /* Circle.swift in Sources */,
 				9DF15ED5272972B300B542E6 /* AppDelegate.swift in Sources */,

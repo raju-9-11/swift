@@ -15,6 +15,7 @@ class HomeViewController: UIViewController {
     var topView: UIStackView!
     var midView: UIStackView!
     var bottomView: UIStackView!
+    var colors:[UIColor] = [.red, .black, .blue, .brown, .green, .yellow, .cyan, .darkGray, .orange]
     
     
     override func loadView() {
@@ -24,7 +25,7 @@ class HomeViewController: UIViewController {
         
         //Create Circles
         for index in 1...9 {
-            circles.append(Circle(circleView: newCircle(radius, circleIndex: index), radius: radius))
+            circles.append(Circle(circleView: newCircle(radius, circleIndex: index, color: generateColor()), radius: radius))
         }
         
         // Create stacks
@@ -47,6 +48,8 @@ class HomeViewController: UIViewController {
     }
     
     
+    
+    
     func newStackView(_ elements: [UIView]) -> UIStackView {
         let myStackView = UIStackView(arrangedSubviews: elements)
         myStackView.axis = .horizontal
@@ -60,13 +63,12 @@ class HomeViewController: UIViewController {
     }
     
     
-    func newCircle(_ rad: CGFloat, circleIndex: Int) -> UIButton {
+    func newCircle(_ rad: CGFloat, circleIndex: Int, color: UIColor) -> UIButton {
         
         let circle = UIButton()
-        circle.backgroundColor = .red
+        circle.backgroundColor = color
         circle.layer.masksToBounds = true
-        circle.layer.borderColor = UIColor.orange.cgColor
-        circle.layer.borderWidth = 3.0
+        circle.layer.borderWidth = 1.0
         circle.setTitleColor(.init(red: 0, green: 0, blue: 0, alpha: 0), for: .normal)
         circle.setTitle("\(circleIndex)", for: .normal)
         circle.addTarget(self, action: #selector(circleTapped(sender:)), for: .touchUpInside)
@@ -86,6 +88,13 @@ class HomeViewController: UIViewController {
         ])
     }
     
+    func generateColor() -> UIColor {
+        let num = Int.random(in: 0..<colors.count)
+        let color = colors.remove(at: num)
+        
+        return color
+    }
+    
     @objc
     func circleTapped(sender: UIButton) {
         guard let circleNumber = Int(sender.title(for: .normal)!) else { return }
@@ -93,19 +102,12 @@ class HomeViewController: UIViewController {
         UIView.animate(withDuration: 2.0, delay: 0.0, options: .curveEaseOut, animations: {
             self.circles[circleNumber % 9].radius += 15
             self.view.layoutIfNeeded()
-        }, completion: {
-            _ in
-            /// PLACEHOLDER
-        })
+        }, completion: nil)
         
         UIView.animate(withDuration: 2.0, delay: 2.0, options: .curveEaseOut, animations: {
             self.circles[circleNumber % 9].radius -= 15
             self.view.layoutIfNeeded()
-        }, completion: {
-            _ in
-            /// PLACEHOLDER
-        })
-
+        }, completion: nil)
         
     }
     
