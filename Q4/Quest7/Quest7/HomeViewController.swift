@@ -9,8 +9,9 @@ import UIKit
 
 class HomeViewController: UIViewController {
     
-    var circles: [UIView] = []
+    var circles: [Circle] = []
     var radius = 30.0
+    
     
     override func loadView() {
         view = UIView()
@@ -19,22 +20,15 @@ class HomeViewController: UIViewController {
         
         //Setup stackView
         
-
-        //Setup circles
-        let circle_1 = newCircle(radius)
-        let circle_2 = newCircle(radius)
-        let circle_3 = newCircle(radius)
-        let circle_4 = newCircle(radius)
-        let circle_5 = newCircle(radius)
-        let circle_6 = newCircle(radius)
-        let circle_7 = newCircle(radius)
-        let circle_8 = newCircle(radius)
-        let circle_9 = newCircle(radius)
-        circles = [circle_1, circle_2, circle_3, circle_4, circle_5, circle_6, circle_7, circle_8, circle_9 ]
         
-        let top = newStackView([circle_1, circle_2, circle_3])
-        let middle = newStackView([circle_4, circle_5, circle_6])
-        let bottom = newStackView([circle_7, circle_8, circle_9])
+        for index in 1...9 {
+            circles.append(Circle(circleView: newCircle(radius, circleIndex: index), radius: radius))
+        }
+        
+        let top = newStackView([circles[0].circleView, circles[1].circleView, circles[2].circleView])
+        let middle = newStackView([circles[3].circleView, circles[4].circleView, circles[5].circleView])
+        let bottom = newStackView([circles[6].circleView, circles[7].circleView, circles[8].circleView])
+        
         
         let outerContainer = UIStackView(arrangedSubviews: [top, middle, bottom])
         outerContainer.axis = .vertical
@@ -63,40 +57,33 @@ class HomeViewController: UIViewController {
         myStackView.alignment = .center
         myStackView.distribution = .equalCentering
         myStackView.spacing = 10
+        myStackView.isLayoutMarginsRelativeArrangement = true
+        myStackView.directionalLayoutMargins = NSDirectionalEdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10)
         myStackView.translatesAutoresizingMaskIntoConstraints = false
         return myStackView
     }
     
     
-    func newCircle(_ rad: CGFloat) -> UIView {
+    func newCircle(_ rad: CGFloat, circleIndex: Int) -> UIButton {
         
-        let circle = UIView()
+        let circle = UIButton()
         circle.backgroundColor = .red
-        circle.layer.cornerRadius = rad
         circle.layer.masksToBounds = true
         circle.layer.borderColor = UIColor.orange.cgColor
         circle.layer.borderWidth = 3.0
-        let tap = UITapGestureRecognizer(target: self, action: #selector(circleTapped))
-        circle.addGestureRecognizer(tap)
-        circle.translatesAutoresizingMaskIntoConstraints = false
-        circle.widthAnchor.constraint(equalToConstant: rad*2).isActive = true
-        circle.heightAnchor.constraint(equalToConstant: rad*2).isActive = true
+        circle.setTitle("\(circleIndex)", for: .normal)
+        circle.addTarget(self, action: #selector(circleTapped(sender:)), for: .touchUpInside)
 
         return circle
     }
     
     @objc
-    func circleTapped() {
-        print(" Circle Tapped")
-        radius += 1
-//        circles.map{ circle in
-//            circle.frame.size.width = radius
-//            circle.frame.size.height = radius
-//            circle.widthAnchor.constraint(equalToConstant: radius*2).isActive = true
-//            circle.heightAnchor.constraint(equalToConstant: radius*2).isActive = true
-//            circle.layer.cornerRadius = radius
-//        }
+    func circleTapped(sender: UIButton) {
+        guard let circleNumber = Int(sender.title(for: .normal)!) else { return }
+        print(" Circle Tapped \(circleNumber)")
+        circles[circleNumber - 1].radius += 1
     }
 }
+
 
 
