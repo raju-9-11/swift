@@ -10,7 +10,6 @@ import UIKit
 class ZigzagView: UIView {
     
     var myPath: UIBezierPath!
-    var offset: CGFloat?
     let zigZagWidth = CGFloat(7)
     let zigZagHeight = CGFloat(5)
 
@@ -18,10 +17,6 @@ class ZigzagView: UIView {
         super.init(frame: frame)
        
         self.backgroundColor = UIColor.clear
-    }
-    
-    func setOffset(offset: CGFloat) {
-        self.offset = offset
     }
        
     override func draw(_ rect: CGRect) {
@@ -38,8 +33,6 @@ class ZigzagView: UIView {
       
       
     func drawZigZag(){
-        
-        
         myPath = UIBezierPath()
         myPath.lineWidth = 2
         var x = CGFloat(0)

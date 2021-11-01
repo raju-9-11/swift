@@ -44,12 +44,10 @@ class HomeViewController: UIViewController {
         bezierPathTop = ZigzagView()
         bezierPathTop.draw(CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.bezierPathTop.frame.height))
         bezierPathTop.translatesAutoresizingMaskIntoConstraints = false
-        bezierPathTop.setOffset(offset: 60)
 
         bezierPathBottom = ZigzagView()
         bezierPathBottom.draw(CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.bezierPathTop.frame.height))
         bezierPathBottom.translatesAutoresizingMaskIntoConstraints = false
-        bezierPathBottom.setOffset(offset: -60)
         
         
         //Parent Container for bezier Path
@@ -63,7 +61,6 @@ class HomeViewController: UIViewController {
         
         // Setup Layout Constraints
         setupConstraints()
-        
         
     }
     
@@ -110,10 +107,10 @@ class HomeViewController: UIViewController {
             topView.widthAnchor.constraint(equalTo: outerContainer.layoutMarginsGuide.widthAnchor),
             midView.widthAnchor.constraint(equalTo: outerContainer.layoutMarginsGuide.widthAnchor),
             bottomView.widthAnchor.constraint(equalTo: outerContainer.layoutMarginsGuide.widthAnchor),
-            pathOuterContainer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             pathOuterContainer.widthAnchor.constraint(equalTo: view.widthAnchor),
             pathOuterContainer.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            pathOuterContainer.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            pathOuterContainer.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            pathOuterContainer.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.7),
             bezierPathTop.widthAnchor.constraint(equalTo: pathOuterContainer.safeAreaLayoutGuide.widthAnchor, constant: -20),
             bezierPathBottom.widthAnchor.constraint(equalTo: pathOuterContainer.safeAreaLayoutGuide.widthAnchor, constant: -20),
         ])
