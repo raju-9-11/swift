@@ -11,6 +11,15 @@ class ViewController: UIViewController, UITextViewDelegate {
     
     var richTextEditor: UITextView!
     var unEditedText: UITextView!
+    var currentColor: UIColor = .systemRed
+    
+    let colorWell : UIColorWell = {
+       let colorwell = UIColorWell()
+        colorwell.selectedColor = .systemRed
+        colorwell.supportsAlpha = true
+        colorwell.title = "Pick a color"
+        return colorwell
+    }()
 
     override func loadView() {
         view = UIView()
@@ -24,6 +33,9 @@ class ViewController: UIViewController, UITextViewDelegate {
             UIMenuItem(title: "StrikeThrough", action: #selector(makeStrikethrough)),
             UIMenuItem(title: "Subscript", action: #selector(makeSubScript)),
             UIMenuItem(title: "Superscript", action: #selector(makeSuperScript)),
+            UIMenuItem(title: "FontColor", action: #selector(changeFontColor)),
+            UIMenuItem(title: "StrikeColor", action: #selector(changeStrikeColor)),
+            UIMenuItem(title: "HighlightColor", action: #selector(changeHighlightColor))
         ]
         
 //      TextEditor initialization
@@ -43,18 +55,38 @@ class ViewController: UIViewController, UITextViewDelegate {
         unEditedText.translatesAutoresizingMaskIntoConstraints = false
         unEditedText.isEditable = false
         unEditedText.font = .italicSystemFont(ofSize: 10)
+        unEditedText.isSelectable = false
         view.addSubview(unEditedText)
         
+        
+        let testView = UIView()
+        testView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(testView)
+        colorWell.translatesAutoresizingMaskIntoConstraints = false
+        colorWell.addTarget(self, action: #selector(setCurrentColor), for: .valueChanged)
+        testView.addSubview(colorWell)
+        
         NSLayoutConstraint.activate([
-            richTextEditor.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor, constant: 30),
-            richTextEditor.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
-            richTextEditor.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
-            richTextEditor.bottomAnchor.constraint(equalTo: view.centerYAnchor),
-            unEditedText.topAnchor.constraint(equalTo: richTextEditor.layoutMarginsGuide.bottomAnchor, constant: 50),
-            unEditedText.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            unEditedText.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
-            unEditedText.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
+            richTextEditor.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            richTextEditor.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, multiplier: 0.98),
+            richTextEditor.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            richTextEditor.heightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.heightAnchor, multiplier: 0.6),
+            unEditedText.topAnchor.constraint(equalTo: richTextEditor.layoutMarginsGuide.bottomAnchor, constant: 20),
+            unEditedText.heightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.heightAnchor, multiplier: 0.3),
+            unEditedText.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, multiplier: 0.98),
+            unEditedText.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            testView.topAnchor.constraint(equalTo: unEditedText.safeAreaLayoutGuide.bottomAnchor,constant: 20),
+            testView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            testView.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, multiplier: 0.98),
+            testView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            unEditedText.bottomAnchor.constraint(equalTo: testView.topAnchor),
+            colorWell.heightAnchor.constraint(equalTo: testView.safeAreaLayoutGuide.heightAnchor),
         ])
+    }
+    
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
     }
     
     func textViewDidChange(_ textView: UITextView) {
@@ -65,6 +97,32 @@ class ViewController: UIViewController, UITextViewDelegate {
                 unEditedText.text = richTextEditor.text ?? "Uknown Text!!"
             }
         }
+    }
+    
+    @objc
+    func setCurrentColor(sender: UIColorWell) {
+        self.currentColor = sender.selectedColor ?? .systemRed
+    }
+    
+    @objc
+    func changeFontColor() {
+        let mutableString = NSMutableAttributedString.init(attributedString: richTextEditor.attributedText)
+        mutableString.addAttribute(NSAttributedString.Key.foregroundColor, value: currentColor, range: richTextEditor.selectedRange)
+        richTextEditor.attributedText = mutableString
+    }
+    
+    @objc
+    func changeStrikeColor() {
+        let mutableString = NSMutableAttributedString.init(attributedString: richTextEditor.attributedText)
+        mutableString.addAttribute(NSAttributedString.Key.strikethroughColor, value: currentColor, range: richTextEditor.selectedRange)
+        richTextEditor.attributedText = mutableString
+    }
+    
+    @objc
+    func changeHighlightColor() {
+        let mutableString = NSMutableAttributedString.init(attributedString: richTextEditor.attributedText)
+        mutableString.addAttribute(NSAttributedString.Key.backgroundColor, value: currentColor, range: richTextEditor.selectedRange)
+        richTextEditor.attributedText = mutableString
     }
     
     @objc
