@@ -10,8 +10,8 @@ import UIKit
 class ZigzagView: UIView {
     
     var myPath: UIBezierPath!
-    let zigZagWidth = CGFloat(7)
-    let zigZagHeight = CGFloat(5)
+    let zigZagWidth = CGFloat(15)
+    let zigZagHeight = CGFloat(15)
 
     override init(frame: CGRect) {
         super.init(frame: frame)
