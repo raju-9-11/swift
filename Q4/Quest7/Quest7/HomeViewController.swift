@@ -10,17 +10,23 @@ import UIKit
 class HomeViewController: UIViewController {
     
     var circles: [Circle] = []
-    var radius = 40.0
+    let radius = 50.0
     var outerContainer: UIStackView!
     var topView: UIStackView!
     var midView: UIStackView!
     var bottomView: UIStackView!
     var colors:[UIColor] = [.red, .black, .blue, .brown, .green, .yellow, .cyan, .darkGray, .orange]
+    var bezierPathTop: ZigzagView!
+    var bezierPathBottom: ZigzagView!
+    var pathOuterContainer: UIStackView!
+    var testViewTop: UIView!
+    var testViewBottom: UIView!
     
     
     override func loadView() {
         view = UIView()
         view.backgroundColor = .white
+        view.frame = UIScreen.main.bounds
         
         
         //Create Circles
@@ -33,29 +39,49 @@ class HomeViewController: UIViewController {
         midView = newStackView([circles[3].circleView, circles[4].circleView, circles[5].circleView])
         bottomView = newStackView([circles[6].circleView, circles[7].circleView, circles[8].circleView])
         
+        
+        //Zigzag line
+        bezierPathTop = ZigzagView()
+        bezierPathTop.draw(CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.bezierPathTop.frame.height))
+        bezierPathTop.translatesAutoresizingMaskIntoConstraints = false
+        bezierPathTop.setOffset(offset: 60)
+
+        bezierPathBottom = ZigzagView()
+        bezierPathBottom.draw(CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.bezierPathTop.frame.height))
+        bezierPathBottom.translatesAutoresizingMaskIntoConstraints = false
+        bezierPathBottom.setOffset(offset: -60)
+        
+        
+        //Parent Container for bezier Path
+        pathOuterContainer = newStackView([bezierPathTop, bezierPathBottom], alignment: .center, spacing: 0, distribution: .fillEqually, axis: .vertical)
+        view.addSubview(pathOuterContainer)
+        
+        
         // Create parent container for views
-        outerContainer = UIStackView(arrangedSubviews: [topView, midView, bottomView])
-        outerContainer.axis = .vertical
-        outerContainer.alignment = .center
-        outerContainer.spacing = 10
-        outerContainer.translatesAutoresizingMaskIntoConstraints = false
-        outerContainer.distribution = .fillEqually
+        outerContainer = newStackView([topView, midView, bottomView], alignment: .center, spacing: 10, distribution: .fillEqually, axis: .vertical)
         view.addSubview(outerContainer)
         
-        // Setup Constraints
+        // Setup Layout Constraints
         setupConstraints()
+        
         
     }
     
     
     
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        // Code
+    }
     
-    func newStackView(_ elements: [UIView]) -> UIStackView {
+    
+    
+    
+    func newStackView(_ elements: [UIView], alignment: UIStackView.Alignment = .center, spacing: CGFloat = 10, distribution: UIStackView.Distribution = .equalCentering, axis: NSLayoutConstraint.Axis = .horizontal ) -> UIStackView {
         let myStackView = UIStackView(arrangedSubviews: elements)
-        myStackView.axis = .horizontal
-        myStackView.alignment = .center
-        myStackView.distribution = .equalCentering
-        myStackView.spacing = 10
+        myStackView.axis = axis
+        myStackView.alignment = alignment
+        myStackView.distribution = distribution
+        myStackView.spacing = spacing
         myStackView.isLayoutMarginsRelativeArrangement = true
         myStackView.directionalLayoutMargins = NSDirectionalEdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10)
         myStackView.translatesAutoresizingMaskIntoConstraints = false
@@ -65,10 +91,9 @@ class HomeViewController: UIViewController {
     
     func newCircle(_ rad: CGFloat, circleIndex: Int, color: UIColor) -> UIButton {
         
-        let circle = UIButton()
+        let circle = UIButton(type: .roundedRect)
         circle.backgroundColor = color
         circle.layer.masksToBounds = true
-        circle.layer.borderWidth = 1.0
         circle.setTitleColor(.init(red: 0, green: 0, blue: 0, alpha: 0), for: .normal)
         circle.setTitle("\(circleIndex)", for: .normal)
         circle.addTarget(self, action: #selector(circleTapped(sender:)), for: .touchUpInside)
@@ -85,7 +110,14 @@ class HomeViewController: UIViewController {
             topView.widthAnchor.constraint(equalTo: outerContainer.layoutMarginsGuide.widthAnchor),
             midView.widthAnchor.constraint(equalTo: outerContainer.layoutMarginsGuide.widthAnchor),
             bottomView.widthAnchor.constraint(equalTo: outerContainer.layoutMarginsGuide.widthAnchor),
+            pathOuterContainer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            pathOuterContainer.widthAnchor.constraint(equalTo: view.widthAnchor),
+            pathOuterContainer.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            pathOuterContainer.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            bezierPathTop.widthAnchor.constraint(equalTo: pathOuterContainer.safeAreaLayoutGuide.widthAnchor, constant: -20),
+            bezierPathBottom.widthAnchor.constraint(equalTo: pathOuterContainer.safeAreaLayoutGuide.widthAnchor, constant: -20),
         ])
+        
     }
     
     func generateColor() -> UIColor {
@@ -98,20 +130,24 @@ class HomeViewController: UIViewController {
     @objc
     func circleTapped(sender: UIButton) {
         guard let circleNumber = Int(sender.title(for: .normal)!) else { return }
-        
-        UIView.animate(withDuration: 2.0, delay: 0.0, options: .curveEaseOut, animations: {
-            self.circles[circleNumber % 9].radius += 15
+        sender.removeTarget(self, action: #selector(circleTapped(sender:)), for: .touchUpInside)
+        let circle = circles[circleNumber % 9]
+        UIView.animate(withDuration: 1.0, delay: 0.0, options: .curveEaseOut, animations: {
+            circle.radius += 20
+            circle.dropShadow()
             self.view.layoutIfNeeded()
         }, completion: nil)
         
-        UIView.animate(withDuration: 2.0, delay: 2.0, options: .curveEaseOut, animations: {
-            self.circles[circleNumber % 9].radius -= 15
+        UIView.animate(withDuration: 1.0, delay: 2.0, options: .curveEaseOut, animations: {
+            circle.radius -= 20
+            circle.removeShadow()
             self.view.layoutIfNeeded()
-        }, completion: nil)
+        }, completion: {
+             finished in
+            sender.addTarget(self, action: #selector(self.circleTapped(sender:)), for: .touchUpInside)
+        })
         
     }
     
+
 }
-
-
-

@@ -33,6 +33,18 @@ class Circle {
         self.circleView.layer.cornerRadius = radius / 2.0
     }
     
+    func dropShadow() {
+        self.circleView.layer.shadowColor = UIColor.black.cgColor
+        self.circleView.layer.shadowOffset = CGSize(width: 5, height: 5)
+        self.circleView.layer.masksToBounds = true
+        self.circleView.layer.shadowRadius = 3.0
+        self.circleView.layer.shadowOpacity = 1.0
+    }
+    
+    func removeShadow() {
+        self.circleView.layer.shadowColor = UIColor.init(red: 0, green: 0, blue: 0, alpha: 0).cgColor
+    }
+    
     
     
 }
