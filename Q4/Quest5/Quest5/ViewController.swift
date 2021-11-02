@@ -49,8 +49,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
     
     var scrollView: UIScrollView!
     
-    var submit: UIButton!
-    var clear: UIButton!
+
     
     override func loadView() {
         view = UIView()
@@ -124,23 +123,10 @@ class ViewController: UIViewController, UITextFieldDelegate {
         food = newTextField("Enter your favourite food")
         
         foodLabel = newLabel("Food:")
-        
-//      Submit
-        submit = UIButton(type: .system)
-        submit.setTitle("Done", for: .normal)
-        submit.addTarget(self, action: #selector(onSubmit), for: .touchUpInside)
-        submit.contentHorizontalAlignment = .right
-        
-        
-//      Clear
-        clear = UIButton(type: .system)
-        clear.setTitle("Clear", for: .normal)
-        clear.addTarget(self, action: #selector(onClear), for: .touchUpInside)
-        clear.contentHorizontalAlignment = .left
+    
 
 
         stack = UIStackView(arrangedSubviews: [
-            newContainer(elements: [clear, titleLabel, submit], axis: .horizontal, spacing: 0, alignment: .fill),
             newContainer(elements: [personNameLabel, personName], axis: .vertical, spacing: 0),
             newContainer(elements: [addressLabel, address], axis: .vertical, spacing: 0),
             newContainer(elements: [dateOfBirthLabel, dateOfBirth], axis: .vertical, spacing: 0),
@@ -165,8 +151,16 @@ class ViewController: UIViewController, UITextFieldDelegate {
         
         
         setUpLayout()
+        setupNavigationBar()
         
         
+    }
+    
+    func setupNavigationBar() {
+        navigationItem.title = "Add Contacts"
+        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.black]
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Clear", style: .plain, target: self, action: #selector(onClear))
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(onSubmit))
     }
     
     override func viewDidLoad() {
