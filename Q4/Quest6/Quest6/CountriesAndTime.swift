@@ -10,7 +10,8 @@ import Foundation
 
 class CountriesAndTime {
     
-    static let countries = ["India": "IST", "Nepal": "NPT", "Beijing":"CST", "Turkey": "TRT", "Rome": "CET", "Sydney": "AEST", "Toronto": "EST", "Montreal": "EST", "Alaska": "AKST", "Shanghai": "CST", "Ho Chi Minh": "ICT", "Dublin": "GMT", "Berlin": "CET", "California": "PST", "New York": "EST"]
+    static var countries = ["India": "IST", "Nepal": "NPT", "Beijing":"CST", "Turkey": "TRT", "Rome": "CET", "Sydney": "AEST", "Toronto": "EST", "Montreal": "EST", "Alaska": "AKST", "Shanghai": "CST", "Ho Chi Minh": "ICT", "Dublin": "GMT", "Berlin": "CET", "California": "PST", "New York": "EST"] 
+        
     static var time: [DataModel] {
         get {
             var timeForCountries: [DataModel] = []
@@ -35,7 +36,7 @@ func localTime(in timeZone: String, hour24: Bool) -> String {
 func localDay(in timeZone: String) -> [String: String] {
     let timeFormatter = DateFormatter()
     timeFormatter.timeZone = TimeZone(abbreviation: timeZone)
-    timeFormatter.dateFormat = "dd-MM-yyyy"
+    timeFormatter.dateFormat = "dd-MMM-yyyy"
     var day: [String: String]  = ["date": timeFormatter.string(from: Date())]
     timeFormatter.dateFormat = "EEEE"
     day["day"] = timeFormatter.string(from: Date())

@@ -18,7 +18,7 @@ class ViewController: UITableViewController {
     var hour24: Bool = false
     let cellID: String = "customTableCell"
     var countries = CountriesAndTime.time
-    var timer = Timer()
+    var timer: Timer?
 
     
     override func loadView() {
@@ -45,17 +45,19 @@ class ViewController: UITableViewController {
         hour24Switch = UIButton(type: .system, primaryAction: UIAction(handler: {
             _ in
             self.hour24 = !self.hour24
-            self.hour24Switch.setTitle(self.hour24 ? "24 Hour" : "12 Hour", for: .normal)
+            self.hour24Switch.setTitle(!self.hour24 ? "24 Hour" : "12 Hour", for: .normal)
             for index in 0..<self.countries.count {
                 self.countries[index].hour24 = self.hour24
                 self.reloadTable()
             }
         }))
         hour24Switch.setTitleColor(.white, for: .normal)
-        hour24Switch.setTitle("12 Hour", for: .normal)
+        hour24Switch.setTitle("24 Hour", for: .normal)
         hour24Switch.backgroundColor = .systemCyan
         hour24Switch.layer.cornerRadius = 4
         hour24Switch.translatesAutoresizingMaskIntoConstraints = false
+        
+        self.navigationController?.navigationBar.isHidden = true
         
         dateTableView = UITableView()
         dateTableView.dataSource = self
@@ -65,21 +67,22 @@ class ViewController: UITableViewController {
         
         buttonContainer = newStackView(elements: [addButton, hour24Switch, editButton], spacing: 10, axis: .horizontal, distribution: .fillEqually, alignment: .center)
         
+        
         view.addSubview(dateTableView)
         view.addSubview(buttonContainer)
         
         NSLayoutConstraint.activate([
-            dateTableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            dateTableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-            dateTableView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor),
-            dateTableView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor),
             buttonContainer.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             buttonContainer.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.7),
             buttonContainer.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10),
+            dateTableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            dateTableView.bottomAnchor.constraint(equalTo: buttonContainer.safeAreaLayoutGuide.topAnchor),
+            dateTableView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor),
+            dateTableView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor),
             
         ])
         
-        updateTable()
+        startUpdate()
         
     }
     
@@ -108,7 +111,7 @@ class ViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, shouldIndentWhileEditingRowAt indexPath: IndexPath) -> Bool {
         return true
     }
-    
+
     override func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
         return .delete
     }
@@ -127,15 +130,26 @@ class ViewController: UITableViewController {
         return view
     }
     
+    override func tableView(_ tableView: UITableView, willBeginEditingRowAt indexPath: IndexPath) {
+        self.stopUpdate()
+    }
+    
+    override func tableView(_ tableView: UITableView, didEndEditingRowAt indexPath: IndexPath?) {
+        self.startUpdate()
+    }
+    
     override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        let swipes = UISwipeActionsConfiguration(actions: [UIContextualAction(style: .destructive, title: "Delete", handler: {
+        let swipes = UISwipeActionsConfiguration(actions: [
+            UIContextualAction(style: .destructive, title: "Remove", handler: {
             _, _, _ in
             self.countries.remove(at: indexPath.row)
             self.dateTableView.deleteRows(at: [indexPath], with: .fade)
-        }), UIContextualAction(style: .normal, title: "Edit", handler: {
-            _, _, _ in
-            self.addTapped()
-        })])
+        }),
+//            UIContextualAction(style: .normal, title: "Edit", handler: {
+//            _, _, _ in
+//            self.addTapped()
+//        })
+        ])
         return swipes
     }
     
@@ -169,8 +183,13 @@ class ViewController: UITableViewController {
         return label
     }
     
-    func updateTable() {
+    func startUpdate() {
         timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(reloadTable), userInfo: nil, repeats: true)
+    }
+    
+    func stopUpdate() {
+        timer?.invalidate()
+        timer = nil
     }
     
     @objc
@@ -180,15 +199,19 @@ class ViewController: UITableViewController {
     
     @objc
     func addTapped() {
-        let alert = UIAlertController(title: "Under Construction", message: "Functionality under development", preferredStyle: .alert)
-        let action = UIAlertAction(title: "Okay!", style: .default, handler: nil)
-        alert.addAction(action)
-        present(alert, animated: true, completion: nil)
+        let newVC = NewRowViewController()
+
+        self.present(newVC, animated: true)
     }
     
     @objc
     func editTapped() {
         dateTableView.isEditing = !dateTableView.isEditing
+        if dateTableView.isEditing {
+            self.stopUpdate()
+        } else {
+            self.startUpdate()
+        }
         UIView.animate(withDuration: 0.7, delay: 0.0, options: .curveEaseOut, animations: {
             self.editButton.setTitle(self.dateTableView.isEditing ? "Done" : "Edit Table", for: .normal)
             self.addButton.isHidden = self.dateTableView.isEditing
@@ -206,6 +229,11 @@ class ViewController: UITableViewController {
                 print("Edit")
             }
         } 
+    }
+    
+    func addNewRow(with data: DataModel) {
+        countries.append(data)
+        dateTableView.reloadData()
     }
     
     @objc
