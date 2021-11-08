@@ -11,6 +11,5 @@ import Foundation
 struct DataModel {
     var country: String!
     var timeZone: String!
-    var day: [String: String]!
-    var hour24: Bool!
+    var formats: (hour24: Bool, dateFormat: String, timeFormat: String)!
 }

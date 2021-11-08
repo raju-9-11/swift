@@ -101,7 +101,7 @@ class NewRowViewController: UIViewController, UIPickerViewDelegate, UIPickerView
         let index = countryPicker.selectedRow(inComponent: 0)
         if let pc = presentingViewController as? ViewController {
             guard let timeZone = CountriesAndTime.countries[countries[index]] else { print("Failed"); return }
-            pc.addNewRow(with: DataModel(country: countries[index], timeZone: timeZone, day: localDay(in: timeZone), hour24: pc.hour24))
+            pc.addNewRow(with: DataModel(country: countries[index], timeZone: timeZone))
         }
         self.dismiss(animated: true, completion: nil)
     }
