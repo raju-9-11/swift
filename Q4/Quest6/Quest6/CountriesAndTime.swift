@@ -10,12 +10,12 @@ import Foundation
 
 class CountriesAndTime {
     
-    static let countries = ["India": "Asia/Kolkata", "Nepal": "Asia/Kathmandu ", "Beijing":"Asia/Beijing", "Turkey": "Europe/Istanbul", "Rome": "Europe/Rome", "Sydney": "Australia/Sydney", "Toronto": "America/Toronto", "Montreal": "America/Montreal", "Alaska": "America/Juneau", "Shanghai": "Asia/Shangai", "Ho Chi Minh": "Asia/Ho_Chi_Minh", "Dublin": "Europe/Dublin", "Berlin": "Europe/Berlin", "California": "America/Los_Angeles", "New York": "America/New_York"]
+    static let countries = ["India": "IST", "Nepal": "NPT", "Beijing":"CST", "Turkey": "TRT", "Rome": "CET", "Sydney": "AEST", "Toronto": "EST", "Montreal": "EST", "Alaska": "AKST", "Shanghai": "CST", "Ho Chi Minh": "ICT", "Dublin": "GMT", "Berlin": "CET", "California": "PST", "New York": "EST"]
     static var time: [DataModel] {
         get {
             var timeForCountries: [DataModel] = []
             for (country, timeZone) in countries {
-                timeForCountries.append(DataModel(country: country, timeZone: timeZone, time: localTime(in: timeZone)))
+                timeForCountries.append(DataModel(country: country, timeZone: timeZone, day: localDay(in: timeZone), hour24: false))
             }
             return timeForCountries
         }
@@ -23,16 +23,21 @@ class CountriesAndTime {
 }
 
 
-func localTime(in timeZone: String) -> String {
-    let f = ISO8601DateFormatter()
-    f.formatOptions = [.withInternetDateTime]
-    f.timeZone = TimeZone(identifier: timeZone)
-    return f.string(from: Date())
-}
- 
+func localTime(in timeZone: String, hour24: Bool) -> String {
+    let timeFormatterPrint = DateFormatter()
+    timeFormatterPrint.dateFormat = hour24 ? "HH:mm" : "hh:mm a"
+    timeFormatterPrint.timeZone = TimeZone(abbreviation: timeZone)
+    let time = timeFormatterPrint.string(from: Date())
+    return time
 
-extension Date {
-    func dayNumberOfWeek() -> Int? {
-        return Calendar.current.dateComponents([.weekday], from: self).weekday
-    }
+}
+
+func localDay(in timeZone: String) -> [String: String] {
+    let timeFormatter = DateFormatter()
+    timeFormatter.timeZone = TimeZone(abbreviation: timeZone)
+    timeFormatter.dateFormat = "dd-MM-yyyy"
+    var day: [String: String]  = ["date": timeFormatter.string(from: Date())]
+    timeFormatter.dateFormat = "EEEE"
+    day["day"] = timeFormatter.string(from: Date())
+    return day
 }

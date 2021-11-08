@@ -15,7 +15,8 @@ class ViewController: UITableViewController {
     var addButton: UIButton!
     var buttonContainer: UIStackView!
     let cellID: String = "customTableCell"
-    var countries = CountriesAndTime.time
+    var countries = CountriesAndTime.time	
+
     
     override func loadView() {
         
@@ -44,12 +45,8 @@ class ViewController: UITableViewController {
         dateTableView.translatesAutoresizingMaskIntoConstraints = false
         dateTableView.register(CustomTableViewCell.self, forCellReuseIdentifier: cellID)
         
-        buttonContainer = UIStackView(arrangedSubviews: [addButton, editButton])
-        buttonContainer.axis = .horizontal
-        buttonContainer.translatesAutoresizingMaskIntoConstraints = false
-        buttonContainer.distribution = .fillEqually
-        buttonContainer.alignment = .center
-        buttonContainer.spacing = 10
+        buttonContainer = newStackView(elements: [addButton, editButton], spacing: 10, axis: .horizontal, distribution: .fillEqually, alignment: .center)
+        
         view.addSubview(dateTableView)
         view.addSubview(buttonContainer)
         
@@ -71,7 +68,7 @@ class ViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 100
+        return 80
     }
     
     override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
@@ -96,11 +93,40 @@ class ViewController: UITableViewController {
         return .delete
     }
     
+    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let view = UIView()
+        let stackView = newStackView(elements: [newLabel(text: "Country", size: 13), newLabel(text: "Day", size: 15), newLabel(text: "Time", size: 15), newLabel(text: "Date", size: 15)], spacing: 10, axis: .horizontal, distribution: .fillEqually, alignment: .fill)
+        
+        view.addSubview(stackView)
+        NSLayoutConstraint.activate([
+            stackView.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -20),
+            stackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            stackView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+        ])
+        view.backgroundColor = .black
+        return view
+    }
+    
+    override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let swipes = UISwipeActionsConfiguration(actions: [UIContextualAction(style: .destructive, title: "Delete", handler: {
+            _, _, _ in
+            self.countries.remove(at: indexPath.row)
+            self.dateTableView.deleteRows(at: [indexPath], with: .fade)
+        }), UIContextualAction(style: .normal, title: "Edit", handler: {
+            _, _, _ in
+            self.addTapped()
+        })])
+        return swipes
+    }
+    
+    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 60
+    }
+    
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         switch editingStyle {
         case .delete:
-            countries.remove(at: indexPath.row)
-            dateTableView.deleteRows(at: [indexPath], with: .fade)
+           print("Deleting")
         case .none:
             print("None")
         case .insert:
@@ -111,9 +137,30 @@ class ViewController: UITableViewController {
         tableView.reloadData()
     }
     
+    func newStackView(elements: [UIView], spacing: CGFloat, axis: NSLayoutConstraint.Axis, distribution: UIStackView.Distribution, alignment: UIStackView.Alignment) -> UIStackView {
+        let stackView = UIStackView(arrangedSubviews: elements)
+        stackView.axis = axis
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.distribution = distribution
+        stackView.alignment = alignment
+        stackView.spacing = spacing
+        return stackView
+    }
+    
+    func newLabel(text: String, size: CGFloat, color: UIColor = .white) -> UILabel {
+        let label = UILabel()
+        label.textColor = color
+        label.text = text
+        label.font = .boldSystemFont(ofSize: size)
+        return label
+    }
+    
     @objc
     func addTapped() {
-        
+        let alert = UIAlertController(title: "Under Construction", message: "Functionality under development", preferredStyle: .alert)
+        let action = UIAlertAction(title: "Okay!", style: .default, handler: nil)
+        alert.addAction(action)
+        present(alert, animated: true, completion: nil)
     }
     
     @objc
@@ -128,7 +175,19 @@ class ViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellID, for: indexPath) as! CustomTableViewCell
+        let tap = UILongPressGestureRecognizer(target: self, action: #selector(cellTapped))
+        cell.addGestureRecognizer(tap)
         cell.data = countries[indexPath.row]
         return cell
+    }
+    
+    @objc
+    func cellTapped(sender: UILongPressGestureRecognizer) {
+        if let _ = sender.view as? CustomTableViewCell {
+            if dateTableView.isEditing {
+                editTapped()
+                print("Edit")
+            }
+        } 
     }
 }

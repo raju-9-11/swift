@@ -23,7 +23,7 @@ class Container {
         containerView = UIView()
         containerView.translatesAutoresizingMaskIntoConstraints = false
         label = UILabel()
-        label.font = .boldSystemFont(ofSize: 10)
+        label.font = .boldSystemFont(ofSize: 11)
         label.text = "PlaceHolder"
         label.translatesAutoresizingMaskIntoConstraints = false
         containerView.addSubview(label)

@@ -11,34 +11,25 @@ class CustomTableViewCell: UITableViewCell {
     
     var row: UIStackView!
     
-    var view1: Container = {
-        let view = Container()
-        return view
-    }()
-    
-    var view2: Container = {
-        let view = Container()
-        return view
-    }()
-    
-    var view3: Container = {
-        let view = Container()
-        return view
-    }()
+    var view1 = Container()
+    var view2 = Container()
+    var view3 = Container()
+    var view4 = Container()
     
     var data: DataModel! {
         didSet {
             view1.label.text = data.country
-            view2.label.text = data.time
-            view3.label.text = data.timeZone
+            view2.label.text = data.day["day"]
+            view3.label.text = localTime(in: data.timeZone, hour24: data.hour24)
+            view4.label.text = data.day["date"]
         }
     }
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-
         
-        row = newRow(elements: [view1.containerView, view2.containerView], spacing: 0, axis: .horizontal, distribution: .fillEqually, alignment: .center)
+        row = newRow(elements: [view1.containerView, view2.containerView, view3.containerView, view4.containerView], spacing: 10, axis: .horizontal, distribution: .fillEqually, alignment: .center)
+
         self.contentView.addSubview(row)
         self.setUpLayout()
         
@@ -50,10 +41,10 @@ class CustomTableViewCell: UITableViewCell {
 
     func setUpLayout() {
         NSLayoutConstraint.activate([
-            row.topAnchor.constraint(equalTo: self.contentView.safeAreaLayoutGuide.topAnchor),
-            row.bottomAnchor.constraint(equalTo: self.contentView.safeAreaLayoutGuide.bottomAnchor),
-            row.widthAnchor.constraint(equalTo: self.contentView.safeAreaLayoutGuide.widthAnchor, multiplier: 0.9),
-            row.centerXAnchor.constraint(equalTo: self.contentView.safeAreaLayoutGuide.centerXAnchor),
+            row.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor),
+            row.bottomAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.bottomAnchor),
+            row.widthAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.widthAnchor, constant: -20),
+            row.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
         ])
     }
     
@@ -61,10 +52,10 @@ class CustomTableViewCell: UITableViewCell {
     func newRow(elements: [UIView], spacing: CGFloat, axis: NSLayoutConstraint.Axis, distribution: UIStackView.Distribution, alignment: UIStackView.Alignment) -> UIStackView {
         let stackView = UIStackView(arrangedSubviews: elements)
         stackView.axis = axis
+        stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.distribution = distribution
         stackView.alignment = alignment
         stackView.spacing = spacing
-        stackView.translatesAutoresizingMaskIntoConstraints = false
         return stackView
     }
 }
