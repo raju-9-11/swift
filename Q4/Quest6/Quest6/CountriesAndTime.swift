@@ -25,7 +25,7 @@ class CountriesAndTime {
 
 func localTime(in timeZone: String, hour24: Bool) -> String {
     let timeFormatterPrint = DateFormatter()
-    timeFormatterPrint.dateFormat = hour24 ? "HH:mm" : "hh:mm a"
+    timeFormatterPrint.dateFormat = hour24 ? "HH:mm:ss" : "hh:mm:ss a"
     timeFormatterPrint.timeZone = TimeZone(abbreviation: timeZone)
     let time = timeFormatterPrint.string(from: Date())
     return time

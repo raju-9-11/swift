@@ -14,8 +14,11 @@ class ViewController: UITableViewController {
     var editButton: UIButton!
     var addButton: UIButton!
     var buttonContainer: UIStackView!
+    var hour24Switch: UIButton!
+    var hour24: Bool = false
     let cellID: String = "customTableCell"
-    var countries = CountriesAndTime.time	
+    var countries = CountriesAndTime.time
+    var timer = Timer()
 
     
     override func loadView() {
@@ -39,13 +42,28 @@ class ViewController: UITableViewController {
         addButton.addTarget(self, action: #selector(addTapped), for: .touchUpInside)
         addButton.layer.cornerRadius = 4
         
+        hour24Switch = UIButton(type: .system, primaryAction: UIAction(handler: {
+            _ in
+            self.hour24 = !self.hour24
+            self.hour24Switch.setTitle(self.hour24 ? "24 Hour" : "12 Hour", for: .normal)
+            for index in 0..<self.countries.count {
+                self.countries[index].hour24 = self.hour24
+                self.reloadTable()
+            }
+        }))
+        hour24Switch.setTitleColor(.white, for: .normal)
+        hour24Switch.setTitle("12 Hour", for: .normal)
+        hour24Switch.backgroundColor = .systemCyan
+        hour24Switch.layer.cornerRadius = 4
+        hour24Switch.translatesAutoresizingMaskIntoConstraints = false
+        
         dateTableView = UITableView()
         dateTableView.dataSource = self
         dateTableView.delegate = self
         dateTableView.translatesAutoresizingMaskIntoConstraints = false
         dateTableView.register(CustomTableViewCell.self, forCellReuseIdentifier: cellID)
         
-        buttonContainer = newStackView(elements: [addButton, editButton], spacing: 10, axis: .horizontal, distribution: .fillEqually, alignment: .center)
+        buttonContainer = newStackView(elements: [addButton, hour24Switch, editButton], spacing: 10, axis: .horizontal, distribution: .fillEqually, alignment: .center)
         
         view.addSubview(dateTableView)
         view.addSubview(buttonContainer)
@@ -60,6 +78,8 @@ class ViewController: UITableViewController {
             buttonContainer.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10),
             
         ])
+        
+        updateTable()
         
     }
     
@@ -123,18 +143,12 @@ class ViewController: UITableViewController {
         return 60
     }
     
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        switch editingStyle {
-        case .delete:
-           print("Deleting")
-        case .none:
-            print("None")
-        case .insert:
-            print("Inserting ...")
-        default:
-            print("Default")
-        }
-        tableView.reloadData()
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: cellID, for: indexPath) as! CustomTableViewCell
+        let tap = UILongPressGestureRecognizer(target: self, action: #selector(cellTapped))
+        cell.addGestureRecognizer(tap)
+        cell.data = countries[indexPath.row]
+        return cell
     }
     
     func newStackView(elements: [UIView], spacing: CGFloat, axis: NSLayoutConstraint.Axis, distribution: UIStackView.Distribution, alignment: UIStackView.Alignment) -> UIStackView {
@@ -155,6 +169,15 @@ class ViewController: UITableViewController {
         return label
     }
     
+    func updateTable() {
+        timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(reloadTable), userInfo: nil, repeats: true)
+    }
+    
+    @objc
+    func reloadTable() {
+        dateTableView.reloadData()
+    }
+    
     @objc
     func addTapped() {
         let alert = UIAlertController(title: "Under Construction", message: "Functionality under development", preferredStyle: .alert)
@@ -169,16 +192,10 @@ class ViewController: UITableViewController {
         UIView.animate(withDuration: 0.7, delay: 0.0, options: .curveEaseOut, animations: {
             self.editButton.setTitle(self.dateTableView.isEditing ? "Done" : "Edit Table", for: .normal)
             self.addButton.isHidden = self.dateTableView.isEditing
+            self.hour24Switch.isHidden = self.dateTableView.isEditing
             self.addButton.alpha = self.dateTableView.isEditing ? 0 : 1
+            self.hour24Switch.alpha = self.dateTableView.isEditing ? 0 : 1
         }, completion: nil)
-    }
-    
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: cellID, for: indexPath) as! CustomTableViewCell
-        let tap = UILongPressGestureRecognizer(target: self, action: #selector(cellTapped))
-        cell.addGestureRecognizer(tap)
-        cell.data = countries[indexPath.row]
-        return cell
     }
     
     @objc
@@ -189,5 +206,10 @@ class ViewController: UITableViewController {
                 print("Edit")
             }
         } 
+    }
+    
+    @objc
+    func onToggle(sender: UISwitch) {
+        print(sender.isOn ? "Switching On" : "Switching Off")
     }
 }
