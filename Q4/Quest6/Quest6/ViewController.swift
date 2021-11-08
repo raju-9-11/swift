@@ -274,11 +274,6 @@ class ViewController: UITableViewController, UIPickerViewDataSource, UIPickerVie
     func editTapped() {
         UIView.animate(withDuration: 0.7, delay: 0.0, options: .curveEaseOut, animations: {
             self.dateTableView.isEditing = !self.dateTableView.isEditing
-            if self.dateTableView.isEditing {
-                self.stopUpdate()
-            } else {
-                self.startUpdate()
-            }
             self.editButton.setTitle(self.dateTableView.isEditing ? "Done" : "Edit Table", for: .normal)
             self.addButton.isHidden = self.dateTableView.isEditing
             self.hour24Switch.isHidden = self.dateTableView.isEditing
@@ -287,6 +282,12 @@ class ViewController: UITableViewController, UIPickerViewDataSource, UIPickerVie
             self.hour24Switch.alpha = self.dateTableView.isEditing ? 0 : 1
             self.footer.alpha = self.dateTableView.isEditing ? 0 : 1
         }, completion: nil)
+        if self.dateTableView.isEditing {
+            self.stopUpdate()
+        } else {
+            self.startUpdate()
+        }
     }
+    
 
 }
