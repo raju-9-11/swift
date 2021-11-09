@@ -39,7 +39,6 @@ class HomeViewController: UIViewController {
         midView = newStackView([circles[3].circleView, circles[4].circleView, circles[5].circleView])
         bottomView = newStackView([circles[6].circleView, circles[7].circleView, circles[8].circleView])
         
-        
         //Zigzag line
         bezierPathTop = ZigzagView()
         bezierPathTop.draw(CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.bezierPathTop.frame.height))
@@ -49,11 +48,9 @@ class HomeViewController: UIViewController {
         bezierPathBottom.draw(CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.bezierPathTop.frame.height))
         bezierPathBottom.translatesAutoresizingMaskIntoConstraints = false
         
-        
         //Parent Container for bezier Path
         pathOuterContainer = newStackView([bezierPathTop, bezierPathBottom], alignment: .center, spacing: 0, distribution: .fillEqually, axis: .vertical)
         view.addSubview(pathOuterContainer)
-        
         
         // Create parent container for views
         outerContainer = newStackView([topView, midView, bottomView], alignment: .center, spacing: 10, distribution: .fillEqually, axis: .vertical)

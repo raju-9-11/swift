@@ -99,6 +99,7 @@ class ViewController: UIViewController, UITextViewDelegate {
         }
     }
     
+    // Set color for further use
     @objc
     func setCurrentColor(sender: UIColorWell) {
         self.currentColor = sender.selectedColor ?? .systemRed
@@ -106,70 +107,70 @@ class ViewController: UIViewController, UITextViewDelegate {
     
     @objc
     func changeFontColor() {
-        let mutableString = NSMutableAttributedString.init(attributedString: richTextEditor.attributedText)
+        let mutableString = NSMutableAttributedString(attributedString: richTextEditor.attributedText)
         mutableString.addAttribute(NSAttributedString.Key.foregroundColor, value: currentColor, range: richTextEditor.selectedRange)
         richTextEditor.attributedText = mutableString
     }
     
     @objc
     func changeStrikeColor() {
-        let mutableString = NSMutableAttributedString.init(attributedString: richTextEditor.attributedText)
+        let mutableString = NSMutableAttributedString(attributedString: richTextEditor.attributedText)
         mutableString.addAttribute(NSAttributedString.Key.strikethroughColor, value: currentColor, range: richTextEditor.selectedRange)
         richTextEditor.attributedText = mutableString
     }
     
     @objc
     func changeHighlightColor() {
-        let mutableString = NSMutableAttributedString.init(attributedString: richTextEditor.attributedText)
+        let mutableString = NSMutableAttributedString(attributedString: richTextEditor.attributedText)
         mutableString.addAttribute(NSAttributedString.Key.backgroundColor, value: currentColor, range: richTextEditor.selectedRange)
         richTextEditor.attributedText = mutableString
     }
     
     @objc
     func makeDefault() {
-        let mutableString = NSMutableAttributedString.init(attributedString: richTextEditor.attributedText )
+        let mutableString = NSMutableAttributedString(attributedString: richTextEditor.attributedText )
         mutableString.addAttribute(NSAttributedString.Key.font, value: UIFont.systemFont(ofSize: 10), range: richTextEditor.selectedRange)
         richTextEditor.attributedText = mutableString
     }
     
     @objc
     func makeBold() {
-        let mutableString = NSMutableAttributedString.init(attributedString: richTextEditor.attributedText )
+        let mutableString = NSMutableAttributedString(attributedString: richTextEditor.attributedText )
         mutableString.addAttribute(NSAttributedString.Key.font, value: UIFont.boldSystemFont(ofSize: 10), range: richTextEditor.selectedRange)
         richTextEditor.attributedText = mutableString
     }
     
     @objc
     func makeItalic() {
-        let mutableString = NSMutableAttributedString.init(attributedString: richTextEditor.attributedText )
+        let mutableString = NSMutableAttributedString(attributedString: richTextEditor.attributedText )
         mutableString.addAttribute(NSAttributedString.Key.font, value: UIFont.italicSystemFont(ofSize: 10), range: richTextEditor.selectedRange)
         richTextEditor.attributedText = mutableString
     }
     
     @objc
     func makeUnderLine() {
-        let mutableString = NSMutableAttributedString.init(attributedString: richTextEditor.attributedText )
+        let mutableString = NSMutableAttributedString(attributedString: richTextEditor.attributedText )
         mutableString.addAttribute(NSAttributedString.Key.underlineStyle, value: NSUnderlineStyle.thick.rawValue , range: richTextEditor.selectedRange)
         richTextEditor.attributedText = mutableString
     }
     
     @objc
     func makeStrikethrough() {
-        let mutableString = NSMutableAttributedString.init(attributedString: richTextEditor.attributedText )
+        let mutableString = NSMutableAttributedString(attributedString: richTextEditor.attributedText )
         mutableString.addAttribute(NSAttributedString.Key.strikethroughStyle, value: NSUnderlineStyle.thick.rawValue , range: richTextEditor.selectedRange)
         richTextEditor.attributedText = mutableString
     }
     
     @objc
     func makeSuperScript() {
-        let mutableString = NSMutableAttributedString.init(attributedString: richTextEditor.attributedText)
+        let mutableString = NSMutableAttributedString(attributedString: richTextEditor.attributedText)
         mutableString.setAttributes([.font: UIFont.systemFont(ofSize: 7), .baselineOffset: 5], range: richTextEditor.selectedRange)
         richTextEditor.attributedText = mutableString
     }
     
     @objc
     func makeSubScript() {
-        let mutableString = NSMutableAttributedString.init(attributedString: richTextEditor.attributedText)
+        let mutableString = NSMutableAttributedString(attributedString: richTextEditor.attributedText)
         mutableString.setAttributes([.font: UIFont.systemFont(ofSize: 7), .baselineOffset: -5], range: richTextEditor.selectedRange)
         richTextEditor.attributedText = mutableString
     }
