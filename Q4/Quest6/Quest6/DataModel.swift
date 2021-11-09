@@ -12,4 +12,5 @@ struct DataModel {
     var country: String!
     var timeZone: String!
     var formats: (hour24: Bool, dateFormat: String, timeFormat: String)!
+    var date: Date!
 }

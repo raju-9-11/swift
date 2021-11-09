@@ -58,6 +58,8 @@ class ViewController: UIViewController, UITextFieldDelegate {
         scrollView = UIScrollView()
         scrollView.isScrollEnabled = true
         scrollView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.contentMode = .center
+        scrollView.keyboardLayoutGuide
         
 //      TtielLabel
         titleLabel = newLabel("Create Contact")
@@ -147,6 +149,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
         
         
         scrollView.addSubview(stack)
+        scrollView.keyboardLayoutGuide.followsUndockedKeyboard = true
         view.addSubview(scrollView)
         
         
@@ -180,17 +183,19 @@ class ViewController: UIViewController, UITextFieldDelegate {
         //Scrollview constraints
         NSLayoutConstraint.activate([
             scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            scrollView.widthAnchor.constraint(equalTo: view.widthAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor, constant: 10),
+            scrollView.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, multiplier: 0.9),
+            scrollView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
         ])
         //Stackview Constraints
         NSLayoutConstraint.activate([
             stack.topAnchor.constraint(equalTo: scrollView.topAnchor),
-            stack.widthAnchor.constraint(equalTo: scrollView.widthAnchor, multiplier: 0.85),
+            stack.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
             stack.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
             stack.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor)
         ])
     }
+    
     
     
     

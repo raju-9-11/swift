@@ -58,29 +58,38 @@ class ViewController: UIViewController, UITextViewDelegate {
         unEditedText.isSelectable = false
         view.addSubview(unEditedText)
         
+        let label = UILabel()
+        label.text = "Select color for bg and font here: "
+        label.textColor = .darkGray
+        label.translatesAutoresizingMaskIntoConstraints = false
         
         let testView = UIView()
+        testView.contentMode = .center
         testView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(testView)
         colorWell.translatesAutoresizingMaskIntoConstraints = false
         colorWell.addTarget(self, action: #selector(setCurrentColor), for: .valueChanged)
         testView.addSubview(colorWell)
+        testView.addSubview(label)
         
         NSLayoutConstraint.activate([
-            richTextEditor.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            richTextEditor.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, multiplier: 0.98),
+            richTextEditor.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
+            richTextEditor.bottomAnchor.constraint(equalTo: testView.topAnchor),
             richTextEditor.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            richTextEditor.heightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.heightAnchor, multiplier: 0.6),
-            unEditedText.topAnchor.constraint(equalTo: richTextEditor.layoutMarginsGuide.bottomAnchor, constant: 20),
-            unEditedText.heightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.heightAnchor, multiplier: 0.3),
-            unEditedText.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, multiplier: 0.98),
-            unEditedText.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            testView.topAnchor.constraint(equalTo: unEditedText.safeAreaLayoutGuide.bottomAnchor,constant: 20),
-            testView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            richTextEditor.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.9),
             testView.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, multiplier: 0.98),
             testView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            unEditedText.bottomAnchor.constraint(equalTo: testView.topAnchor),
-            colorWell.heightAnchor.constraint(equalTo: testView.safeAreaLayoutGuide.heightAnchor),
+            testView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            testView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.08),
+            label.centerYAnchor.constraint(equalTo: testView.centerYAnchor),
+            label.leftAnchor.constraint(equalTo: testView.safeAreaLayoutGuide.leftAnchor, constant: 10),
+            colorWell.heightAnchor.constraint(equalTo: testView.safeAreaLayoutGuide.heightAnchor, multiplier: 0.9),
+            colorWell.centerYAnchor.constraint(equalTo: testView.centerYAnchor),
+            colorWell.leftAnchor.constraint(equalTo: label.safeAreaLayoutGuide.rightAnchor, constant: 10),
+            unEditedText.topAnchor.constraint(equalTo: testView.bottomAnchor),
+            unEditedText.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.9),
+            unEditedText.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            unEditedText.centerXAnchor.constraint(equalTo: view.centerXAnchor),
         ])
     }
     

@@ -14,13 +14,14 @@ class ViewController: UITableViewController, UIPickerViewDataSource, UIPickerVie
     var addButton: UIButton!
     var buttonContainer: UIStackView!
     var hour24Switch: UIButton!
-    var hour24: Bool = false
-    let cellID: String = "customTableCell"
-    var countries = CountriesAndTime.time
-    var timer: Timer?
+    var datePicker: UIDatePicker!
     var dateFormatPicker: UIPickerView!
     var timeFormatPicker: UIPickerView!
     var footer: UIStackView!
+    var currDate: Date!
+    var hour24: Bool = false
+    let cellID: String = "customTableCell"
+    var countries = CountriesAndTime.time
     var timeFormat = "hh:mm:ss"
     var dateFormat = "dd-MMM-yyyy"
 
@@ -76,20 +77,29 @@ class ViewController: UITableViewController, UIPickerViewDataSource, UIPickerVie
         timeFormatPicker.dataSource = self
         timeFormatPicker.delegate = self
         
+        datePicker = UIDatePicker()
+        datePicker.translatesAutoresizingMaskIntoConstraints = false
+        let minMax = getDates(from: 2019, to: 2023)
+        datePicker.minimumDate = minMax.min
+        datePicker.maximumDate = minMax.max
+        datePicker.addTarget(self, action: #selector(onDateChanged), for: .valueChanged)
+        datePicker.date = minMax.min
+        currDate = datePicker.date
+        
+        
         footer = newStackView(elements: [dateFormatPicker, timeFormatPicker], spacing: 10, axis: .horizontal, distribution: .fillEqually, alignment: .fill)
         
         view.addSubview(dateTableView)
         view.addSubview(footer)
+        view.addSubview(datePicker)
         view.addSubview(buttonContainer)
         
         setupLayout()
         
-        startUpdate()
-        
     }
     
     // MARK: - TableView Delegate
-    
+
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return countries.count
     }
@@ -134,14 +144,6 @@ class ViewController: UITableViewController, UIPickerViewDataSource, UIPickerVie
         return view
     }
     
-    override func tableView(_ tableView: UITableView, willBeginEditingRowAt indexPath: IndexPath) {
-        self.stopUpdate()
-    }
-    
-    override func tableView(_ tableView: UITableView, didEndEditingRowAt indexPath: IndexPath?) {
-        self.startUpdate()
-    }
-    
     override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let swipes = UISwipeActionsConfiguration(actions: [
             UIContextualAction(style: .destructive, title: "Remove", handler: {
@@ -164,6 +166,7 @@ class ViewController: UITableViewController, UIPickerViewDataSource, UIPickerVie
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellID, for: indexPath) as! CustomTableViewCell
         countries[indexPath.row].formats = (hour24: hour24, dateFormat: dateFormat, timeFormat: timeFormat)
+        countries[indexPath.row].date = currDate
         cell.data = countries[indexPath.row]
         return cell
     }
@@ -233,24 +236,36 @@ class ViewController: UITableViewController, UIPickerViewDataSource, UIPickerVie
             buttonContainer.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             buttonContainer.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.7),
             buttonContainer.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10),
+            datePicker.bottomAnchor.constraint(equalTo: footer.safeAreaLayoutGuide.topAnchor),
+            datePicker.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             footer.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -20),
             footer.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             footer.bottomAnchor.constraint(equalTo: buttonContainer.topAnchor),
             footer.heightAnchor.constraint(equalToConstant: 50),
             dateTableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            dateTableView.bottomAnchor.constraint(equalTo: footer.safeAreaLayoutGuide.topAnchor, constant: -10),
+            dateTableView.bottomAnchor.constraint(equalTo: datePicker.topAnchor, constant: -10),
             dateTableView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor),
             dateTableView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor),
         ])
     }
     
-    func startUpdate() {
-        timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(reloadTable), userInfo: nil, repeats: true)
-    }
-    
-    func stopUpdate() {
-        timer?.invalidate()
-        timer = nil
+
+    func getDates(from: Int, to: Int) -> (min: Date, max: Date) {
+        let calendar = Calendar(identifier: .gregorian)
+        var components = DateComponents()
+        components.calendar = calendar
+
+        components.year = to
+        components.month = 12
+        components.day = 31
+        let maxDate = calendar.date(from: components)!
+
+        components.year = from
+        components.month = 1
+        components.day = 1
+        let minDate = calendar.date(from: components)!
+        
+        return (min: minDate, max: maxDate)
     }
     
     func addNewRow(with data: DataModel) {
@@ -271,6 +286,12 @@ class ViewController: UITableViewController, UIPickerViewDataSource, UIPickerVie
     }
     
     @objc
+    func onDateChanged(sender: UIDatePicker) {
+        currDate = sender.date
+        self.dateTableView.reloadData()
+    }
+    
+    @objc
     func editTapped() {
         UIView.animate(withDuration: 0.7, delay: 0.0, options: .curveEaseOut, animations: {
             self.dateTableView.isEditing = !self.dateTableView.isEditing
@@ -278,15 +299,12 @@ class ViewController: UITableViewController, UIPickerViewDataSource, UIPickerVie
             self.addButton.isHidden = self.dateTableView.isEditing
             self.hour24Switch.isHidden = self.dateTableView.isEditing
             self.footer.isHidden = self.dateTableView.isEditing
+            self.datePicker.isHidden = self.dateTableView.isEditing
             self.addButton.alpha = self.dateTableView.isEditing ? 0 : 1
             self.hour24Switch.alpha = self.dateTableView.isEditing ? 0 : 1
             self.footer.alpha = self.dateTableView.isEditing ? 0 : 1
+            self.datePicker.alpha = self.dateTableView.isEditing ? 0 : 1
         }, completion: nil)
-        if self.dateTableView.isEditing {
-            self.stopUpdate()
-        } else {
-            self.startUpdate()
-        }
     }
     
 

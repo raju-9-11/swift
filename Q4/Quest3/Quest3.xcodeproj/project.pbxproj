@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9DEF39FA273A9DF300C0C6D6 /* CustomButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DEF39F9273A9DF300C0C6D6 /* CustomButton.swift */; };
 		9DFA788E271058C8000D1FAD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DFA788D271058C8000D1FAD /* AppDelegate.swift */; };
 		9DFA7890271058C8000D1FAD /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DFA788F271058C8000D1FAD /* SceneDelegate.swift */; };
 		9DFA7892271058C8000D1FAD /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DFA7891271058C8000D1FAD /* ViewController.swift */; };
@@ -16,6 +17,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		9DEF39F9273A9DF300C0C6D6 /* CustomButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomButton.swift; sourceTree = "<group>"; };
 		9DFA788A271058C8000D1FAD /* Quest3.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Quest3.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9DFA788D271058C8000D1FAD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		9DFA788F271058C8000D1FAD /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -59,6 +61,7 @@
 				9DFA788D271058C8000D1FAD /* AppDelegate.swift */,
 				9DFA788F271058C8000D1FAD /* SceneDelegate.swift */,
 				9DFA7891271058C8000D1FAD /* ViewController.swift */,
+				9DEF39F9273A9DF300C0C6D6 /* CustomButton.swift */,
 				9DFA7893271058C8000D1FAD /* Main.storyboard */,
 				9DFA7896271058CA000D1FAD /* Assets.xcassets */,
 				9DFA7898271058CA000D1FAD /* LaunchScreen.storyboard */,
@@ -138,6 +141,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9DEF39FA273A9DF300C0C6D6 /* CustomButton.swift in Sources */,
 				9DFA7892271058C8000D1FAD /* ViewController.swift in Sources */,
 				9DFA788E271058C8000D1FAD /* AppDelegate.swift in Sources */,
 				9DFA7890271058C8000D1FAD /* SceneDelegate.swift in Sources */,

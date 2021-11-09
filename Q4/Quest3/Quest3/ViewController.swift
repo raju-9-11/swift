@@ -9,8 +9,8 @@ import UIKit
 
 class ViewController: UIViewController {
     
-    var purpleButton: UIButton!
-    var yellowButton: UIButton!
+    var purpleButton: CustomButton!
+    var yellowButton: CustomButton!
 
     
     override func loadView() {
@@ -19,31 +19,28 @@ class ViewController: UIViewController {
         view.backgroundColor = .white
         
 //      Purple button initialization
-        purpleButton = UIButton(type: .system)
-        purpleButton.setTitle("Purple Button", for: .normal)
-        purpleButton.backgroundColor = .purple
+        purpleButton = CustomButton(type: .system)
+        purpleButton.data = (text: "Purple", color: .purple)
         purpleButton.translatesAutoresizingMaskIntoConstraints = false
         purpleButton.setTitleColor(.black, for: .normal)
-        purpleButton.tintColor = .black
         view.addSubview(purpleButton)
         
 //      Yellow Button Initialization
-        yellowButton = UIButton(type: .system)
-        yellowButton.setTitle("Yellow Button", for: .normal)
+        yellowButton = CustomButton(type: .system)
+        yellowButton.data = (text: "Yellow", color: .yellow)
         yellowButton.setTitleColor(.black, for: .normal)
         yellowButton.translatesAutoresizingMaskIntoConstraints = false
-        yellowButton.backgroundColor = .yellow
-        yellowButton.tintColor = .black
         view.addSubview(yellowButton)
         
         NSLayoutConstraint.activate([
             purpleButton.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor),
-            purpleButton.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
-            purpleButton.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
+            purpleButton.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.2),
+            purpleButton.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.9),
+            purpleButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             yellowButton.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor),
-            yellowButton.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
-            yellowButton.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
-        
+            yellowButton.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.2),
+            yellowButton.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.9),
+            yellowButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
         ])
         
         purpleButton.addTarget(self, action: #selector(onPurpleClick), for: .touchUpInside)

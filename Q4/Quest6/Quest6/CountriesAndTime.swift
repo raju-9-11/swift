@@ -27,21 +27,21 @@ class CountriesAndTime {
 }
 
 
-func localTime(in timeZone: String, hour24: Bool = true, timeFormat: String = "hh:mm:ss") -> String {
+func localTime(in timeZone: String, hour24: Bool = true, timeFormat: String = "hh:mm:ss", date: Date = Date()) -> String {
     let timeFormatterPrint = DateFormatter()
     timeFormatterPrint.dateFormat = hour24 ? timeFormat.replacingOccurrences(of: "h", with: "H") : "\(timeFormat) a"
     timeFormatterPrint.timeZone = TimeZone(abbreviation: timeZone)
-    let time = timeFormatterPrint.string(from: Date())
+    let time = timeFormatterPrint.string(from: date)
     return time
 
 }
 
-func localDay(in timeZone: String, dateFormat: String = "dd-MMM-yyyy") -> [String: String] {
+func localDay(in timeZone: String, dateFormat: String = "dd-MMM-yyyy", date: Date = Date()) -> [String: String] {
     let timeFormatter = DateFormatter()
     timeFormatter.timeZone = TimeZone(abbreviation: timeZone)
     timeFormatter.dateFormat = dateFormat
-    var day: [String: String]  = ["date": timeFormatter.string(from: Date())]
+    var day: [String: String]  = ["date": timeFormatter.string(from: date)]
     timeFormatter.dateFormat = "EEEE"
-    day["day"] = timeFormatter.string(from: Date())
+    day["day"] = timeFormatter.string(from: date)
     return day
 }

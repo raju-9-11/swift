@@ -19,9 +19,9 @@ class CustomTableViewCell: UITableViewCell {
     var data: DataModel! {
         didSet {
             view1.label.text = data.country
-            let day = localDay(in: data.timeZone,dateFormat: data.formats.dateFormat)
+            let day = localDay(in: data.timeZone,dateFormat: data.formats.dateFormat, date: data.date)
             view2.label.text = day["day"]
-            view3.label.text = localTime(in: data.timeZone, hour24: data.formats.hour24, timeFormat: data.formats.timeFormat)
+            view3.label.text = localTime(in: data.timeZone, hour24: data.formats.hour24, timeFormat: data.formats.timeFormat, date: data.date)
             view4.label.text = day["date"]
         }
     }
