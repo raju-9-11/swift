@@ -84,6 +84,7 @@ class ViewController: UITableViewController, UIPickerViewDataSource, UIPickerVie
         datePicker.maximumDate = minMax.max
         datePicker.addTarget(self, action: #selector(onDateChanged), for: .valueChanged)
         datePicker.date = minMax.min
+        datePicker.datePickerMode = .dateAndTime
         currDate = datePicker.date
         
         

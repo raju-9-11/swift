@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ViewController: UIViewController, UITextFieldDelegate {
+class ViewController : UIViewController, UITextFieldDelegate {
     
     var personName: UITextField!
     var personNameLabel: UILabel!
@@ -31,8 +31,14 @@ class ViewController: UIViewController, UITextFieldDelegate {
     var foodLabel: UILabel!
     var song: UITextField!
     var songLabel: UILabel!
-    var titleLabel: UILabel!
     var totalContactsLabel: UILabel!
+    var scrollBottonConstraint: NSLayoutConstraint!
+    
+    var onKeyboardChange: UIResponder! {
+        willSet {
+            
+        }
+    }
     
     
     var myContacts: [Contact] = []{
@@ -59,11 +65,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
         scrollView.isScrollEnabled = true
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.contentMode = .center
-        scrollView.keyboardLayoutGuide
-        
-//      TtielLabel
-        titleLabel = newLabel("Create Contact")
-        titleLabel.font = .boldSystemFont(ofSize: 16)
+
         
 //      Contacts label
         totalContactsLabel = newLabel("Total Contacts Entered: \(myContacts.count)")
@@ -71,59 +73,48 @@ class ViewController: UIViewController, UITextFieldDelegate {
         
 //      person name
         personName = newTextField("Enter Your name")
-        
         personNameLabel = newLabel("Name: ")
         
 //      dateOfBirth
         dateOfBirth = UIDatePicker()
         dateOfBirth.datePickerMode = .date
-        
         dateOfBirthLabel = newLabel("Date of birth: ")
         
 //      address
         address = newTextField("Enter Your address")
-        
         addressLabel = newLabel("Address: ")
       
 //      Phone number
         ph = newTextField("Enter your phone number")
         ph.keyboardType = .numberPad
-
         phLabel = newLabel("Phone number:")
         
 //      Email
         email = newTextField("test@xyz.com")
-        
         emailLabel = newLabel("Email: ")
         
 //      Job
         job = newTextField("Enter Job title")
-        
         jobLabel = newLabel("Job:")
         
 //      color
         color = newTextField("Enter your favourite color")
-        
         colorLabel = newLabel("Color:")
         
 //      song
         song = newTextField("Enter your favourite song")
-        
         songLabel = newLabel("Song:")
         
 //      department
         dept = newTextField("Enter your department")
-        
         deptLabel = newLabel("Department:")
         
 //      company
         company = newTextField("Enter Your Company")
-        
         companyLabel = newLabel("Company:")
         
 //      Food
         food = newTextField("Enter your favourite food")
-        
         foodLabel = newLabel("Food:")
     
 
@@ -147,17 +138,26 @@ class ViewController: UIViewController, UITextFieldDelegate {
         stack.spacing = 3
         stack.distribution = .fillEqually
         
-        
         scrollView.addSubview(stack)
-        scrollView.keyboardLayoutGuide.followsUndockedKeyboard = true
         view.addSubview(scrollView)
         
+        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardNotification(notification:)),name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
         
         setUpLayout()
         setupNavigationBar()
         
         
     }
+    
+    @objc func keyboardNotification(notification: NSNotification) {
+        guard let userInfo = notification.userInfo else { return }
+        let keyBoardFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue
+        self.scrollBottonConstraint.constant  = -(keyBoardFrame?.height ?? 0)
+    }
+    
+    
+    
+    
     
     func setupNavigationBar() {
         navigationItem.title = "Add Contacts"
@@ -181,9 +181,10 @@ class ViewController: UIViewController, UITextFieldDelegate {
     
     func setUpLayout() {
         //Scrollview constraints
+        self.scrollBottonConstraint = scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+        scrollBottonConstraint.isActive = true
         NSLayoutConstraint.activate([
             scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor, constant: 10),
             scrollView.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, multiplier: 0.9),
             scrollView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
         ])

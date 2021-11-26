@@ -27,7 +27,7 @@ class CountriesAndTime {
 }
 
 
-func localTime(in timeZone: String, hour24: Bool = true, timeFormat: String = "hh:mm:ss", date: Date = Date()) -> String {
+func localTime(in timeZone: String, hour24: Bool = true, timeFormat: String = "hh:mm:ss", date: Date) -> String {
     let timeFormatterPrint = DateFormatter()
     timeFormatterPrint.dateFormat = hour24 ? timeFormat.replacingOccurrences(of: "h", with: "H") : "\(timeFormat) a"
     timeFormatterPrint.timeZone = TimeZone(abbreviation: timeZone)
@@ -36,7 +36,7 @@ func localTime(in timeZone: String, hour24: Bool = true, timeFormat: String = "h
 
 }
 
-func localDay(in timeZone: String, dateFormat: String = "dd-MMM-yyyy", date: Date = Date()) -> [String: String] {
+func localDay(in timeZone: String, dateFormat: String = "dd-MMM-yyyy", date: Date) -> [String: String] {
     let timeFormatter = DateFormatter()
     timeFormatter.timeZone = TimeZone(abbreviation: timeZone)
     timeFormatter.dateFormat = dateFormat
