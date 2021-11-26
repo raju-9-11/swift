@@ -13,12 +13,14 @@ class Navigation: UINavigationController {
         return .portrait
     }
     
+    
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
     
     override init(rootViewController: UIViewController) {
         super.init(rootViewController: rootViewController)
+        
     }
     
     

@@ -16,8 +16,10 @@ class LoginViewController: UIViewController, UICollectionViewDataSource, UIColle
     var signUpLabel: UILabel!
     var signUpButton: UIButton!
     var signupContainer: UIStackView!
+    var imageViewImageItems: [String] = ["BackLog", "Board", "Sprints", "Feed"]
+    var imageViewStringItems: [(head: String, body: String)] =  [ (head: "Welcome to Zoho Sprints", body: "Manage your projects efficiently using sprints"), (head: "Build your backlog", body: "Collate yout requirements in single place"), (head: "On your marks... get set... sprint", body: "Create new items and manage sprints on the go"), (head: "Manage work on your 'Board'", body: "Monitor the status of your work items in a glimpse")]
     
-
+    
     override func loadView() {
         super.loadView()
         
@@ -26,10 +28,13 @@ class LoginViewController: UIViewController, UICollectionViewDataSource, UIColle
         
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
-        layout.itemSize = CGSize(width: 300, height: 400)
-        imageView = UICollectionView(frame: CGRect(x: 0, y: 0, width: 0, height: 0), collectionViewLayout: layout)
+        layout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
+        layout.minimumLineSpacing = 0
+        imageView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.dataSource = self
+        imageView.isPagingEnabled = true
+        imageView.contentMode = .scaleToFill
         imageView.register(CustomCollectionViewCell.self, forCellWithReuseIdentifier: "myCell")
         imageView.showsHorizontalScrollIndicator = false
         
@@ -41,7 +46,7 @@ class LoginViewController: UIViewController, UICollectionViewDataSource, UIColle
         login.setTitle("Sign In", for: .normal)
         login.setTitleColor(.white, for: .normal)
         login.backgroundColor = .systemGreen
-        login.layer.cornerRadius = 2
+        login.layer.cornerRadius = 4
         login.titleLabel?.font = .monospacedSystemFont(ofSize: 13, weight: .bold)
         login.layer.shadowOpacity = 0.8
         login.layer.shadowColor = UIColor.darkGray.cgColor
@@ -56,7 +61,7 @@ class LoginViewController: UIViewController, UICollectionViewDataSource, UIColle
         googleLoginButton.customTitleLabel.text = "Sign In with Google"
         googleLoginButton.customTitleLabel.font = .monospacedSystemFont(ofSize: 13, weight: .bold)
         googleLoginButton.backgroundColor = .white
-        googleLoginButton.layer.cornerRadius = 2
+        googleLoginButton.layer.cornerRadius = 4
         googleLoginButton.layer.shadowOpacity = 0.8
         googleLoginButton.layer.shadowColor = UIColor.darkGray.cgColor
         googleLoginButton.layer.shadowRadius = 0.4
@@ -90,14 +95,20 @@ class LoginViewController: UIViewController, UICollectionViewDataSource, UIColle
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 5
+        return imageViewImageItems.count
     }
     
-    
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "myCell", for: indexPath)
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "myCell", for: indexPath) as! CustomCollectionViewCell
         cell.contentMode = .scaleAspectFit
+        cell.size = collectionView.frame.size
+        cell.image = imageViewImageItems[indexPath.row]
+        cell.textString = imageViewStringItems[indexPath.row]
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: 100, height: 100)
     }
     
     
@@ -122,9 +133,11 @@ class LoginViewController: UIViewController, UICollectionViewDataSource, UIColle
         ])
     }
     
+    
+    
     func setupNavigationController() {
-        self.navigationItem.title = "Login"
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.darkGray]
+        self.navigationController?.navigationBar.isOpaque = true
 
     }
     

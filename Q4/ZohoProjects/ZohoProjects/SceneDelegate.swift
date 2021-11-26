@@ -20,7 +20,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window = UIWindow(windowScene: windowScene)
         window?.makeKeyAndVisible()
         window?.frame = UIScreen.main.bounds
-        let topVC = UINavigationController(rootViewController: LoginViewController())
+        let topVC = Navigation(rootViewController: LoginViewController())
         window?.rootViewController = topVC
     }
 
