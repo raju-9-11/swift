@@ -30,6 +30,7 @@ class LoginViewController: UIViewController, UICollectionViewDataSource, UIColle
         layout.scrollDirection = .horizontal
         layout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
         layout.minimumLineSpacing = 0
+        layout.minimumInteritemSpacing = 0
         imageView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.dataSource = self
