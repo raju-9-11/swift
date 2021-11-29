@@ -152,15 +152,20 @@ class LoginViewController: UIViewController, UICollectionViewDataSource, UIColle
         let backLogVC = BackLogViewController()
         let sprintsVC = SprintsViewController()
         let boardVC = BoardViewController()
-        mainVC.viewControllers = [feedVC, backLogVC, sprintsVC, boardVC]
+        let userVC = UsersViewController()
+        let reportVC = ReportsViewController()
+        
+        mainVC.viewControllers = [feedVC, backLogVC, sprintsVC, boardVC, userVC, reportVC]
+        
         mainVC.selectedViewController = feedVC
+        
         feedVC.tabBarItem = UITabBarItem(title: "Feed", image: UIImage(systemName: "network"), tag: 0)
-        feedVC.tabBarItem.title = "Feed"
-        backLogVC.tabBarItem = UITabBarItem(title: "BackLog", image: UIImage(systemName: "doc.on.clipboard"), tag: 1)
-        backLogVC.tabBarItem.title = "BackLog"
+        backLogVC.tabBarItem = UITabBarItem(title: "Backlog", image: UIImage(systemName: "doc.on.clipboard"), tag: 1)
         sprintsVC.tabBarItem = UITabBarItem(title: "Sprints", image: UIImage(systemName: "bolt.horizontal.fill"), tag: 2)
-        sprintsVC.tabBarItem.title = "Sprints"
         boardVC.tabBarItem = UITabBarItem(title: "Board", image: UIImage(systemName: "chart.bar.xaxis"), tag: 3)
+        reportVC.tabBarItem = UITabBarItem(title: "Reports", image: UIImage(systemName: "chart.pie.fill"), tag: 4)
+        userVC.tabBarItem = UITabBarItem(title: "Users", image: UIImage(systemName: "person.3"), tag: 5)
+        
         self.navigationController?.pushViewController(mainVC, animated: true)
     }
 

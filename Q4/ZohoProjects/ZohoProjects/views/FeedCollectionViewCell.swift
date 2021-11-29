@@ -20,6 +20,15 @@ class FeedCollectionViewCell: UICollectionViewCell {
     
     var size: CGSize = .zero
     
+    var statusLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Test"
+        label.font = .systemFont(ofSize: 11, weight: .regular)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.contentMode = .center
+        return label
+    }()
+    
     var timeLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 10, weight: .regular)
@@ -60,13 +69,17 @@ class FeedCollectionViewCell: UICollectionViewCell {
         return imageView
     }()
     
-    var item: FeedItem = FeedItem(owner: "PACMAN", pic: "person", process: "Unknown", result: "Test", time: "Nov 25 12: 45 PM"){
+    var item: FeedItem = FeedItem(owner: "PACMAN", pic: "person", time: "Nov 25 12: 45 PM", type: .creation){
         willSet {
             let attr: NSMutableAttributedString = NSMutableAttributedString(string: newValue.owner)
             attr.addAttributes([NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 13)], range: NSRange(location: 0, length: newValue.owner.count))
-            attr.append(NSAttributedString(string: " \(newValue.process) \(newValue.result)"))
+            attr.append(NSAttributedString(string: newValue.type == .creation ? " created project" : " posted status"))
             titleLabel.attributedText = attr
             profileView.image = UIImage(systemName: newValue.pic)
+            if newValue.type == .status {
+                self.setupStatus()
+                statusLabel.text = newValue.additionalData
+            }
         }
     }
     
@@ -103,13 +116,20 @@ class FeedCollectionViewCell: UICollectionViewCell {
             titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
             timeLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 5),
             timeLabel.leftAnchor.constraint(equalTo: profileView.rightAnchor, constant: 10),
-            
             addCommentView.heightAnchor.constraint(equalToConstant: 50),
             addCommentView.widthAnchor.constraint(equalTo: contentView.widthAnchor),
             addCommentView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             addCommentView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
         ])
         profileView.layer.cornerRadius = 17
+    }
+    
+    func setupStatus() {
+        contentView.addSubview(statusLabel)
+        NSLayoutConstraint.activate([
+            statusLabel.topAnchor.constraint(equalTo: profileView.bottomAnchor, constant: 17),
+            statusLabel.leftAnchor.constraint(equalTo: contentView.leftAnchor, constant: 12)
+        ])
     }
     
     @objc
@@ -120,7 +140,7 @@ class FeedCollectionViewCell: UICollectionViewCell {
     override func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
         let attr = layoutAttributes
         attr.size.width = self.size.width - 15
-        attr.size.height = 150
+        attr.size.height = item.type == .creation ? 130 : 170
         return attr
     }
     

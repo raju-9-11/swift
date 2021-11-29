@@ -34,6 +34,13 @@ class MainViewController: UITabBarController, UITabBarControllerDelegate {
     override func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
         button.setMainTitle(name: item.title ?? "Home")
         button.setProjectTitle(name: "Test")
+        if let title = item.title {
+            if title == "Backlog" {
+                self.navigationItem.rightBarButtonItems = [UIBarButtonItem(image: UIImage(systemName: "magnifyingglass")?.withRenderingMode(.alwaysOriginal), style: .plain, target: self, action: #selector(onSearchtapped)), UIBarButtonItem(image: UIImage(systemName: "line.3.horizontal.decrease")?.withRenderingMode(.alwaysOriginal), style: .plain, target: self, action: #selector(onFilterTapped))]
+            } else {
+                self.navigationItem.rightBarButtonItems = []
+            }
+        }
     }
     
     func setupNavigationController() {
@@ -53,6 +60,26 @@ class MainViewController: UITabBarController, UITabBarControllerDelegate {
     func menuClicked() {
         settingsLauncher.showMenu()
     }
+    
+    @objc
+    func onSearchtapped() {
+        if self.tabBar.selectedItem?.title ?? "" == "Backlog" {
+            if let vc = self.selectedViewController as? BackLogViewController{
+                vc.onSearch()
+            }
+        }
+    }
+    
+    @objc
+    func onFilterTapped() {
+        if self.tabBar.selectedItem?.title ?? "" == "Backlog" {
+            if let vc = self.selectedViewController as? BackLogViewController{
+                vc.onFilter()
+            }
+        }
+
+    }
+    
 }
 
 public extension UIApplication {

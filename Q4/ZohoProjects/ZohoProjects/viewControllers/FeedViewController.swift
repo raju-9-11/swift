@@ -10,7 +10,7 @@ import UIKit
 class FeedViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     
     let items : [FeedItem] = {
-        return [FeedItem(owner: "Pacman", pic: "person.fill", process: "Created", result: "Project", time: "25 Nov 12: 45 PM")]
+        return [FeedItem(owner: "Pacman", pic: "person.fill", time: "25 Nov 12: 45 PM", type: .creation), FeedItem(owner: "Pacman", pic: "person.fill", time: "25 Nov 12: 55 PM", type: .status, additionalData: "Welcome to project") ]
     }()
     
     let cellID = "FeedCell"
@@ -64,15 +64,19 @@ class FeedItem: NSObject {
     
     var owner: String
     var pic: String
-    var process: String
-    var result: String
     var time: String
+    var type: FeedItemType
+    var additionalData: String
     
-    init(owner: String, pic: String, process: String, result: String, time: String) {
+    init(owner: String, pic: String, time: String, type: FeedItemType, additionalData: String = "") {
         self.owner = owner
         self.pic = pic
-        self.process = process
-        self.result = result
         self.time = time
+        self.type = type
+        self.additionalData = additionalData
     }
+}
+
+enum FeedItemType {
+    case status, creation
 }

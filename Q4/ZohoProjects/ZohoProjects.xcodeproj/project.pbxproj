@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9D099F9E2754F2CA00D7F7F9 /* ReportsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D099F9D2754F2CA00D7F7F9 /* ReportsViewController.swift */; };
+		9D099FA02754F2D700D7F7F9 /* UsersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D099F9F2754F2D700D7F7F9 /* UsersViewController.swift */; };
+		9D099FA22754FDFE00D7F7F9 /* BackLogCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D099FA12754FDFE00D7F7F9 /* BackLogCollectionViewCell.swift */; };
 		9D8D1A2E274F52B000C2B9A4 /* Navigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D8D1A2D274F52B000C2B9A4 /* Navigation.swift */; };
 		9D8D1A31274F5EFE00C2B9A4 /* CustomGoogleButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D8D1A30274F5EFE00C2B9A4 /* CustomGoogleButton.swift */; };
 		9D8D1A33274F96B200C2B9A4 /* CustomCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D8D1A32274F96B200C2B9A4 /* CustomCollectionViewCell.swift */; };
@@ -26,6 +29,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		9D099F9D2754F2CA00D7F7F9 /* ReportsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportsViewController.swift; sourceTree = "<group>"; };
+		9D099F9F2754F2D700D7F7F9 /* UsersViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsersViewController.swift; sourceTree = "<group>"; };
+		9D099FA12754FDFE00D7F7F9 /* BackLogCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackLogCollectionViewCell.swift; sourceTree = "<group>"; };
 		9D8D1A2D274F52B000C2B9A4 /* Navigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Navigation.swift; sourceTree = "<group>"; };
 		9D8D1A30274F5EFE00C2B9A4 /* CustomGoogleButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomGoogleButton.swift; sourceTree = "<group>"; };
 		9D8D1A32274F96B200C2B9A4 /* CustomCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -65,6 +71,7 @@
 				9DE73E4C27549EF300E033EB /* SideMenuCollectionViewCell.swift */,
 				9DE73E4E2754A34D00E033EB /* CustomFeedTitle.swift */,
 				9D9125832754BA07006468AF /* FeedCollectionViewCell.swift */,
+				9D099FA12754FDFE00D7F7F9 /* BackLogCollectionViewCell.swift */,
 			);
 			path = views;
 			sourceTree = "<group>";
@@ -103,6 +110,8 @@
 			children = (
 				9DEF4530274AB8020003B89C /* LoginViewController.swift */,
 				9DEF4541274AC26A0003B89C /* MainViewController.swift */,
+				9D099F9D2754F2CA00D7F7F9 /* ReportsViewController.swift */,
+				9D099F9F2754F2D700D7F7F9 /* UsersViewController.swift */,
 				9D8D1A2D274F52B000C2B9A4 /* Navigation.swift */,
 				9D8D1A34274FA4C300C2B9A4 /* FeedViewController.swift */,
 				9D8D1A36274FA4D200C2B9A4 /* SprintsViewController.swift */,
@@ -182,16 +191,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9D099FA22754FDFE00D7F7F9 /* BackLogCollectionViewCell.swift in Sources */,
 				9DEF4531274AB8020003B89C /* LoginViewController.swift in Sources */,
 				9DE73E4B2753D2A100E033EB /* SettingsLauncher.swift in Sources */,
 				9D9125842754BA07006468AF /* FeedCollectionViewCell.swift in Sources */,
 				9D8D1A33274F96B200C2B9A4 /* CustomCollectionViewCell.swift in Sources */,
+				9D099F9E2754F2CA00D7F7F9 /* ReportsViewController.swift in Sources */,
 				9DE73E4F2754A34D00E033EB /* CustomFeedTitle.swift in Sources */,
 				9DEF452D274AB8020003B89C /* AppDelegate.swift in Sources */,
 				9D8D1A2E274F52B000C2B9A4 /* Navigation.swift in Sources */,
 				9D8D1A3B274FA4F200C2B9A4 /* BackLogViewController.swift in Sources */,
 				9DEF452F274AB8020003B89C /* SceneDelegate.swift in Sources */,
 				9DEF4542274AC26A0003B89C /* MainViewController.swift in Sources */,
+				9D099FA02754F2D700D7F7F9 /* UsersViewController.swift in Sources */,
 				9D8D1A35274FA4C300C2B9A4 /* FeedViewController.swift in Sources */,
 				9D8D1A31274F5EFE00C2B9A4 /* CustomGoogleButton.swift in Sources */,
 				9D8D1A37274FA4D200C2B9A4 /* SprintsViewController.swift in Sources */,
