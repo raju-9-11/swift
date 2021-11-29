@@ -7,18 +7,26 @@
 
 import UIKit
 
-class SettingsLauncher: NSObject {
+class SettingsLauncher: NSObject, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     
     var containerView = UIView()
     
     let collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
+        layout.minimumInteritemSpacing = 0
+        layout.minimumLineSpacing = 0
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
         cv.backgroundColor = .white
         return cv
     }()
     
-    func showSettings() {
+    let cellID = "myCell"
+    
+    let menuItems: [MenuItem] = {
+        return [MenuItem(name: "Ungrouped Projects", icon: "barcode"), MenuItem(name: "Manage Projects", icon: "gear"), MenuItem(name: "Settings", icon: "gearshape.fill"), MenuItem(name: "Feedback", icon: "bubble.right.fill")]
+    }()
+    
+    func showMenu() {
         
         if let keyWindow = UIApplication.shared.connectedScenes
             .compactMap({$0 as? UIWindowScene})
@@ -53,5 +61,36 @@ class SettingsLauncher: NSObject {
             }, completion: nil)
             
         }
+    }
+    
+    override init() {
+        super.init()
+        collectionView.register(SideMenuCollectionViewCell.self, forCellWithReuseIdentifier: cellID)
+        collectionView.dataSource = self
+        collectionView.delegate = self
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: self.collectionView.frame.size.width, height: 50)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellID, for: indexPath) as! SideMenuCollectionViewCell
+        cell.itemString = menuItems[indexPath.row]
+        return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return menuItems.count
+    }
+}
+
+class MenuItem: NSObject {
+    var name: String
+    var icon: String
+    
+    init(name: String, icon: String) {
+        self.name = name
+        self.icon = icon
     }
 }

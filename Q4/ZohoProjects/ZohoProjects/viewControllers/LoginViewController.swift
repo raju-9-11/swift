@@ -142,6 +142,10 @@ class LoginViewController: UIViewController, UICollectionViewDataSource, UIColle
 
     }
     
+    override open var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
+    }
+    
     func loginTapped() {
         let mainVC = MainViewController()
         let feedVC = FeedViewController()
@@ -150,13 +154,13 @@ class LoginViewController: UIViewController, UICollectionViewDataSource, UIColle
         let boardVC = BoardViewController()
         mainVC.viewControllers = [feedVC, backLogVC, sprintsVC, boardVC]
         mainVC.selectedViewController = feedVC
-        feedVC.tabBarItem = UITabBarItem(title: "Feed", image: UIImage(named: "BackLog"), tag: 0)
+        feedVC.tabBarItem = UITabBarItem(title: "Feed", image: UIImage(systemName: "network"), tag: 0)
         feedVC.tabBarItem.title = "Feed"
-        backLogVC.tabBarItem = UITabBarItem(title: "BackLog", image: UIImage(named: "BackLog"), tag: 1)
+        backLogVC.tabBarItem = UITabBarItem(title: "BackLog", image: UIImage(systemName: "doc.on.clipboard"), tag: 1)
         backLogVC.tabBarItem.title = "BackLog"
-        sprintsVC.tabBarItem = UITabBarItem(title: "Sprints", image: UIImage(named: "BackLog"), tag: 2)
+        sprintsVC.tabBarItem = UITabBarItem(title: "Sprints", image: UIImage(systemName: "bolt.horizontal.fill"), tag: 2)
         sprintsVC.tabBarItem.title = "Sprints"
-        boardVC.tabBarItem = UITabBarItem(title: "Board", image: UIImage(named: "BackLog"), tag: 3)
+        boardVC.tabBarItem = UITabBarItem(title: "Board", image: UIImage(systemName: "chart.bar.xaxis"), tag: 3)
         self.navigationController?.pushViewController(mainVC, animated: true)
     }
 

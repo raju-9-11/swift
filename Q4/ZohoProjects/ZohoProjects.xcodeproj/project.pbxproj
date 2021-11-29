@@ -14,7 +14,10 @@
 		9D8D1A37274FA4D200C2B9A4 /* SprintsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D8D1A36274FA4D200C2B9A4 /* SprintsViewController.swift */; };
 		9D8D1A39274FA4E800C2B9A4 /* BoardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D8D1A38274FA4E800C2B9A4 /* BoardViewController.swift */; };
 		9D8D1A3B274FA4F200C2B9A4 /* BackLogViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D8D1A3A274FA4F200C2B9A4 /* BackLogViewController.swift */; };
+		9D9125842754BA07006468AF /* FeedCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D9125832754BA07006468AF /* FeedCollectionViewCell.swift */; };
 		9DE73E4B2753D2A100E033EB /* SettingsLauncher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DE73E4A2753D2A100E033EB /* SettingsLauncher.swift */; };
+		9DE73E4D27549EF300E033EB /* SideMenuCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DE73E4C27549EF300E033EB /* SideMenuCollectionViewCell.swift */; };
+		9DE73E4F2754A34D00E033EB /* CustomFeedTitle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DE73E4E2754A34D00E033EB /* CustomFeedTitle.swift */; };
 		9DEF452D274AB8020003B89C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DEF452C274AB8020003B89C /* AppDelegate.swift */; };
 		9DEF452F274AB8020003B89C /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DEF452E274AB8020003B89C /* SceneDelegate.swift */; };
 		9DEF4531274AB8020003B89C /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DEF4530274AB8020003B89C /* LoginViewController.swift */; };
@@ -30,7 +33,10 @@
 		9D8D1A36274FA4D200C2B9A4 /* SprintsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SprintsViewController.swift; sourceTree = "<group>"; };
 		9D8D1A38274FA4E800C2B9A4 /* BoardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardViewController.swift; sourceTree = "<group>"; };
 		9D8D1A3A274FA4F200C2B9A4 /* BackLogViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackLogViewController.swift; sourceTree = "<group>"; };
+		9D9125832754BA07006468AF /* FeedCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedCollectionViewCell.swift; sourceTree = "<group>"; };
 		9DE73E4A2753D2A100E033EB /* SettingsLauncher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsLauncher.swift; sourceTree = "<group>"; };
+		9DE73E4C27549EF300E033EB /* SideMenuCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideMenuCollectionViewCell.swift; sourceTree = "<group>"; };
+		9DE73E4E2754A34D00E033EB /* CustomFeedTitle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomFeedTitle.swift; sourceTree = "<group>"; };
 		9DEF4529274AB8020003B89C /* ZohoProjects.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ZohoProjects.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9DEF452C274AB8020003B89C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		9DEF452E274AB8020003B89C /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -56,6 +62,9 @@
 			children = (
 				9D8D1A30274F5EFE00C2B9A4 /* CustomGoogleButton.swift */,
 				9D8D1A32274F96B200C2B9A4 /* CustomCollectionViewCell.swift */,
+				9DE73E4C27549EF300E033EB /* SideMenuCollectionViewCell.swift */,
+				9DE73E4E2754A34D00E033EB /* CustomFeedTitle.swift */,
+				9D9125832754BA07006468AF /* FeedCollectionViewCell.swift */,
 			);
 			path = views;
 			sourceTree = "<group>";
@@ -175,7 +184,9 @@
 			files = (
 				9DEF4531274AB8020003B89C /* LoginViewController.swift in Sources */,
 				9DE73E4B2753D2A100E033EB /* SettingsLauncher.swift in Sources */,
+				9D9125842754BA07006468AF /* FeedCollectionViewCell.swift in Sources */,
 				9D8D1A33274F96B200C2B9A4 /* CustomCollectionViewCell.swift in Sources */,
+				9DE73E4F2754A34D00E033EB /* CustomFeedTitle.swift in Sources */,
 				9DEF452D274AB8020003B89C /* AppDelegate.swift in Sources */,
 				9D8D1A2E274F52B000C2B9A4 /* Navigation.swift in Sources */,
 				9D8D1A3B274FA4F200C2B9A4 /* BackLogViewController.swift in Sources */,
@@ -184,6 +195,7 @@
 				9D8D1A35274FA4C300C2B9A4 /* FeedViewController.swift in Sources */,
 				9D8D1A31274F5EFE00C2B9A4 /* CustomGoogleButton.swift in Sources */,
 				9D8D1A37274FA4D200C2B9A4 /* SprintsViewController.swift in Sources */,
+				9DE73E4D27549EF300E033EB /* SideMenuCollectionViewCell.swift in Sources */,
 				9D8D1A39274FA4E800C2B9A4 /* BoardViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
