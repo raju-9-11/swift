@@ -44,17 +44,10 @@ class DropDownCollectionViewCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        self.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(newadsad)))
-        
         self.contentView.addSubview(titleLabel)
         self.setupLayout()
     }
-    
-    @objc
-    func newadsad() {
-        print("ADSDA")
-    }
-    
+
     func setupLayout() {
         NSLayoutConstraint.activate([
             titleLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),

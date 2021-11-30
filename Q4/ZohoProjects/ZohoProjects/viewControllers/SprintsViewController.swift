@@ -9,11 +9,7 @@ import UIKit
 
 class SprintsViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
-    lazy var currSprint: SprintsDataModel = sprints[0] {
-        willSet {
-            self.dropDownIconButton.customLabel.text = newValue.name
-        }
-    }
+    lazy var currSprint: SprintsDataModel = sprints[0]
     
     var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -43,8 +39,9 @@ class SprintsViewController: UIViewController, UICollectionViewDelegate, UIColle
         return leftIcon
     }()
     
-    var dropDownIconButton: DropDownButton = {
+    lazy var dropDownIconButton: DropDownButton = {
         let dropDownIcon = DropDownButton(type: .custom)
+        dropDownIcon.setLabelName(sprints[0].name)
         dropDownIcon.translatesAutoresizingMaskIntoConstraints = false
         dropDownIcon.contentMode = .scaleAspectFit
         dropDownIcon.tintColor = .darkGray
@@ -97,7 +94,6 @@ class SprintsViewController: UIViewController, UICollectionViewDelegate, UIColle
             self.infoButtonTapped()
         }), for: .touchUpInside)
         
-        dropDownIconButton.customLabel.text = currSprint.name
         dropDownIconButton.addAction(UIAction(handler: {
             _ in
             self.dropDownTapped()
@@ -149,6 +145,15 @@ class SprintsViewController: UIViewController, UICollectionViewDelegate, UIColle
         return CGSize(width: collectionView.frame.size.width - 15, height: 60)
     }
     
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if collectionView == dropDownCollectionView {
+            self.currSprint = sprints[indexPath.row]
+            self.dropDownIconButton.setLabelName(currSprint.name)
+            collectionView.reloadData()
+            self.collectionView.reloadData()
+        }
+    }
+    
     func dropDownTapped() {
         if dropDownContainer.alpha == 0.5 {
             dismissDropDown()
@@ -190,11 +195,6 @@ class SprintsViewController: UIViewController, UICollectionViewDelegate, UIColle
             dropDownCollectionView.centerXAnchor.constraint(equalTo: dropDownSubContainer.centerXAnchor),
             dropDownCollectionView.heightAnchor.constraint(equalToConstant: 50 * CGFloat(sprints.count)),
         ])
-        
-    }
-    
-    @objc
-    func sprintChanged() {
         
     }
     
