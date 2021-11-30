@@ -21,12 +21,13 @@ class BackLogViewController: UIViewController, UICollectionViewDelegate, UIColle
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
         cv.contentInset = UIEdgeInsets(top: 10, left: 0, bottom: 10, right: 0)
         cv.translatesAutoresizingMaskIntoConstraints = false
-        cv.backgroundColor = .systemGray6
+        cv.backgroundColor = .clear
         return cv
     }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .systemGray6
 
         collectionView.dataSource = self
         collectionView.delegate = self

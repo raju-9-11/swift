@@ -7,7 +7,7 @@
 
 import UIKit
 
-class SettingsLauncher: NSObject, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
+class SideMenuLauncher: NSObject, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     
     var containerView = UIView()
     
@@ -16,8 +16,16 @@ class SettingsLauncher: NSObject, UICollectionViewDataSource, UICollectionViewDe
         layout.minimumInteritemSpacing = 0
         layout.minimumLineSpacing = 0
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        cv.translatesAutoresizingMaskIntoConstraints = false
         cv.backgroundColor = .white
         return cv
+    }()
+    
+    let subContainerView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .red
+        
+        return view
     }()
     
     let cellID = "myCell"
@@ -37,16 +45,25 @@ class SettingsLauncher: NSObject, UICollectionViewDataSource, UICollectionViewDe
             containerView.alpha = 0
             containerView.frame = keyWindow.frame
             keyWindow.addSubview(containerView)
-            keyWindow.addSubview(collectionView)
-            collectionView.frame = CGRect(x: -keyWindow.frame.width, y: 0, width: keyWindow.frame.size.width*0.7, height: keyWindow.frame.size.height)
-            let gestureRecon = UITapGestureRecognizer(target: self, action: #selector(dismissMenu))
-            containerView.addGestureRecognizer(gestureRecon)
-            
+            keyWindow.addSubview(subContainerView)
+            subContainerView.addSubview(collectionView)
+            subContainerView.frame = CGRect(x: -keyWindow.frame.width, y: 0, width: keyWindow.frame.size.width*0.7, height: keyWindow.frame.size.height)
+            containerView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismissMenu)))
+            self.setupLayout()
             UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseInOut, animations: {
                 self.containerView.alpha = 1
-                self.collectionView.frame = CGRect(x: 0, y: 0, width: keyWindow.frame.size.width*0.7, height: keyWindow.frame.size.height)
+                self.subContainerView.frame = CGRect(x: 0, y: 0, width: keyWindow.frame.size.width*0.7, height: keyWindow.frame.size.height)
             }, completion: nil)
         }
+    }
+    
+    func setupLayout() {
+        NSLayoutConstraint.activate([
+            collectionView.topAnchor.constraint(equalTo: subContainerView.topAnchor, constant: 20),
+            collectionView.bottomAnchor.constraint(equalTo: subContainerView.bottomAnchor),
+            collectionView.widthAnchor.constraint(equalTo: subContainerView.widthAnchor),
+            collectionView.centerXAnchor.constraint(equalTo: subContainerView.centerXAnchor),
+        ])
     }
     
     @objc
@@ -56,7 +73,7 @@ class SettingsLauncher: NSObject, UICollectionViewDataSource, UICollectionViewDe
             .first?.windows
             .filter({ $0.isKeyWindow}).first {
             UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseInOut, animations: {
-                self.collectionView.frame = CGRect(x: -keyWindow.frame.width, y: 0, width: keyWindow.frame.size.width*0.7, height: keyWindow.frame.size.height)
+                self.subContainerView.frame = CGRect(x: -keyWindow.frame.width, y: 0, width: keyWindow.frame.size.width*0.7, height: keyWindow.frame.size.height)
                 self.containerView.alpha = 0
             }, completion: nil)
             

@@ -9,7 +9,7 @@ import UIKit
 
 class MainViewController: UITabBarController, UITabBarControllerDelegate {
     
-    let settingsLauncher = SettingsLauncher()
+    let settingsLauncher = SideMenuLauncher()
     
     var button: CustomFeedTitle!
     
@@ -23,12 +23,13 @@ class MainViewController: UITabBarController, UITabBarControllerDelegate {
     
     var profileView: UIView!
     
-    override func loadView() {
-        super.loadView()
-        self.delegate = self
-        self.setupNavigationController()
-        
+    override func viewDidLoad() {
+        super.viewDidLoad()
         view.backgroundColor = .white
+        self.delegate = self
+        
+        self.setupNavigationController()        
+        
     }
     
     override func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
@@ -77,7 +78,6 @@ class MainViewController: UITabBarController, UITabBarControllerDelegate {
                 vc.onFilter()
             }
         }
-
     }
     
 }
