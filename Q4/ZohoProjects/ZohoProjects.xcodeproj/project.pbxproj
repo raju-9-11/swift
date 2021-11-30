@@ -17,6 +17,7 @@
 		9D8D1A37274FA4D200C2B9A4 /* SprintsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D8D1A36274FA4D200C2B9A4 /* SprintsViewController.swift */; };
 		9D8D1A39274FA4E800C2B9A4 /* BoardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D8D1A38274FA4E800C2B9A4 /* BoardViewController.swift */; };
 		9D8D1A3B274FA4F200C2B9A4 /* BackLogViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D8D1A3A274FA4F200C2B9A4 /* BackLogViewController.swift */; };
+		9D8D839D275626E4002D376D /* DropDownCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D8D839C275626E4002D376D /* DropDownCollectionViewCell.swift */; };
 		9D9125842754BA07006468AF /* FeedCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D9125832754BA07006468AF /* FeedCollectionViewCell.swift */; };
 		9DE73E4B2753D2A100E033EB /* SideMenuLauncher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DE73E4A2753D2A100E033EB /* SideMenuLauncher.swift */; };
 		9DE73E4D27549EF300E033EB /* SideMenuCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DE73E4C27549EF300E033EB /* SideMenuCollectionViewCell.swift */; };
@@ -39,6 +40,7 @@
 		9D8D1A36274FA4D200C2B9A4 /* SprintsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SprintsViewController.swift; sourceTree = "<group>"; };
 		9D8D1A38274FA4E800C2B9A4 /* BoardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardViewController.swift; sourceTree = "<group>"; };
 		9D8D1A3A274FA4F200C2B9A4 /* BackLogViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackLogViewController.swift; sourceTree = "<group>"; };
+		9D8D839C275626E4002D376D /* DropDownCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropDownCollectionViewCell.swift; sourceTree = "<group>"; };
 		9D9125832754BA07006468AF /* FeedCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedCollectionViewCell.swift; sourceTree = "<group>"; };
 		9DE73E4A2753D2A100E033EB /* SideMenuLauncher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideMenuLauncher.swift; sourceTree = "<group>"; };
 		9DE73E4C27549EF300E033EB /* SideMenuCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideMenuCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -66,14 +68,25 @@
 		9D8D1A2F274F5ECC00C2B9A4 /* views */ = {
 			isa = PBXGroup;
 			children = (
+				9DE73E4A2753D2A100E033EB /* SideMenuLauncher.swift */,
 				9D8D1A30274F5EFE00C2B9A4 /* CustomGoogleButton.swift */,
 				9D8D1A32274F96B200C2B9A4 /* CustomCollectionViewCell.swift */,
 				9DE73E4C27549EF300E033EB /* SideMenuCollectionViewCell.swift */,
 				9DE73E4E2754A34D00E033EB /* CustomFeedTitle.swift */,
 				9D9125832754BA07006468AF /* FeedCollectionViewCell.swift */,
 				9D099FA12754FDFE00D7F7F9 /* BackLogCollectionViewCell.swift */,
+				9D8D839C275626E4002D376D /* DropDownCollectionViewCell.swift */,
 			);
 			path = views;
+			sourceTree = "<group>";
+		};
+		9D8D839E27562E65002D376D /* delegates */ = {
+			isa = PBXGroup;
+			children = (
+				9DEF452C274AB8020003B89C /* AppDelegate.swift */,
+				9DEF452E274AB8020003B89C /* SceneDelegate.swift */,
+			);
+			path = delegates;
 			sourceTree = "<group>";
 		};
 		9DEF4520274AB8020003B89C = {
@@ -95,8 +108,7 @@
 		9DEF452B274AB8020003B89C /* ZohoProjects */ = {
 			isa = PBXGroup;
 			children = (
-				9DEF452C274AB8020003B89C /* AppDelegate.swift */,
-				9DEF452E274AB8020003B89C /* SceneDelegate.swift */,
+				9D8D839E27562E65002D376D /* delegates */,
 				9D8D1A2F274F5ECC00C2B9A4 /* views */,
 				9DEF4540274AB95E0003B89C /* viewControllers */,
 				9DEF4535274AB8050003B89C /* Assets.xcassets */,
@@ -117,7 +129,6 @@
 				9D8D1A36274FA4D200C2B9A4 /* SprintsViewController.swift */,
 				9D8D1A38274FA4E800C2B9A4 /* BoardViewController.swift */,
 				9D8D1A3A274FA4F200C2B9A4 /* BackLogViewController.swift */,
-				9DE73E4A2753D2A100E033EB /* SideMenuLauncher.swift */,
 			);
 			path = viewControllers;
 			sourceTree = "<group>";
@@ -198,6 +209,7 @@
 				9D8D1A33274F96B200C2B9A4 /* CustomCollectionViewCell.swift in Sources */,
 				9D099F9E2754F2CA00D7F7F9 /* ReportsViewController.swift in Sources */,
 				9DE73E4F2754A34D00E033EB /* CustomFeedTitle.swift in Sources */,
+				9D8D839D275626E4002D376D /* DropDownCollectionViewCell.swift in Sources */,
 				9DEF452D274AB8020003B89C /* AppDelegate.swift in Sources */,
 				9D8D1A2E274F52B000C2B9A4 /* Navigation.swift in Sources */,
 				9D8D1A3B274FA4F200C2B9A4 /* BackLogViewController.swift in Sources */,

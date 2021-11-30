@@ -28,6 +28,13 @@ class SideMenuLauncher: NSObject, UICollectionViewDataSource, UICollectionViewDe
         return view
     }()
     
+    let search: UITextField = {
+        let bar = UITextField()
+        bar.translatesAutoresizingMaskIntoConstraints = false
+        bar.placeholder = "Search"
+        return bar
+    }()
+    
     let cellID = "myCell"
     
     let menuItems: [MenuItem] = {
@@ -46,9 +53,9 @@ class SideMenuLauncher: NSObject, UICollectionViewDataSource, UICollectionViewDe
             containerView.frame = keyWindow.frame
             keyWindow.addSubview(containerView)
             keyWindow.addSubview(subContainerView)
+            subContainerView.addSubview(search)
             subContainerView.addSubview(collectionView)
             subContainerView.frame = CGRect(x: -keyWindow.frame.width, y: 0, width: keyWindow.frame.size.width*0.7, height: keyWindow.frame.size.height)
-            containerView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismissMenu)))
             self.setupLayout()
             UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseInOut, animations: {
                 self.containerView.alpha = 1
@@ -59,7 +66,10 @@ class SideMenuLauncher: NSObject, UICollectionViewDataSource, UICollectionViewDe
     
     func setupLayout() {
         NSLayoutConstraint.activate([
-            collectionView.topAnchor.constraint(equalTo: subContainerView.topAnchor, constant: 20),
+            search.topAnchor.constraint(equalTo: subContainerView.safeAreaLayoutGuide.topAnchor, constant: 20),
+            search.widthAnchor.constraint(equalTo: subContainerView.widthAnchor),
+            search.centerXAnchor.constraint(equalTo: subContainerView.centerXAnchor),
+            collectionView.topAnchor.constraint(equalTo: search.bottomAnchor),
             collectionView.bottomAnchor.constraint(equalTo: subContainerView.bottomAnchor),
             collectionView.widthAnchor.constraint(equalTo: subContainerView.widthAnchor),
             collectionView.centerXAnchor.constraint(equalTo: subContainerView.centerXAnchor),
@@ -75,7 +85,11 @@ class SideMenuLauncher: NSObject, UICollectionViewDataSource, UICollectionViewDe
             UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseInOut, animations: {
                 self.subContainerView.frame = CGRect(x: -keyWindow.frame.width, y: 0, width: keyWindow.frame.size.width*0.7, height: keyWindow.frame.size.height)
                 self.containerView.alpha = 0
-            }, completion: nil)
+            }, completion: {
+                _ in
+                self.containerView.removeFromSuperview()
+                self.subContainerView.removeFromSuperview()
+            })
             
         }
     }
@@ -85,6 +99,7 @@ class SideMenuLauncher: NSObject, UICollectionViewDataSource, UICollectionViewDe
         collectionView.register(SideMenuCollectionViewCell.self, forCellWithReuseIdentifier: cellID)
         collectionView.dataSource = self
         collectionView.delegate = self
+        containerView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismissMenu)))
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {

@@ -9,6 +9,12 @@ import UIKit
 
 class SprintsViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
+    lazy var currSprint: SprintsDataModel = sprints[0] {
+        willSet {
+            self.dropDownIconButton.customLabel.text = newValue.name
+        }
+    }
+    
     var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
@@ -37,7 +43,7 @@ class SprintsViewController: UIViewController, UICollectionViewDelegate, UIColle
         return leftIcon
     }()
     
-    var dropDownIcon: DropDownButton = {
+    var dropDownIconButton: DropDownButton = {
         let dropDownIcon = DropDownButton(type: .custom)
         dropDownIcon.translatesAutoresizingMaskIntoConstraints = false
         dropDownIcon.contentMode = .scaleAspectFit
@@ -48,16 +54,39 @@ class SprintsViewController: UIViewController, UICollectionViewDelegate, UIColle
     var dropDownContainer: UIView = {
         let containerView = UIView()
         containerView.backgroundColor = UIColor.init(white: 0, alpha: 0.5)
+        containerView.alpha = 0
         return containerView
     }()
     
+    var dropDownSubContainer: UIView = {
+        let view = UIView()
+        view.backgroundColor = .white
+        return view
+    }()
     
+    var dropDownCollectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.minimumLineSpacing = 0
+        layout.minimumInteritemSpacing = 0
+        let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        cv.backgroundColor = .white
+        cv.translatesAutoresizingMaskIntoConstraints = false
+        return cv
+    }()
+    
+    var searchBar: UITextField = {
+        let bar = UITextField()
+        bar.placeholder = "Search sprints"
+        bar.translatesAutoresizingMaskIntoConstraints = false
+        return bar
+    }()
+    
+    var sprints: [SprintsDataModel] = {
+        return [SprintsDataModel(name: "Sprint1", description: "sprint description", items: [BacklogDataModel(title: "Log 1", description: "Log init")]), SprintsDataModel(name: "Sprint2", description: "Sprint successor description ", owner: "pacman", sprintsUser: ["user1, user2"], startDate: Date(), endDate: Date(), items: [BacklogDataModel(title: "Log 1", description: "Log init"), BacklogDataModel(title: "Log 2", description: "Log contined", startDate: Date(), endDate:Date(), type: .story, priority: .high)]) ]
+    }()
     
     let cellID = "SprintsCellID"
-    
-    var items: [BacklogDataModel] = {
-        return [BacklogDataModel(title: "Log 1", description: "Log init"), BacklogDataModel(title: "Log 2", description: "Log contined", startDate: Date(), endDate:Date(), type: .story, priority: .high)]
-    }()
+    let dropDownCellID = "DropDownCellID"
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -68,13 +97,16 @@ class SprintsViewController: UIViewController, UICollectionViewDelegate, UIColle
             self.infoButtonTapped()
         }), for: .touchUpInside)
         
-        dropDownIcon.addAction(UIAction(handler: {
+        dropDownIconButton.customLabel.text = currSprint.name
+        dropDownIconButton.addAction(UIAction(handler: {
             _ in
             self.dropDownTapped()
         }), for: .touchUpInside)
         
+        dropDownContainer.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismissDropDown)))
+        
         topLayerContainerView.addSubview(infoIcon)
-        topLayerContainerView.addSubview(dropDownIcon)
+        topLayerContainerView.addSubview(dropDownIconButton)
         
         collectionView.dataSource = self
         collectionView.delegate = self
@@ -88,16 +120,32 @@ class SprintsViewController: UIViewController, UICollectionViewDelegate, UIColle
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        if collectionView == dropDownCollectionView {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: dropDownCellID, for: indexPath) as! DropDownCollectionViewCell   
+            cell.sprint = sprints[indexPath.row]
+            if currSprint.name == sprints[indexPath.row].name {
+                cell.isCustomSelected = true
+            } else {
+                cell.isCustomSelected = false
+            }
+            return cell
+        }
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellID, for: indexPath) as! BackLogCollectionViewCell
-        cell.data = items[indexPath.row]
+        cell.data = currSprint.items[indexPath.row]
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return items.count
+        if collectionView == dropDownCollectionView {
+            return sprints.count
+        }
+        return currSprint.items.count
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        if collectionView == dropDownCollectionView {
+            return CGSize(width: collectionView.frame.size.width, height: 50)
+        }
         return CGSize(width: collectionView.frame.size.width - 15, height: 60)
     }
     
@@ -110,18 +158,56 @@ class SprintsViewController: UIViewController, UICollectionViewDelegate, UIColle
     }
     
     func showDropDown() {
-        dropDownContainer.alpha = 0.5
-        dropDownContainer.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismissDropDown)))
         if let vc = self.tabBarController?.navigationController {
-            dropDownContainer.frame = vc.view.frame
-            dropDownContainer.frame.origin.y = topLayerContainerView.frame.origin.y + topLayerContainerView.frame.height
+            self.dropDownContainer.frame = vc.view.frame
+            self.dropDownContainer.frame.origin.y = self.topLayerContainerView.frame.origin.y + self.topLayerContainerView.frame.height
+            self.setupDropDownContainer()
             vc.view.addSubview(dropDownContainer)
+            vc.view.addSubview(dropDownSubContainer)
+            UIView.animate(withDuration: 0.4, delay: 0, options: .curveEaseIn, animations: {
+                self.dropDownContainer.alpha = 0.5
+                self.dropDownSubContainer.frame.origin.x = 0
+            }, completion: nil)
         }
+    }
+    
+    func setupDropDownContainer() {
+        dropDownCollectionView.delegate = self
+        dropDownCollectionView.dataSource = self
+        dropDownCollectionView.register(DropDownCollectionViewCell.self, forCellWithReuseIdentifier: dropDownCellID)
+        dropDownSubContainer.addSubview(dropDownCollectionView)
+        dropDownSubContainer.frame = dropDownContainer.frame
+        dropDownSubContainer.frame.size.height = 50 + 50 * CGFloat(sprints.count)
+        dropDownSubContainer.frame.origin.x = dropDownSubContainer.frame.width
+        dropDownSubContainer.addSubview(searchBar)
+        NSLayoutConstraint.activate([
+            searchBar.topAnchor.constraint(equalTo: dropDownSubContainer.topAnchor),
+            searchBar.widthAnchor.constraint(equalTo: dropDownSubContainer.widthAnchor),
+            searchBar.heightAnchor.constraint(equalToConstant: 50),
+            searchBar.centerXAnchor.constraint(equalTo: dropDownSubContainer.centerXAnchor),
+            dropDownCollectionView.topAnchor.constraint(equalTo: searchBar.bottomAnchor),
+            dropDownCollectionView.widthAnchor.constraint(equalTo: dropDownSubContainer.widthAnchor),
+            dropDownCollectionView.centerXAnchor.constraint(equalTo: dropDownSubContainer.centerXAnchor),
+            dropDownCollectionView.heightAnchor.constraint(equalToConstant: 50 * CGFloat(sprints.count)),
+        ])
+        
+    }
+    
+    @objc
+    func sprintChanged() {
+        
     }
     
     @objc
     func dismissDropDown() {
-        self.dropDownContainer.alpha = 0
+        UIView.animate(withDuration: 0.4, delay: 0, options: .curveEaseOut, animations: {
+            self.dropDownContainer.alpha = 0
+            self.dropDownSubContainer.frame.origin.x = self.dropDownSubContainer.frame.width
+        }, completion: {
+            _ in
+            self.dropDownSubContainer.removeFromSuperview()
+            self.dropDownContainer.removeFromSuperview()
+        })
     }
     
     @objc
@@ -144,13 +230,43 @@ class SprintsViewController: UIViewController, UICollectionViewDelegate, UIColle
             infoIcon.centerYAnchor.constraint(equalTo: topLayerContainerView.centerYAnchor),
             infoIcon.heightAnchor.constraint(equalTo: topLayerContainerView.heightAnchor, multiplier: 0.9),
             infoIcon.widthAnchor.constraint(equalTo: topLayerContainerView.heightAnchor, multiplier: 0.9),
-            dropDownIcon.heightAnchor.constraint(equalTo: topLayerContainerView.heightAnchor, multiplier: 0.85),
-            dropDownIcon.centerYAnchor.constraint(equalTo: topLayerContainerView.centerYAnchor),
-            dropDownIcon.rightAnchor.constraint(equalTo: infoIcon.leftAnchor, constant: -10),
-            dropDownIcon.leftAnchor.constraint(equalTo: topLayerContainerView.leftAnchor)
+            dropDownIconButton.heightAnchor.constraint(equalTo: topLayerContainerView.heightAnchor, multiplier: 0.85),
+            dropDownIconButton.centerYAnchor.constraint(equalTo: topLayerContainerView.centerYAnchor),
+            dropDownIconButton.rightAnchor.constraint(equalTo: infoIcon.leftAnchor, constant: -10),
+            dropDownIconButton.leftAnchor.constraint(equalTo: topLayerContainerView.leftAnchor)
         ])
     }
     
+}
+
+class SprintsDataModel {
+    var name: String
+    var description: String
+    var owner: String
+    var sprintsUser: [String]
+    var startDate: Date?
+    var endDate: Date?
+    var items: [BacklogDataModel]
+    
+    init(name: String, description: String, owner: String = "Pacman", sprintsUser: [String], startDate: Date, endDate: Date, items: [BacklogDataModel] = [] ) {
+        self.name = name
+        self.description = description
+        self.owner = owner
+        self.sprintsUser = sprintsUser
+        self.startDate = startDate
+        self.endDate = endDate
+        self.items = items
+    }
+    
+    init(name: String, description: String, owner: String = "Pacman", items: [BacklogDataModel] = []) {
+        self.name = name
+        self.description = description
+        self.owner = owner
+        self.sprintsUser = []
+        self.startDate = nil
+        self.endDate = nil
+        self.items = items
+    }
 }
 
 class CustomInfoButton: UIButton {
@@ -186,7 +302,7 @@ class DropDownButton: UIButton {
         let label = UILabel()
         label.text = "String"
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .systemFont(ofSize: 15, weight: .regular)
+        label.font = .systemFont(ofSize: 15, weight: .semibold)
         return label
     }()
     
