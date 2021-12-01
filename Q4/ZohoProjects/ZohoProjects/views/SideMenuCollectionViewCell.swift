@@ -60,7 +60,7 @@ class SideMenuCollectionViewCell: UICollectionViewCell {
         NSLayoutConstraint.activate([
             icon.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.1),
             icon.heightAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 0.98),
-            icon.leftAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.leftAnchor, constant: 20),
+            icon.leftAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.leftAnchor, constant: 10),
             icon.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             nameLabel.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.9),
             nameLabel.heightAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 0.98),

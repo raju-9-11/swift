@@ -71,8 +71,8 @@ class SprintsViewController: UIViewController, UICollectionViewDelegate, UIColle
         return cv
     }()
     
-    var searchBar: UITextField = {
-        let bar = UITextField()
+    var searchBar: Search = {
+        let bar = Search()
         bar.placeholder = "Search sprints"
         bar.translatesAutoresizingMaskIntoConstraints = false
         return bar
@@ -151,14 +151,15 @@ class SprintsViewController: UIViewController, UICollectionViewDelegate, UIColle
             self.dropDownIconButton.setLabelName(currSprint.name)
             collectionView.reloadData()
             self.collectionView.reloadData()
+            self.dismissDropDown()
         }
     }
     
     func dropDownTapped() {
         if dropDownContainer.alpha == 0.5 {
-            dismissDropDown()
+            self.dismissDropDown()
         } else {
-            showDropDown()
+            self.showDropDown()
         }
     }
     
@@ -169,6 +170,7 @@ class SprintsViewController: UIViewController, UICollectionViewDelegate, UIColle
             self.setupDropDownContainer()
             vc.view.addSubview(dropDownContainer)
             vc.view.addSubview(dropDownSubContainer)
+            searchBar.becomeFirstResponder()
             UIView.animate(withDuration: 0.4, delay: 0, options: .curveEaseIn, animations: {
                 self.dropDownContainer.alpha = 0.5
                 self.dropDownSubContainer.frame.origin.x = 0
@@ -188,7 +190,7 @@ class SprintsViewController: UIViewController, UICollectionViewDelegate, UIColle
         NSLayoutConstraint.activate([
             searchBar.topAnchor.constraint(equalTo: dropDownSubContainer.topAnchor),
             searchBar.widthAnchor.constraint(equalTo: dropDownSubContainer.widthAnchor),
-            searchBar.heightAnchor.constraint(equalToConstant: 50),
+            searchBar.heightAnchor.constraint(equalToConstant: 40),
             searchBar.centerXAnchor.constraint(equalTo: dropDownSubContainer.centerXAnchor),
             dropDownCollectionView.topAnchor.constraint(equalTo: searchBar.bottomAnchor),
             dropDownCollectionView.widthAnchor.constraint(equalTo: dropDownSubContainer.widthAnchor),
@@ -208,6 +210,7 @@ class SprintsViewController: UIViewController, UICollectionViewDelegate, UIColle
             self.dropDownSubContainer.removeFromSuperview()
             self.dropDownContainer.removeFromSuperview()
         })
+        searchBar.resignFirstResponder()
     }
     
     @objc
