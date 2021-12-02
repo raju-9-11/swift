@@ -157,7 +157,7 @@ class LoginViewController: UIViewController, UICollectionViewDataSource, UIColle
         
         mainVC.viewControllers = [feedVC, backLogVC, sprintsVC, boardVC, userVC, reportVC]
         
-        mainVC.selectedViewController = userVC
+        mainVC.selectedViewController = feedVC
         
         feedVC.tabBarItem = UITabBarItem(title: "Feed", image: UIImage(systemName: "network"), tag: 0)
         backLogVC.tabBarItem = UITabBarItem(title: "Backlog", image: UIImage(systemName: "doc.on.clipboard"), tag: 1)

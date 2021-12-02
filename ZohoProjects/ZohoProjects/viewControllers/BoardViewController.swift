@@ -197,15 +197,15 @@ class BoardViewController: UIViewController, UICollectionViewDelegate, UICollect
     
     func showDropDown() {
         if let vc = self.tabBarController?.navigationController {
-            searchBar.becomeFirstResponder()
             self.dropDownContainer.frame = vc.view.frame
             self.dropDownContainer.frame.origin.y = self.topLayerContainerView.frame.origin.y + self.topLayerContainerView.frame.height
             self.setupDropDownContainer()
             vc.view.addSubview(dropDownContainer)
             vc.view.addSubview(dropDownSubContainer)
+            searchBar.becomeFirstResponder()
             UIView.animate(withDuration: 0.4, delay: 0, options: .curveEaseIn, animations: {
                 self.dropDownContainer.alpha = 0.5
-                self.dropDownSubContainer.frame.origin.x = 0
+                self.dropDownSubContainer.frame.origin.y = self.topLayerContainerView.frame.origin.y + self.topLayerContainerView.frame.height
             }, completion: nil)
         }
     }
@@ -217,7 +217,7 @@ class BoardViewController: UIViewController, UICollectionViewDelegate, UICollect
         dropDownSubContainer.addSubview(dropDownCollectionView)
         dropDownSubContainer.frame = dropDownContainer.frame
         dropDownSubContainer.frame.size.height = 50 + 50 * CGFloat(sprints.count)
-        dropDownSubContainer.frame.origin.x = dropDownSubContainer.frame.width
+        dropDownSubContainer.frame.origin.y = -dropDownSubContainer.frame.height
         dropDownSubContainer.addSubview(searchBar)
         NSLayoutConstraint.activate([
             searchBar.topAnchor.constraint(equalTo: dropDownSubContainer.topAnchor),
@@ -236,7 +236,7 @@ class BoardViewController: UIViewController, UICollectionViewDelegate, UICollect
     func dismissDropDown() {
         UIView.animate(withDuration: 0.4, delay: 0, options: .curveEaseOut, animations: {
             self.dropDownContainer.alpha = 0
-            self.dropDownSubContainer.frame.origin.x = self.dropDownSubContainer.frame.width
+            self.dropDownSubContainer.frame.origin.y = -self.dropDownSubContainer.frame.height
         }, completion: {
             _ in
             self.dropDownSubContainer.removeFromSuperview()

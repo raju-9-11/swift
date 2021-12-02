@@ -173,7 +173,7 @@ class SprintsViewController: UIViewController, UICollectionViewDelegate, UIColle
             searchBar.becomeFirstResponder()
             UIView.animate(withDuration: 0.4, delay: 0, options: .curveEaseIn, animations: {
                 self.dropDownContainer.alpha = 0.5
-                self.dropDownSubContainer.frame.origin.x = 0
+                self.dropDownSubContainer.frame.origin.y = self.topLayerContainerView.frame.origin.y + self.topLayerContainerView.frame.height
             }, completion: nil)
         }
     }
@@ -185,7 +185,7 @@ class SprintsViewController: UIViewController, UICollectionViewDelegate, UIColle
         dropDownSubContainer.addSubview(dropDownCollectionView)
         dropDownSubContainer.frame = dropDownContainer.frame
         dropDownSubContainer.frame.size.height = 50 + 50 * CGFloat(sprints.count)
-        dropDownSubContainer.frame.origin.x = dropDownSubContainer.frame.width
+        dropDownSubContainer.frame.origin.y = -dropDownSubContainer.frame.height
         dropDownSubContainer.addSubview(searchBar)
         NSLayoutConstraint.activate([
             searchBar.topAnchor.constraint(equalTo: dropDownSubContainer.topAnchor),
@@ -204,7 +204,7 @@ class SprintsViewController: UIViewController, UICollectionViewDelegate, UIColle
     func dismissDropDown() {
         UIView.animate(withDuration: 0.4, delay: 0, options: .curveEaseOut, animations: {
             self.dropDownContainer.alpha = 0
-            self.dropDownSubContainer.frame.origin.x = self.dropDownSubContainer.frame.width
+            self.dropDownSubContainer.frame.origin.y = -self.dropDownSubContainer.frame.height
         }, completion: {
             _ in
             self.dropDownSubContainer.removeFromSuperview()
