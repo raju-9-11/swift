@@ -15,12 +15,6 @@ class MainViewController: UITabBarController, UITabBarControllerDelegate {
     
     lazy var menuBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "menucard.fill")?.withRenderingMode(.alwaysOriginal), style: .done, target: self, action: #selector(menuClicked))
     
-    lazy var menuView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .systemBackground
-        return view
-    }()
-    
     var profileView: UIView!
     
     override func viewDidLoad() {
@@ -44,6 +38,8 @@ class MainViewController: UITabBarController, UITabBarControllerDelegate {
         }
     }
     
+    
+    
     func setupNavigationController() {
         button = CustomFeedTitle()
         button.setMainTitle(name: "Feed")
@@ -55,6 +51,7 @@ class MainViewController: UITabBarController, UITabBarControllerDelegate {
         self.tabBar.layer.shadowColor = UIColor.systemGray3.cgColor
         self.tabBar.layer.shadowRadius = 1
         self.tabBar.layer.shadowOpacity = 0.2
+        self.moreNavigationController.navigationBar.isHidden = true
     }
     
     @objc
