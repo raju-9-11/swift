@@ -46,7 +46,7 @@ class BackLogCollectionViewCell: UICollectionViewCell {
     override var isHighlighted: Bool {
         willSet {
             UIView.animate(withDuration: 0.2, delay: 0, options: .curveLinear, animations: {
-                self.contentView.backgroundColor = newValue ? .systemGray2 : .white
+                self.backgroundColor = newValue ? .systemGray2 : .white
                 self.titleLabel.textColor = newValue ? .white : .black
                 self.subTitleLabel.textColor = newValue ? .white : .systemGray2
             }, completion: nil)
@@ -59,6 +59,8 @@ class BackLogCollectionViewCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        
+        self.layer.cornerRadius = 4
         
         contentView.addSubview(priorityCircle)
         contentView.addSubview(titleLabel)

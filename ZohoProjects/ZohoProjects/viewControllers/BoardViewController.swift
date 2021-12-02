@@ -11,14 +11,6 @@ class BoardViewController: UIViewController, UICollectionViewDelegate, UICollect
 
     lazy var currSprint: SprintsDataModel = sprints[0]
     
-    var collectionView: UICollectionView = {
-        let layout = UICollectionViewFlowLayout()
-        let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        cv.translatesAutoresizingMaskIntoConstraints = false
-        cv.contentInset = UIEdgeInsets(top: 10, left: 0, bottom: 10, right: 0)
-        cv.backgroundColor = .clear
-        return cv
-    }()
     
     var typeCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -31,6 +23,11 @@ class BoardViewController: UIViewController, UICollectionViewDelegate, UICollect
         cv.contentInset = UIEdgeInsets(top: 10, left: 0, bottom: 10, right: 0)
         return cv
     }()
+    
+    var sprints: [SprintsDataModel] = {
+        return [SprintsDataModel(name: "Sprint1", description: "sprint description", items: [BacklogDataModel(title: "Log 1", description: "Log init")]), SprintsDataModel(name: "Sprint2", description: "Sprint successor description ", owner: "pacman", sprintsUser: ["user1, user2"], startDate: Date(), endDate: Date(), items: [BacklogDataModel(title: "Log 1", description: "Log init"), BacklogDataModel(title: "Log 2", description: "Log contined", startDate: Date(), endDate:Date(), type: .story, priority: .high)]) ]
+    }()
+    
     
     var topLevelContainerCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -100,12 +97,9 @@ class BoardViewController: UIViewController, UICollectionViewDelegate, UICollect
         return bar
     }()
     
-    var sprints: [SprintsDataModel] = {
-        return [SprintsDataModel(name: "Sprint1", description: "sprint description", items: [BacklogDataModel(title: "Log 1", description: "Log init")]), SprintsDataModel(name: "Sprint2", description: "Sprint successor description ", owner: "pacman", sprintsUser: ["user1, user2"], startDate: Date(), endDate: Date(), items: [BacklogDataModel(title: "Log 1", description: "Log init"), BacklogDataModel(title: "Log 2", description: "Log contined", startDate: Date(), endDate:Date(), type: .story, priority: .high)]) ]
-    }()
     
-    let types: [BoardType] = {
-        return [BoardType(name: "To do", count: 0, color: .systemPink), BoardType(name: "In progress", count: 0, color: .systemGray4), BoardType(name: "Done", count: 0, color: .cyan)]
+    let types: [BoardTypeDataModel] = {
+        return [BoardTypeDataModel(count: 0, color: .systemPink, type: .todo), BoardTypeDataModel(count: 0, color: .darkGray, type: .inprogress), BoardTypeDataModel(count: 0, color: .cyan, type: .done)]
     }()
     
     let cellID = "SprintsCellID"
@@ -135,13 +129,8 @@ class BoardViewController: UIViewController, UICollectionViewDelegate, UICollect
         typeCollectionView.delegate = self
         typeCollectionView.register(BoardCollectionViewCell.self, forCellWithReuseIdentifier: typeCollectionCellID)
         
-//        collectionView.dataSource = self
-//        collectionView.delegate = self
-//        collectionView.register(BackLogCollectionViewCell.self, forCellWithReuseIdentifier: cellID)
-        
-        view.addSubview(topLayerContainerView)
         view.addSubview(typeCollectionView)
-        view.addSubview(collectionView)
+        view.addSubview(topLayerContainerView)
         self.setupLayout()
         
     }
@@ -160,6 +149,7 @@ class BoardViewController: UIViewController, UICollectionViewDelegate, UICollect
         if collectionView == typeCollectionView {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: typeCollectionCellID, for: indexPath) as! BoardCollectionViewCell
             cell.boardType = types[indexPath.row]
+            cell.sprint = currSprint
             return cell
         }
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellID, for: indexPath) as! BackLogCollectionViewCell
@@ -192,7 +182,7 @@ class BoardViewController: UIViewController, UICollectionViewDelegate, UICollect
             self.currSprint = sprints[indexPath.row]
             self.dropDownIconButton.setLabelName(currSprint.name)
             collectionView.reloadData()
-            self.collectionView.reloadData()
+            self.typeCollectionView.reloadData()
             self.dismissDropDown()
         }
     }
@@ -284,32 +274,18 @@ class BoardViewController: UIViewController, UICollectionViewDelegate, UICollect
 }
 
 
-class BoardType {
-    var name: String
+class BoardTypeDataModel {
     var count: Int
     var color: UIColor
+    var type: BoardType
     
-    init(name: String, count: Int, color: UIColor) {
-        self.name = name
+    init(count: Int, color: UIColor, type: BoardType = .todo) {
         self.count = count
         self.color = color
+        self.type = type
     }
 }
 
-enum Type: String {
-    case todo = "TO DO", inprogress = "In Progress", done = "Done"
-}
-
-class BoardDataModel: SprintsDataModel {
-    var type: Type = .todo
-    
-    init(name: String, description: String, owner: String = "Pacman", sprintsUser: [String], startDate: Date, endDate: Date, items: [BacklogDataModel] = [], type: Type = .todo) {
-        super.init(name: name, description: description, sprintsUser: sprintsUser, startDate: startDate, endDate: endDate)
-        self.type = type
-    }
-    
-    init(name: String, description: String, owner: String = "Pacman", items: [BacklogDataModel] = [], type: Type = .todo) {
-        super.init(name: name, description: description, owner: owner, items: items)
-        self.type = type
-    }
+enum BoardType: String {
+    case todo = "To Do", inprogress = "In Progress", done = "Done"
 }

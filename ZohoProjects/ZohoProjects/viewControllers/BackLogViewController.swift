@@ -77,8 +77,9 @@ class BacklogDataModel {
     var priority: Priority
     var index: Int
     static var index: Int = 0
+    var boardType: BoardType
     
-    init(title: String, description: String, startDate: Date? = nil, endDate: Date? = nil, type: BacklogType = .story, priority: Priority = .none) {
+    init(title: String, description: String, startDate: Date? = nil, endDate: Date? = nil, type: BacklogType = .story, priority: Priority = .none, boardType: BoardType = .todo) {
         self.title = title
         self.description = description
         self.startDate = startDate
@@ -87,6 +88,7 @@ class BacklogDataModel {
         self.priority = priority
         self.index = BacklogDataModel.index
         BacklogDataModel.index += 1
+        self.boardType = .todo
     }
     
 }
