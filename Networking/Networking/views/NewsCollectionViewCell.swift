@@ -63,7 +63,7 @@ class NewsCollectionViewCell: UICollectionViewCell {
         self.contentView.layer.cornerRadius = 6
         self.contentView.layer.shadowOpacity = 1
         var shadowFrame = self.contentView.bounds
-        self.contentView.layer.shadowPath = UIBezierPath(rect: self.bounds).cgPath
+        self.contentView.layer.shadowPath = UIBezierPath(rect: self.contentView.bounds).cgPath
         self.contentView.layer.shadowColor = UIColor.darkGray.cgColor
         self.contentView.layer.shadowOffset = CGSize(width: 0, height: 0)
         self.contentView.layer.shadowRadius = 5
