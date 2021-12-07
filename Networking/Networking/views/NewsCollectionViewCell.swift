@@ -20,7 +20,20 @@ class NewsCollectionViewCell: UICollectionViewCell {
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
+        imageView.image = UIImage(systemName: "photo.fill")
         return imageView
+    }()
+    
+    let topicLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.backgroundColor = .white.withAlphaComponent(0.8)
+        label.text = "Topic"
+        label.textColor = .darkGray
+        label.textAlignment = .center
+        label.clipsToBounds = true
+        label.font = .systemFont(ofSize: 16, weight: .semibold)
+        return label
     }()
     
     let titleLabel: UILabel = {
@@ -62,24 +75,24 @@ class NewsCollectionViewCell: UICollectionViewCell {
         self.contentView.backgroundColor = .white
         self.contentView.layer.cornerRadius = 6
         self.contentView.layer.shadowOpacity = 1
-        var shadowFrame = self.contentView.bounds
         self.contentView.layer.shadowPath = UIBezierPath(rect: self.contentView.bounds).cgPath
         self.contentView.layer.shadowColor = UIColor.darkGray.cgColor
         self.contentView.layer.shadowOffset = CGSize(width: 0, height: 0)
         self.contentView.layer.shadowRadius = 5
         
-        
         subContainerView.addSubview(imageView)
         subContainerView.addSubview(titleLabel)
         subContainerView.addSubview(summaryView)
+        subContainerView.addSubview(topicLabel)
         contentView.addSubview(subContainerView)
         self.setupLayout()
     }
     
     func updateLayout() {
-        downloadImage(from: URL(string: article?.media ?? "https://www.slntechnologies.com/wp-content/uploads/2017/08/ef3-placeholder-image.jpg")!)
+        downloadImage(from: URL(string: article?.media ?? ""))
         titleLabel.text = article?.title ?? "Title"
         summaryView.text = article?.summary ?? "Summary"
+        topicLabel.text = article?.topic ?? "Topic"
     }
     
     func setupLayout() {
@@ -98,12 +111,18 @@ class NewsCollectionViewCell: UICollectionViewCell {
             summaryView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 5),
             summaryView.leftAnchor.constraint(equalTo: subContainerView.leftAnchor, constant: 10),
             summaryView.rightAnchor.constraint(equalTo: subContainerView.rightAnchor, constant: -10),
-            summaryView.bottomAnchor.constraint(equalTo: subContainerView.bottomAnchor, constant: -5)
+            summaryView.bottomAnchor.constraint(equalTo: subContainerView.bottomAnchor, constant: -5),
+            topicLabel.topAnchor.constraint(equalTo: imageView.topAnchor),
+            topicLabel.centerXAnchor.constraint(equalTo: imageView.centerXAnchor),
+            topicLabel.widthAnchor.constraint(equalTo: imageView.widthAnchor),
+            topicLabel.heightAnchor.constraint(equalToConstant: 25),
         ])
     }
     
-    func downloadImage(from url: URL) {
-        getData(from: url) { data, response, error in
+    func downloadImage(from url: URL?) {
+        imageView.image = UIImage(systemName: "photo.fill")
+        guard url != nil else { return }
+        getData(from: url!) { data, response, error in
             guard let data = data, error == nil else { return }
             DispatchQueue.main.async() { [weak self] in
                 self?.imageView.image = UIImage(data: data)

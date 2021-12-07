@@ -11,6 +11,7 @@
 		9D302E54275DE50600BF6AD6 /* Article.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D302E53275DE50600BF6AD6 /* Article.swift */; };
 		9D302E56275DEACC00BF6AD6 /* NewsCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D302E55275DEACC00BF6AD6 /* NewsCollectionViewCell.swift */; };
 		9D5D495D275E0A8200A3A559 /* API.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D5D495C275E0A8200A3A559 /* API.swift */; };
+		9DA5E9F8275F2A8D003586A2 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9DA5E9F7275F2A8D003586A2 /* libsqlite3.tbd */; };
 		9DB8F5E22758F2D1005E55A4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DB8F5E12758F2D1005E55A4 /* AppDelegate.swift */; };
 		9DB8F5E62758F2D1005E55A4 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DB8F5E52758F2D1005E55A4 /* ViewController.swift */; };
 		9DB8F5EB2758F2D3005E55A4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9DB8F5EA2758F2D3005E55A4 /* Assets.xcassets */; };
@@ -23,6 +24,7 @@
 		9D302E53275DE50600BF6AD6 /* Article.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Article.swift; sourceTree = "<group>"; };
 		9D302E55275DEACC00BF6AD6 /* NewsCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsCollectionViewCell.swift; sourceTree = "<group>"; };
 		9D5D495C275E0A8200A3A559 /* API.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = API.swift; sourceTree = "<group>"; };
+		9DA5E9F7275F2A8D003586A2 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		9DB8F5DE2758F2D1005E55A4 /* Networking.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Networking.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9DB8F5E12758F2D1005E55A4 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		9DB8F5E52758F2D1005E55A4 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -37,6 +39,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9DA5E9F8275F2A8D003586A2 /* libsqlite3.tbd in Frameworks */,
 				3F82ECDB99A85BA98733CD13 /* Pods_Networking.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -56,6 +59,7 @@
 		46D05A30E797A64A6426F127 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				9DA5E9F7275F2A8D003586A2 /* libsqlite3.tbd */,
 				3B333B312FEC2C946A520BBC /* Pods_Networking.framework */,
 			);
 			name = Frameworks;
