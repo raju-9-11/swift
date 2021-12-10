@@ -13,17 +13,23 @@ internal let SQLITE_TRANSIENT = unsafeBitCast(-1, to: sqlite3_destructor_type.se
 
 class ViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
     
-    lazy var articles: [Article] = []
+    lazy var articles: [Article] = [] {
+        willSet {
+            images = Array(repeating: UIImage(systemName: "photo.fill")!, count: newValue.count)
+        }
+    }
     
     var totalPages: Int = 0
     
-    let searchQuery: String = "IOS"
+    let searchQuery: String = "Linux"
     
     let api = API()
     
     var currPage: Int = 1
     
     var db: OpaquePointer?
+    
+    var images: [UIImage] = []
     
     let bottomContainer: UIView = {
         let view = UIView()
@@ -78,18 +84,19 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
         super.loadView()
         view.backgroundColor = .gray
         
+        self.getData(query: searchQuery, pageSize: 10, page: currPage)
+        
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.register(NewsCollectionViewCell.self, forCellWithReuseIdentifier: cellID)
 
-        
-        self.getData(url: "https://free-news.p.rapidapi.com/v1/search", query: searchQuery, pageSize: 10, page: currPage)
         
         bottomContainer.addSubview(previousPage)
         bottomContainer.addSubview(nextPage)
         view.addSubview(collectionView)
         view.addSubview(dBLabel)
         view.addSubview(bottomContainer)
+        
         self.setupLayout()
     }
     
@@ -99,6 +106,7 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellID, for: indexPath) as! NewsCollectionViewCell
+        cell.imageView.image = images[indexPath.row]
         cell.article = articles[indexPath.row]
         cell.updateLayout()
         return cell
@@ -130,7 +138,7 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
         }
         self.dBLabel.text = "Loading..."
         self.collectionView.isHidden = true
-        self.getData(url: "https://free-news.p.rapidapi.com/v1/search", query: searchQuery, pageSize: 10, page: currPage)
+        self.getData(query: searchQuery, pageSize: 10, page: currPage)
         self.collectionView.reloadData()
     }
     
@@ -138,7 +146,7 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
     func reloadPage() {
         self.dBLabel.text = "Loading..."
         self.collectionView.isHidden = true
-        self.getData(url: "https://free-news.p.rapidapi.com/v1/search", query: searchQuery, pageSize: 10, page: currPage)
+        self.getData(query: searchQuery, pageSize: 10, page: currPage)
     }
    
     func setupLayout() {
@@ -166,53 +174,93 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
 
 }
 
-
+// MARK: - Networking calls
 extension ViewController {
-    // Networking calls
     
-    func getData(url: String ,query: String, pageSize: Int, page: Int) {
-        
-        var components = URLComponents(string: url)
-        components?.queryItems = [URLQueryItem(name: "q", value: query), URLQueryItem(name: "lang", value: "en"), URLQueryItem(name: "page_size", value: "\(pageSize)"), URLQueryItem(name: "page", value: "\(page)")]
-        guard let myUrl = components?.url else { return }
-        let request = NSMutableURLRequest(url: myUrl , cachePolicy: .useProtocolCachePolicy, timeoutInterval: 10.0)
-        request.httpMethod = "GET"
-        request.allHTTPHeaderFields = API.headers
-
-        let session = URLSession.shared
-        let dataTask = session.dataTask(with: request as URLRequest, completionHandler: { (data, response, error) -> Void in
-            if (error != nil) {
-                print(error ?? "Error")
-                DispatchQueue.main.async {
-                    self.loadDataFromLocalDB()
-                }
-            } else {
-                do {
-                    let jsonData = try JSONSerialization.jsonObject(with: data!, options: .mutableContainers) as! Dictionary<String, AnyObject>
-                    if let data = jsonData["articles"] as? [AnyObject] {
-                        self.articles = data.map({ dat in return Article(data: dat)})
-                        DispatchQueue.main.async {
-                            self.dBLabel.text = ""
-                            self.collectionView.reloadData()
-                            self.view.layoutIfNeeded()
-                            self.collectionView.isHidden = false
-                            self.totalPages = jsonData["total_pages"] as? Int ?? 0
-                            self.saveToLocalDB()
+//    func getData(query: String, pageSize: Int, page: Int) {
+//            Task {
+//                guard let articleResponse = await API.shared.otherFetch(pageSize: pageSize, page: page, query: query) else { self.loadDataFromLocalDB(); return }
+//                self.dBLabel.text = ""
+//                self.articles = articleResponse.articles
+//                self.collectionView.reloadData()
+//                self.view.layoutIfNeeded()
+//                self.collectionView.isHidden = false
+//                self.totalPages = articleResponse.total_pages
+//                self.saveToLocalDB()
+//                if self.articles.count > 0 {
+//                    self.collectionView.scrollToItem(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
+//                }
+//                for (index, article) in articleResponse.articles.enumerated() {
+//                    guard let media = article.media, let url = URL(string: media) else { continue }
+//                    self.downloadImage(from: url, completion: { (data, response, error) -> Void in
+//                        if error == nil {
+//                            self.images[index] = UIImage(data: data!) ?? UIImage(systemName: "photo.fill")!
+//                            self.collectionView.reloadData()
+//                        }
+//                    })
+//                }
+//            }
+//
+//    }
+    
+//    func downloadImage(from url: URL?, completion: @escaping (Data? , URLResponse? , Error? ) -> Void) {
+//        guard let url = url else { return }
+//        Task {
+//            do {
+//                let (data, response) = try await URLSession.shared.data(from: url)
+//                completion(data, response, nil)
+//            }
+//            catch {
+//                completion(nil,nil,error)
+//            }
+//        }
+//    }
+    
+    func getData(query: String, pageSize: Int, page: Int) {
+        DispatchQueue.global(qos: .background).async {
+            API.shared.fetchArticles(pageSize: pageSize, page: page, query: query, completion: { (result) in
+                switch result {
+                case .success(let articleResponse):
+                    DispatchQueue.main.async {
+                        self.dBLabel.text = ""
+                        self.articles = articleResponse.articles
+                        self.collectionView.reloadData()
+                        self.view.layoutIfNeeded()
+                        self.collectionView.isHidden = false
+                        self.totalPages = articleResponse.total_pages
+                        self.saveToLocalDB()
+                        if self.articles.count > 0 {
+                            self.collectionView.scrollToItem(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
                         }
                     }
+                    for (index, article) in articleResponse.articles.enumerated() {
+                        guard let media = article.media, let url = URL(string: media) else { continue }
+                        self.downloadImage(from: url, completion: { data, response, error in
+                            if error == nil {
+                                self.images[index] = UIImage(data: data!) ?? UIImage(systemName: "photo.fill")!
+                                DispatchQueue.main.async {
+                                    self.collectionView.reloadData()
+                                }
+                            }
+                        })
+                    }
+                case .failure(let err):
+                    print(err)
                 }
-                catch {
-                    print("Json Error!!")
-                }
-            }
-        })
-
-        dataTask.resume()
-        
+            })
+        }
+               
     }
     
+    func downloadImage(from url: URL?, completion: @escaping (Data? , URLResponse? , Error? ) -> Void) {
+        guard let url = url else { return }
+        URLSession.shared.dataTask(with: url, completionHandler: completion).resume()
+    }
+    
+    // MARK: - SQL
+    
     func loadDataFromLocalDB() {
-        let alert = UIAlertController(title: "Internet not available", message: "You are not connected to internet or the api is unavailable", preferredStyle: .alert)
+        let alert = UIAlertController(title: "Data not available", message: "You are not connected to internet or the api is unavailable", preferredStyle: .alert)
         let action = UIAlertAction(title: "View offline data", style: .default, handler: {
             _ in
             if self.initSQLDB(dbName: "Testing") {
@@ -247,17 +295,16 @@ extension ViewController {
         let fileURL = try! FileManager.default
             .url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
             .appendingPathComponent("\(dbName).sqlite")
-
         guard sqlite3_open(fileURL.path, &db) == SQLITE_OK else {
             print("error opening database")
             sqlite3_close(db)
             db = nil
             return false
         }
-        
         return true
-        
     }
+    
+    
     
     func initTable() -> Bool {
         if sqlite3_exec(db, "create table if not exists article_table (id integer primary key autoincrement, title text, summary text, topic text)", nil, nil, nil) != SQLITE_OK {
@@ -312,9 +359,6 @@ extension ViewController {
             if let cString = sqlite3_column_text(statement, 3) {
                 let topic = String(cString: cString)
                 articleTopic = topic
-                print("topic = \(topic)")
-            } else {
-                print("Topic error")
             }
             
             self.articles.append(Article(_id: articleId, title: articleTitle, summary: articleSummary, topic: articleTopic))

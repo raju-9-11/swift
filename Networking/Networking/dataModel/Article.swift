@@ -6,38 +6,28 @@
 //
 
 import Foundation
+import UIKit
 
 
 struct ArticleData: Codable {
-    var status: String
-    var page: Int
-    var page_size: Int
+//    var status: String
+//    var page: Int
+//    var page_size: Int
     var total_pages: Int
-    var total_hits: Int
+//    var total_hits: Int
     var articles: [Article]
 }
 
-struct Article: Codable, Hashable {
+struct Article: Codable {
     var _id: String
-    var _score: String
+    var _score: Decimal
     var summary: String
     var title: String
     var topic: String
-    var media: String
+    var media: String?
     var link: String
     
-    
-    
-    init(data: AnyObject) {
-        self._id = data["_id"] as? String ?? "Unknown"
-        self._score = data["_score"] as? String ?? "Unknown"
-        self.summary = data["summary"] as? String ?? "Undefined"
-        self.title = data["title"] as? String ?? "Undefined"
-        self.topic = data["topic"] as? String ?? "Undefined"
-        self.media = data["media"] as? String ?? "Undefined"
-        self.link = data["link"] as? String ?? "Undefined"
-    }
-    
+
     init(_id: String, title: String, summary: String, topic: String ) {
         self._id = _id
         self.title = title
@@ -45,6 +35,6 @@ struct Article: Codable, Hashable {
         self.topic = topic
         self.media = ""
         self.link = ""
-        self._score = ""
+        self._score = 0
     }
 }

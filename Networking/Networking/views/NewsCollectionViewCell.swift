@@ -15,6 +15,7 @@ class NewsCollectionViewCell: UICollectionViewCell {
         }
     }
     
+    
     let imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -89,10 +90,10 @@ class NewsCollectionViewCell: UICollectionViewCell {
     }
     
     func updateLayout() {
-        downloadImage(from: URL(string: article?.media ?? ""))
-        titleLabel.text = article?.title ?? "Title"
-        summaryView.text = article?.summary ?? "Summary"
-        topicLabel.text = article?.topic ?? "Topic"
+//        downloadImage(from: URL(string: article?.media ?? ""))
+        self.titleLabel.text = self.article?.title ?? "Title"
+        self.summaryView.text = self.article?.summary ?? "Summary"
+        self.topicLabel.text = self.article?.topic ?? "Topic"
     }
     
     func setupLayout() {
@@ -117,21 +118,6 @@ class NewsCollectionViewCell: UICollectionViewCell {
             topicLabel.widthAnchor.constraint(equalTo: imageView.widthAnchor),
             topicLabel.heightAnchor.constraint(equalToConstant: 25),
         ])
-    }
-    
-    func downloadImage(from url: URL?) {
-        imageView.image = UIImage(systemName: "photo.fill")
-        guard url != nil else { return }
-        getData(from: url!) { data, response, error in
-            guard let data = data, error == nil else { return }
-            DispatchQueue.main.async() { [weak self] in
-                self?.imageView.image = UIImage(data: data)
-            }
-        }
-    }
-    
-    func getData(from url: URL, completion: @escaping (Data?, URLResponse?, Error?) -> ()) {
-        URLSession.shared.dataTask(with: url, completionHandler: completion).resume()
     }
     
 }
