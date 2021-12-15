@@ -9,6 +9,8 @@ import UIKit
 
 class FormTextFieldCollectionViewCell: UICollectionViewCell, UITextFieldDelegate {
     
+    static let textfieldCellID = "textField"
+    
     var delegate: TextFormElementDelegate?
     
     let textField: UITextField = {
@@ -37,11 +39,12 @@ class FormTextFieldCollectionViewCell: UICollectionViewCell, UITextFieldDelegate
         willSet {
             errorLabel.isHidden = !newValue
             textField.layer.borderColor = newValue ? UIColor.red.cgColor : UIColor.systemGray.cgColor
+            textFieldProp.errorState = newValue
         }
     }
     
     
-    var textFieldProp: TextFieldElement = TextFieldElement(text: "", placeholder: "", error: "", index: -1, type: .plain) {
+    var textFieldProp: TextFieldElement = TextFieldElement(text: "", placeholder: "", error: "", index: -1, type: .plain, tag: "") {
         willSet {
             textField.text = newValue.text
             if newValue.type == .password {
@@ -54,33 +57,40 @@ class FormTextFieldCollectionViewCell: UICollectionViewCell, UITextFieldDelegate
                 textField.keyboardType = .emailAddress
             }
             errorLabel.text = newValue.error
+            errorState = newValue.errorState
             textField.placeholder = newValue.placeholder
+            self.setupLayout()
         }
     }
-    
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
+
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        self.removeViews()
     }
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        
-        textField.delegate = self
-        
-        contentView.addSubview(textField)
-        contentView.addSubview(errorLabel)
-        self.setupLayout()
+    @objc
+    func textFieldEditingChanged(sender: UITextField) {
+        let tp = TextFieldElement(text: textField.text ?? textFieldProp.text, placeholder: textFieldProp.placeholder, error: textFieldProp.error, index: textFieldProp.index, type: textFieldProp.type, tag: textFieldProp.tag)
+        tp.errorState = self.errorState
+        self.delegate?.notifyChange(textFieldProp: tp)
     }
     
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        self.delegate?.notifyChange(textFieldProp: TextFieldElement(text: textField.text ?? textFieldProp.text, placeholder: textFieldProp.placeholder, error: textFieldProp.error, index: textFieldProp.index, type: textFieldProp.type))
+    func checkError() -> Bool {
+        return true
     }
     
-    func errorDetected(for: FieldType, text: String) -> Bool {
-        return false
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        delegate?.notifyNext(textFieldProp: textFieldProp)
+        return true
     }
     
     func setupLayout() {
+        textField.delegate = self
+        textField.addTarget(self, action: #selector(textFieldEditingChanged(sender:)), for: .allEditingEvents)
+        
+        contentView.addSubview(textField)
+        contentView.addSubview(errorLabel)
         NSLayoutConstraint.activate([
             textField.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.9),
             textField.heightAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 0.6),
@@ -98,4 +108,5 @@ protocol TextFormElementDelegate {
     
     func notifyChange(textFieldProp: TextFieldElement)
     func notifyError(textFieldProp: TextFieldElement)
+    func notifyNext(textFieldProp: TextFieldElement)
 }

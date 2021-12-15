@@ -9,6 +9,8 @@ import UIKit
 
 class FormButtonCollectionViewCell: UICollectionViewCell {
     
+    static let buttonCellID = "buttonCell"
+    
     var delegate: SubmitButtonDelegate?
     
     let button: UIButton = {
@@ -31,22 +33,18 @@ class FormButtonCollectionViewCell: UICollectionViewCell {
     var buttonComponentProp: ButtonElement = ButtonElement(title: "", index: -1) {
         willSet {
             self.button.setTitle(newValue.title, for: .normal)
+            self.setupLayout()
         }
     }
     
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-    }
-    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        
-        button.addTarget(self, action: #selector(buttonClicked), for: .touchUpInside)
-        contentView.addSubview(button)
-        self.setupLayout()
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        self.removeViews()
     }
     
     func setupLayout() {
+        button.addTarget(self, action: #selector(buttonClicked), for: .touchUpInside)
+        contentView.addSubview(button)
         NSLayoutConstraint.activate([
             button.heightAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 0.8),
             button.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.9),

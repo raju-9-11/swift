@@ -7,7 +7,11 @@
 
 import UIKit
 
-class SignUpViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, TextFormElementDelegate, SubmitButtonDelegate {
+class SignUpViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, TextFormElementDelegate, SubmitButtonDelegate {
+    
+    override open var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        return .portrait
+    }
     
     // MARK: - UI Elements
     
@@ -15,7 +19,7 @@ class SignUpViewController: UIViewController, UICollectionViewDataSource, UIColl
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.backgroundColor = .white
-        view.layer.cornerRadius = 6
+        view.layer.cornerRadius = 10
         return view
     }()
     
@@ -28,39 +32,50 @@ class SignUpViewController: UIViewController, UICollectionViewDataSource, UIColl
         return label
     }()
     
-    let buttonCellID = "buttonCell"
-    let textfieldCellID = "textField"
+    var collectionViewBottomConstraint: NSLayoutConstraint?
     
     let collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.minimumLineSpacing = 5
         layout.minimumInteritemSpacing = 5
-        layout.scrollDirection = .horizontal
+        layout.scrollDirection = .vertical
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
         cv.backgroundColor = .clear
         cv.translatesAutoresizingMaskIntoConstraints = false
+        cv.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "Cell")
+        cv.register(FormButtonCollectionViewCell.self, forCellWithReuseIdentifier: FormButtonCollectionViewCell.buttonCellID)
+        cv.register(FormTextFieldCollectionViewCell.self, forCellWithReuseIdentifier: FormTextFieldCollectionViewCell.textfieldCellID)
         return cv
     }()
     
     
-    var elements:[FormElement] = [TextFieldElement(text: "", placeholder: "Enter Email", error: "Email error", index: 0, type: .email), TextFieldElement(text: "", placeholder: "Enter Password", error: "Password error", index: 1, type: .password), ButtonElement(title: "Sign up", index: 2)]
+    var elements:[FormElement] = [
+        TextFieldElement(text: "", placeholder: "Enter Email", error: "Email error", index: 0, type: .email, tag: "email"),
+        TextFieldElement(text: "", placeholder: "Enter Full name", error: "Name Error", index: 1, type: .plain, tag: "name") ,
+        TextFieldElement(text: "", placeholder: "Enter Password", error: "Password error", index: 2, type: .password, tag: "password"),
+        TextFieldElement(text: "", placeholder: "Confirm Password", error: "Password error", index: 3, type: .password, tag: "password"),
+        TextFieldElement(text: "", placeholder: "Enter Country", error: "Country error", index: 4, type: .plain, tag: "country"),
+        TextFieldElement(text: "", placeholder: "Enter City", error: "City error", index: 5, type: .plain, tag: "city"),
+        ButtonElement(title: "Sign up", index: 4)
+    ]
     
 
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemGray6
         
-        collectionView.register(FormButtonCollectionViewCell.self, forCellWithReuseIdentifier: buttonCellID)
-        collectionView.register(FormTextFieldCollectionViewCell.self, forCellWithReuseIdentifier: textfieldCellID)
         collectionView.delegate = self
         collectionView.dataSource = self
+
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardNotification(notification:)),name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHideNotification(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
         
-        
-        view.addSubview(collectionView)
+        view.addSubview(containerView)
+        containerView.addSubview(signUpLabel)
+        containerView.addSubview(collectionView)
         self.setupLayout()
         
     }
-    
     
     // MARK: - Delegate functions
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -69,23 +84,21 @@ class SignUpViewController: UIViewController, UICollectionViewDataSource, UIColl
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if let buttonElement = elements[indexPath.row] as? ButtonElement {
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: buttonCellID, for: indexPath) as! FormButtonCollectionViewCell
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier:FormButtonCollectionViewCell.buttonCellID, for: indexPath) as! FormButtonCollectionViewCell
             cell.buttonComponentProp = buttonElement
             cell.delegate = self
             return cell
         }
         if let textFieldElement = elements[indexPath.row] as? TextFieldElement {
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: textfieldCellID, for: indexPath) as! FormTextFieldCollectionViewCell
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FormTextFieldCollectionViewCell.textfieldCellID, for: indexPath) as! FormTextFieldCollectionViewCell
             cell.textFieldProp = textFieldElement
             cell.delegate = self
             return cell
         }
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: textfieldCellID, for: indexPath) as! FormTextFieldCollectionViewCell
-        cell.textFieldProp = TextFieldElement(text: "", placeholder: "", error: "", index: indexPath.row, type: .plain)
-        cell.delegate = self
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath)
         return cell
     }
-    
+
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         if let _ = elements[indexPath.row] as? ButtonElement {
@@ -95,7 +108,7 @@ class SignUpViewController: UIViewController, UICollectionViewDataSource, UIColl
     }
     
     func notifyChange(textFieldProp: TextFieldElement) {
-        print("\(textFieldProp.text) at \(textFieldProp.index)")
+        elements[textFieldProp.index] = textFieldProp
     }
     
     func notifyError(textFieldProp: TextFieldElement) {
@@ -103,10 +116,21 @@ class SignUpViewController: UIViewController, UICollectionViewDataSource, UIColl
     }
     
     func sendSubmit(buttonProp: ButtonElement) {
-        (collectionView.cellForItem(at: IndexPath(row: 0, section: 0)) as! FormTextFieldCollectionViewCell ).errorState = true
+//        (collectionView.cellForItem(at: IndexPath(row: 0, section: 0)) as? FormTextFieldCollectionViewCell )?.errorState = true
         let dict: [String: String] = getFormData()
         for (key, value) in dict {
             print(key, value)
+        }
+        collectionView.reloadData()
+        collectionView.layoutIfNeeded()
+        self.onSignup()
+    }
+    
+    func notifyNext(textFieldProp: TextFieldElement) {
+        collectionView.scrollToItem(at: IndexPath(row: textFieldProp.index, section: 0), at: .top, animated: true)
+        if textFieldProp.index != (elements[elements.count - 2] as? TextFieldElement)?.index {
+            (collectionView.cellForItem(at: IndexPath(row: textFieldProp.index, section: 0)) as? FormTextFieldCollectionViewCell)?.textField.resignFirstResponder()
+            (collectionView.cellForItem(at: IndexPath(row: textFieldProp.index + 1, section: 0)) as? FormTextFieldCollectionViewCell)?.textField.becomeFirstResponder()
         }
     }
     
@@ -114,33 +138,81 @@ class SignUpViewController: UIViewController, UICollectionViewDataSource, UIColl
     func getFormData() -> [String: String] {
         var val: [String: String] = [:]
         _ = elements.map({ element in
-            if let elem = element as? TextFieldElement, let field = collectionView.cellForItem(at: IndexPath(row: elem.index, section: 0)) as? FormTextFieldCollectionViewCell {
-                val[elem.placeholder] = field.textField.text
-            }
+            if let elem = element as? TextFieldElement {
+                val[elem.tag] = elem.text
+            } 
         })
         return val
     }
     
-    
-    @objc
     func onSignup() {
         self.dismiss(animated: true)
     }
     
+    @objc
+    func keyboardNotification(notification: NSNotification) {
+        guard let userInfo = notification.userInfo else { return }
+        let keyBoardFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue
+        self.collectionViewBottomConstraint?.constant  = -(keyBoardFrame?.height ?? 0)
+    }
+    
+    @objc
+    func keyboardWillHideNotification(notification: NSNotification) {
+        self.collectionViewBottomConstraint?.constant = 0
+    }
+    
     func setupLayout() {
+        collectionViewBottomConstraint = collectionView.bottomAnchor.constraint(equalTo: containerView.safeAreaLayoutGuide.bottomAnchor)
+        collectionViewBottomConstraint?.isActive = true
         NSLayoutConstraint.activate([
-            collectionView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            collectionView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            collectionView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.8),
-            collectionView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8),
+            containerView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.8),
+            containerView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.9),
+            containerView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            containerView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            signUpLabel.topAnchor.constraint(equalTo: containerView.safeAreaLayoutGuide.topAnchor, constant: 20),
+            signUpLabel.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
+            collectionView.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
+            collectionView.topAnchor.constraint(equalTo: signUpLabel.bottomAnchor, constant: 20),
+            collectionView.widthAnchor.constraint(equalTo: containerView.widthAnchor, multiplier: 0.8),
         ])
     }
 
 }
 
+extension UINavigationController {
+    override open var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        return .portrait
+    }
+}
 
-class FormElement {
+
+class FormElement: Hashable {
     var id = UUID()
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+    
+    static func == (lhs: FormElement, rhs: FormElement) -> Bool {
+        lhs.id == rhs.id
+    }
+}
+
+class FormElementSection: Hashable {
+    var id = UUID()
+    var items: [FormElement]
+    
+    init(items: [FormElement]) {
+        self.items = items
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+    
+    static func == (lhs: FormElementSection, rhs: FormElementSection) -> Bool {
+        lhs.id == rhs.id
+    }
 }
 
 class ButtonElement: FormElement {
@@ -159,13 +231,16 @@ class TextFieldElement: FormElement {
     var error: String
     var index: Int
     var type: FieldType
+    var tag: String
+    var errorState: Bool = false
     
-    init( text: String, placeholder: String, error: String, index: Int, type: FieldType) {
+    init( text: String, placeholder: String, error: String, index: Int, type: FieldType, tag: String) {
         self.index = index
         self.text = text
         self.placeholder = placeholder
         self.error = error
         self.type = type
+        self.tag = tag
     }
 }
 

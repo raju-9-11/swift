@@ -10,3 +10,11 @@ import UIKit
 class FormDatePickerCollectionViewCell: UICollectionViewCell {
     
 }
+
+
+extension UICollectionViewCell {
+    
+    func removeViews() {
+        self.contentView.subviews.forEach({ view in view.removeFromSuperview() })
+    }
+}
