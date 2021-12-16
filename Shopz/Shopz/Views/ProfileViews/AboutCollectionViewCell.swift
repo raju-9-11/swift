@@ -24,7 +24,7 @@ class AboutCollectionViewCell: UICollectionViewCell {
         let textView = UITextView()
         textView.translatesAutoresizingMaskIntoConstraints = false
         textView.layer.cornerRadius = 6
-        textView.font = .systemFont(ofSize: 12, weight: .regular)
+        textView.font = .systemFont(ofSize: 13, weight: .regular)
         textView.textColor = .darkGray
         textView.text = aboutData.about
         textView.textAlignment = .center
@@ -55,7 +55,9 @@ class AboutCollectionViewCell: UICollectionViewCell {
     func setupLayout() {
         containerView.addSubview(aboutLabel)
         containerView.addSubview(aboutView)
+        
         contentView.addSubview(containerView)
+        
         NSLayoutConstraint.activate([
             containerView.heightAnchor.constraint(equalTo: contentView.heightAnchor),
             containerView.widthAnchor.constraint(equalTo: contentView.widthAnchor),

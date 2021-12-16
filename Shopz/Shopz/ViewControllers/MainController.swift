@@ -10,6 +10,19 @@ import UIKit
 class MainController: UITabBarController, UITabBarControllerDelegate, ModalViewDelegate {
     
     var auth: Auth? = nil
+    
+    let searchBarView: UIView = {
+        let view = UIView()
+        view.backgroundColor = UIColor.black
+        return view
+    }()
+    
+    let searchBar: UITextField = {
+        let textField = UITextField()
+        textField.placeholder = "Search Items"
+        textField.translatesAutoresizingMaskIntoConstraints = false
+        return textField
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -18,7 +31,8 @@ class MainController: UITabBarController, UITabBarControllerDelegate, ModalViewD
         view.backgroundColor = .systemGray
         self.delegate = self
         
-        
+        self.tabBar.backgroundColor = .white
+        self.setupNavigationController()
         
     }
     
@@ -38,6 +52,21 @@ class MainController: UITabBarController, UITabBarControllerDelegate, ModalViewD
             }
         }
         return true
+    }
+    
+    func setupNavigationController() {
+        searchBarView.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.navigationController?.navigationBar.frame.height ?? 200)
+        searchBarView.addSubview(searchBar)
+        NSLayoutConstraint.activate([
+            searchBar.centerXAnchor.constraint(equalTo: searchBarView.centerXAnchor),
+            searchBar.centerYAnchor.constraint(equalTo: searchBarView.centerYAnchor),
+            searchBar.heightAnchor.constraint(equalTo: searchBarView.heightAnchor, multiplier: 0.99),
+        ])
+        self.navigationItem.titleView = searchBarView
+    }
+    
+    override func viewWillLayoutSubviews() {
+        searchBarView.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.navigationController?.navigationBar.frame.height ?? 200)
     }
     
 

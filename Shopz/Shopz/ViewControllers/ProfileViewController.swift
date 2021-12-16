@@ -7,20 +7,21 @@
 
 import UIKit
 
-class ProfileViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
+class ProfileViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, ShoppingListCellDelegate {
     
     
     let containerView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
         layout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
-        layout.minimumLineSpacing = 50
-        layout.minimumInteritemSpacing = 50
+        layout.minimumLineSpacing = 20
+        layout.minimumInteritemSpacing = 20
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
         cv.translatesAutoresizingMaskIntoConstraints = false
         cv.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         cv.register(ProfileTopViewCollectioViewCell.self, forCellWithReuseIdentifier: ProfileTopViewCollectioViewCell.cellID)
         cv.register(AboutCollectionViewCell.self, forCellWithReuseIdentifier: AboutCollectionViewCell.cellID)
+        cv.register(ShoppingListCollectionViewCell.self, forCellWithReuseIdentifier: ShoppingListCollectionViewCell.cellID)
         cv.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "Cell")
         cv.backgroundColor = .clear
         return cv
@@ -29,11 +30,19 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource, UICol
     var containerData: [ProfileViewElement] = [
         ProfileData(name: "Pacman", bgImageMedia: "https://docs.swift.org/swift-book/_images/memory_shopping_2x.png", profileImageMedia: "https://www.gravatar.com/avatar/acee100932e6b180a64cf7a58ccab6d6.jpg?d=https%3A%2F%2Fwolverine.raywenderlich.com%2Fv3-resources%2Fimages%2Fdefault-account-avatar_2x.png&s=480", email: "test@email.com"),
         AboutData(about: ""),
+        ShoppingListData(shoppingLists: [
+            ShoppingList(name: "Tech"),
+            ShoppingList(name: "Clothes"),
+            ShoppingList(name: "Accessories"),
+            ShoppingList(name: "Tech"),
+            ShoppingList(name: "Clothes"),
+            ShoppingList(name: "Accessories"),
+        ])
     ]
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemGray
+        view.backgroundColor = .systemGray6
         
         containerView.delegate = self
         containerView.dataSource = self
@@ -45,8 +54,23 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource, UICol
         
     }
     
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        self.containerView.reloadData()
+    }
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return containerData.count
+    }
+    
+    func listItemClicked(indexPath: IndexPath, shoppingListData: ShoppingList?) {
+        if let listData = shoppingListData {
+            let svc = CartViewController()
+            svc.listDetails = listData
+            svc.modalPresentationStyle = .fullScreen
+            self.navigationController?.pushViewController(svc, animated: true)
+            
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -67,6 +91,7 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource, UICol
             let cell = containerView.dequeueReusableCell(withReuseIdentifier: ShoppingListCollectionViewCell.cellID, for: indexPath) as! ShoppingListCollectionViewCell
             cell.shoppingListData = shoppingListData
             cell.cellFrame = self.view.frame
+            cell.delegate = self
             return cell
         }
         let cell = containerView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath)
@@ -77,7 +102,7 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource, UICol
     func setupLayout() {
         NSLayoutConstraint.activate([
             containerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            containerView.heightAnchor.constraint(equalTo: view.heightAnchor),
+            containerView.heightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.heightAnchor),
             containerView.widthAnchor.constraint(equalTo: view.widthAnchor),
             containerView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
         ])

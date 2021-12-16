@@ -24,6 +24,7 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
         layout.scrollDirection = .horizontal
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
         cv.bounces = true
+        cv.showsHorizontalScrollIndicator = false
         cv.backgroundColor = .clear
         cv.contentInset = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 5)
         cv.translatesAutoresizingMaskIntoConstraints = false
@@ -49,7 +50,7 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
     
     let categoryList: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
-        layout.minimumInteritemSpacing = 10
+        layout.minimumInteritemSpacing = 5
         layout.minimumLineSpacing = 10
         layout.sectionInset = UIEdgeInsets(top: 10, left: 5, bottom: 10, right: 5)
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
@@ -72,23 +73,10 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
     
     let categoryLabel: UILabel = {
         let label = UILabel()
-        label.text = "Popular Items"
+        label.text = "Categories"
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .systemFont(ofSize: 12, weight: .bold)
         return label
-    }()
-    
-    let searchBarView: UIView = {
-        let view = UIView()
-        view.backgroundColor = UIColor.black
-        return view
-    }()
-    
-    let searchBar: UITextField = {
-        let textField = UITextField()
-        textField.placeholder = "Search Items"
-        textField.translatesAutoresizingMaskIntoConstraints = false
-        return textField
     }()
 
     
@@ -114,14 +102,8 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
         categoryView.addSubview(categoryList)
         view.addSubview(categoryView)
         
-        self.setupLayout()
-        self.setupNavigationController()
+        self.setupLayout()        
         
-        
-    }
-    
-    override func viewWillLayoutSubviews() {
-        searchBarView.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.navigationController?.navigationBar.frame.height ?? 200)
     }
     
     // MARK: - CollectionView delegate
@@ -131,7 +113,10 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: view.frame.height*0.15, height: view.frame.height*0.15)
+        if collectionView == categoryList {
+            return CGSize(width: collectionView.frame.width*0.3, height: collectionView.frame.width*0.3)
+        }
+        return CGSize(width: collectionView.frame.height*0.95, height: collectionView.frame.height*0.95)
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -151,11 +136,11 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
             popularItemsView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.2),
             popularItemsLabel.topAnchor.constraint(equalTo: popularItemsView.topAnchor, constant: 10),
             popularItemsLabel.leftAnchor.constraint(equalTo: popularItemsView.leftAnchor, constant: 10),
-            popularItemsList.topAnchor.constraint(equalTo: popularItemsLabel.bottomAnchor),
+            popularItemsList.topAnchor.constraint(equalTo: popularItemsLabel.bottomAnchor, constant: 5),
             popularItemsList.centerXAnchor.constraint(equalTo: popularItemsView.centerXAnchor),
             popularItemsList.heightAnchor.constraint(equalTo: popularItemsView.heightAnchor, multiplier: 0.8),
             popularItemsList.widthAnchor.constraint(equalTo: popularItemsView.widthAnchor),
-            categoryView.topAnchor.constraint(equalTo: popularItemsView.bottomAnchor),
+            categoryView.topAnchor.constraint(equalTo: popularItemsView.bottomAnchor, constant: 10),
             categoryView.widthAnchor.constraint(equalTo: view.widthAnchor),
             categoryView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             categoryView.heightAnchor.constraint(equalTo: view.heightAnchor),
@@ -166,18 +151,6 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
             categoryList.centerXAnchor.constraint(equalTo: categoryView.centerXAnchor),
             categoryList.bottomAnchor.constraint(equalTo: categoryView.bottomAnchor),
         ])
-    }
-    
-    func setupNavigationController() {
-        searchBarView.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.navigationController?.navigationBar.frame.height ?? 200)
-        searchBarView.addSubview(searchBar)
-//        searchBar.becomeFirstResponder()
-        NSLayoutConstraint.activate([
-            searchBar.centerXAnchor.constraint(equalTo: searchBarView.centerXAnchor),
-            searchBar.centerYAnchor.constraint(equalTo: searchBarView.centerYAnchor),
-            searchBar.heightAnchor.constraint(equalTo: searchBarView.heightAnchor, multiplier: 0.99),
-        ])
-        self.navigationItem.titleView = searchBarView
     }
 
 

@@ -14,7 +14,7 @@ class ProfileTopViewCollectioViewCell: UICollectionViewCell {
     let profileTopView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .systemGray2
+        view.backgroundColor = .white
         return view
     }()
     

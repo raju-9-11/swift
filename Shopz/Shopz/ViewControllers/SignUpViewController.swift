@@ -179,13 +179,6 @@ class SignUpViewController: UIViewController, UICollectionViewDelegate, UICollec
 
 }
 
-extension UINavigationController {
-    override open var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        return .portrait
-    }
-}
-
-
 class FormElement: Hashable {
     var id = UUID()
     

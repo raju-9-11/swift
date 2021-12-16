@@ -27,12 +27,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         profileVC.tabBarItem = UITabBarItem(title: "Profile", image: UIImage(systemName: "person.fill"), tag: 1)
         let cartVC = CartViewController()
         cartVC.tabBarItem = UITabBarItem(title: "Cart", image: UIImage(systemName: "cart.fill"), tag: 2)
-        vc.viewControllers = [homeVC, profileVC, cartVC]
+        let searchVC = SearchViewController()
+        searchVC.tabBarItem = UITabBarItem(title: "Search", image: UIImage(systemName: "magnifyingglass"), tag: 3)
+        vc.viewControllers = [homeVC, profileVC, cartVC, searchVC]
         vc.selectedViewController = homeVC
-        self.window?.rootViewController = UINavigationController(rootViewController: vc)
+        self.window?.rootViewController = CustomNavigationController(rootViewController: vc)
         return true
     }
 
 
+}
+
+
+
+class CustomNavigationController: UINavigationController {
+    open override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        return .portrait
+    }
+    open override var preferredInterfaceOrientationForPresentation: UIInterfaceOrientation {
+        return .portrait
+    }
 }
 
