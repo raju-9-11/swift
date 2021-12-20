@@ -9,10 +9,6 @@ import UIKit
 
 class SignUpViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, TextFormElementDelegate, SubmitButtonDelegate {
     
-    override open var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        return .portrait
-    }
-    
     // MARK: - UI Elements
     
     let containerView: UIView = {
@@ -30,6 +26,32 @@ class SignUpViewController: UIViewController, UICollectionViewDelegate, UICollec
         label.sizeToFit()
         label.font = .systemFont(ofSize: 36, weight: .heavy)
         return label
+    }()
+    
+    let signInView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
+    let signInLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Already have an account? "
+        label.sizeToFit()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.contentMode = .center
+        label.adjustsFontSizeToFitWidth = true
+        label.font = .systemFont(ofSize: 15, weight: .medium)
+        return label
+    }()
+    
+    let signInButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("Sign In", for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 16, weight: .heavy)
+        button.setTitleColor(UIColor(red: 0.692, green: 0.582, blue: 0.582, alpha: 1), for: .normal)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
     }()
     
     var collectionViewBottomConstraint: NSLayoutConstraint?
@@ -73,8 +95,15 @@ class SignUpViewController: UIViewController, UICollectionViewDelegate, UICollec
         view.addSubview(containerView)
         containerView.addSubview(signUpLabel)
         containerView.addSubview(collectionView)
+        signInButton.addTarget(self, action: #selector(onSignin), for: .touchUpInside)
+        signInView.addSubview(signInLabel)
+        signInView.addSubview(signInButton)
+        containerView.addSubview(signInView)
         self.setupLayout()
-        
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
     
     // MARK: - Delegate functions
@@ -150,6 +179,11 @@ class SignUpViewController: UIViewController, UICollectionViewDelegate, UICollec
     }
     
     @objc
+    func onSignin() {
+        self.dismiss(animated: true, completion: nil)
+    }
+    
+    @objc
     func keyboardNotification(notification: NSNotification) {
         guard let userInfo = notification.userInfo else { return }
         let keyBoardFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue
@@ -174,6 +208,15 @@ class SignUpViewController: UIViewController, UICollectionViewDelegate, UICollec
             collectionView.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
             collectionView.topAnchor.constraint(equalTo: signUpLabel.bottomAnchor, constant: 20),
             collectionView.widthAnchor.constraint(equalTo: containerView.widthAnchor, multiplier: 0.8),
+            signInView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -10),
+            signInView.widthAnchor.constraint(equalTo: containerView.widthAnchor, multiplier: 0.8),
+            signInView.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
+            signInView.heightAnchor.constraint(equalToConstant: 40),
+            signInLabel.leftAnchor.constraint(equalTo: signInView.leftAnchor),
+            signInLabel.centerYAnchor.constraint(equalTo: signInView.centerYAnchor),
+            signInButton.leftAnchor.constraint(equalTo: signInLabel.rightAnchor),
+            signInButton.centerYAnchor.constraint(equalTo: signInView.centerYAnchor),
+            signInButton.rightAnchor.constraint(equalTo: signInView.rightAnchor),
         ])
     }
 

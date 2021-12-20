@@ -16,7 +16,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         self.window = UIWindow(frame: UIScreen.main.bounds)
         self.window?.makeKeyAndVisible()
-        
+
         let newAuthSate = Auth()
         newAuthSate.authState = false
         let vc = MainController()
@@ -31,21 +31,42 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         searchVC.tabBarItem = UITabBarItem(title: "Search", image: UIImage(systemName: "magnifyingglass"), tag: 3)
         vc.viewControllers = [homeVC, profileVC, cartVC, searchVC]
         vc.selectedViewController = homeVC
-        self.window?.rootViewController = CustomNavigationController(rootViewController: vc)
+        let cvc = CustomNavigationController(rootViewController: vc)
+        cvc.customDelegate = vc
+        self.window?.rootViewController = cvc
         return true
     }
-
-
-}
-
-
-
-class CustomNavigationController: UINavigationController {
-    open override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+    
+    func applicationDidReceiveMemoryWarning(_ application: UIApplication) {
+        print("Excessive memory warning")
+    }
+    
+    func applicationWillResignActive(_ application: UIApplication) {
+        print("Before background")
+        window?.isHidden = true
+    }
+    
+    func applicationWillEnterForeground(_ application: UIApplication) {
+        print("Before foreground")
+    }
+    
+    func applicationDidEnterBackground(_ application: UIApplication) {
+        print("Going back ground")
+    }
+    
+    func applicationDidBecomeActive(_ application: UIApplication) {
+        print("After Foreground")
+        window?.isHidden = false 
+    }
+    
+    func applicationWillTerminate(_ application: UIApplication) {
+        print("About to terminate")
+    }
+    
+    func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
         return .portrait
     }
-    open override var preferredInterfaceOrientationForPresentation: UIInterfaceOrientation {
-        return .portrait
-    }
+
+
 }
 

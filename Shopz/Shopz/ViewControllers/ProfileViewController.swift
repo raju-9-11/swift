@@ -19,6 +19,7 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource, UICol
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
         cv.translatesAutoresizingMaskIntoConstraints = false
         cv.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        cv.contentInset = UIEdgeInsets(top: 10, left: 0, bottom: 0, right: 10)
         cv.register(ProfileTopViewCollectioViewCell.self, forCellWithReuseIdentifier: ProfileTopViewCollectioViewCell.cellID)
         cv.register(AboutCollectionViewCell.self, forCellWithReuseIdentifier: AboutCollectionViewCell.cellID)
         cv.register(ShoppingListCollectionViewCell.self, forCellWithReuseIdentifier: ShoppingListCollectionViewCell.cellID)
@@ -43,7 +44,7 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource, UICol
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemGray6
-        
+
         containerView.delegate = self
         containerView.dataSource = self
         
@@ -67,8 +68,8 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource, UICol
         if let listData = shoppingListData {
             let svc = CartViewController()
             svc.listDetails = listData
-            svc.modalPresentationStyle = .fullScreen
-            self.navigationController?.pushViewController(svc, animated: true)
+            svc.modalPresentationStyle = .overCurrentContext
+            self.present(svc, animated: true)
             
         }
     }
@@ -102,7 +103,7 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource, UICol
     func setupLayout() {
         NSLayoutConstraint.activate([
             containerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            containerView.heightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.heightAnchor),
+            containerView.heightAnchor.constraint(equalTo: view.heightAnchor),
             containerView.widthAnchor.constraint(equalTo: view.widthAnchor),
             containerView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
         ])

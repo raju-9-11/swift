@@ -7,7 +7,7 @@
 
 import UIKit
 
-class HomeViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
+class SellerHomeViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     
     
     // MARK: Data
@@ -102,7 +102,7 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
         categoryView.addSubview(categoryList)
         view.addSubview(categoryView)
         
-        self.setupLayout()        
+        self.setupLayout()
         
     }
     
@@ -124,7 +124,6 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
         cell.data = collectionView == popularItemsList ? popularItems[indexPath.row] : categories[indexPath.row]
         return cell
     }
-    
     
     
     // MARK: - Layout and other functions
@@ -155,6 +154,4 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
 
 
 }
-
-
 

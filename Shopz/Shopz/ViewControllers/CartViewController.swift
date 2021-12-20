@@ -16,11 +16,22 @@ class CartViewController: UIViewController, UICollectionViewDataSource, UICollec
             if newValue != nil {
                 self.listItems = getList()
                 self.titleLabel.text = newValue?.name
+                self.buttonsView.addArrangedSubview(deleteList)
             }
         }
     }
     
-    lazy var listItems: [ItemData] = getCart()
+    lazy var listItems: [ItemData] = getCart() {
+        willSet {
+            if newValue.isEmpty {
+                UIView.animate(withDuration: 4 ) {
+                    self.buttonsView.isHidden = true
+                }
+            } else {
+                buttonsView.isHidden = false
+            }
+        }
+    }
     
     let titleLabel: UILabel = {
         let label = UILabel()
@@ -58,6 +69,7 @@ class CartViewController: UIViewController, UICollectionViewDataSource, UICollec
             button.backgroundColor = UIColor(red: 0.373, green: 0.353, blue: 0.969, alpha: 1)
             button.layer.cornerRadius = 6
         }
+        button.titleLabel?.adjustsFontSizeToFitWidth = true
         return button
     }()
     
@@ -77,7 +89,20 @@ class CartViewController: UIViewController, UICollectionViewDataSource, UICollec
             button.backgroundColor = UIColor(red: 0.996, green: 0.924, blue: 0.947, alpha: 1)
             button.layer.cornerRadius = 6
         }
+        button.titleLabel?.adjustsFontSizeToFitWidth = true
         return button
+    }()
+    
+    let cvc = CheckoutViewController()
+    
+    lazy var buttonsView: UIStackView = {
+        let view = UIStackView(arrangedSubviews: [checkout])
+        view.alignment = .fill
+        view.axis = .horizontal
+        view.spacing = 5
+        view.distribution = .fillProportionally
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
     }()
     
     let containerView: UIView = {
@@ -93,12 +118,11 @@ class CartViewController: UIViewController, UICollectionViewDataSource, UICollec
         collectionView.dataSource = self
         collectionView.delegate = self
         
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: UIView())
+        checkout.addTarget(self, action: #selector(onCheckout), for: .touchUpInside)
         
         containerView.addSubview(titleLabel)
         containerView.addSubview(collectionView)
-        containerView.addSubview(checkout)
-        containerView.addSubview(deleteList)
+        containerView.addSubview(buttonsView)
         view.addSubview(containerView)
         
         
@@ -140,27 +164,20 @@ class CartViewController: UIViewController, UICollectionViewDataSource, UICollec
             collectionView.heightAnchor.constraint(equalTo: containerView.safeAreaLayoutGuide.heightAnchor, multiplier: 0.85),
             collectionView.widthAnchor.constraint(equalTo: containerView.widthAnchor, multiplier: 0.9),
             collectionView.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
-            checkout.topAnchor.constraint(equalTo: collectionView.bottomAnchor, constant: 10),
-            checkout.leftAnchor.constraint(equalTo: collectionView.leftAnchor),
-            checkout.bottomAnchor.constraint(equalTo: containerView.bottomAnchor),
-            deleteList.leftAnchor.constraint(equalTo: checkout.rightAnchor, constant: 5),
-            deleteList.topAnchor.constraint(equalTo: collectionView.bottomAnchor, constant: 10),
-            deleteList.bottomAnchor.constraint(equalTo: containerView.bottomAnchor),
-            deleteList.rightAnchor.constraint(equalTo: collectionView.rightAnchor),
+            buttonsView.topAnchor.constraint(equalTo: collectionView.bottomAnchor, constant: 10),
+            buttonsView.bottomAnchor.constraint(equalTo: containerView.safeAreaLayoutGuide.bottomAnchor),
+            buttonsView.widthAnchor.constraint(equalTo: containerView.widthAnchor),
+            buttonsView.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
         ])
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 1
-    }
-    
-    func numberOfSections(in collectionView: UICollectionView) -> Int {
         return listItems.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CartItemCollectionViewCell.cellID, for: indexPath) as! CartItemCollectionViewCell
-        cell.itemData = listItems[indexPath.section]
+        cell.itemData = listItems[indexPath.row]
         cell.delegate = self
         return cell
     }
@@ -170,8 +187,22 @@ class CartViewController: UIViewController, UICollectionViewDataSource, UICollec
     }
     
     func removeItem(itemData: ItemData) {
-        print("Deleting.. \(itemData.name) ")
+        for (index, item ) in listItems.enumerated() {
+            if item.id == itemData.id {
+                listItems.remove(at: index)
+                collectionView.deleteItems(at: [IndexPath(row: index, section: 0)])
+                break
+            }
+        }
         self.collectionView.reloadData()
+    }
+    
+    @objc
+    func onCheckout() {
+        cvc.willMove(toParent: self)
+        self.addChild(cvc)
+        self.view.addSubview(cvc.view)
+        cvc.displayFullScreen(on: self.view)
     }
     
 }

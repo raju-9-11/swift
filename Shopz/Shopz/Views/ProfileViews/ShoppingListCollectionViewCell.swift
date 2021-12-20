@@ -30,6 +30,7 @@ class ShoppingListCollectionViewCell: UICollectionViewCell, UICollectionViewData
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
         cv.translatesAutoresizingMaskIntoConstraints = false
         cv.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        cv.bounces = false
         cv.register(ShoppingListSubCollectionViewCell.self, forCellWithReuseIdentifier: ShoppingListSubCollectionViewCell.cellID)
         cv.backgroundColor = .clear
         return cv
@@ -100,7 +101,7 @@ class ShoppingListCollectionViewCell: UICollectionViewCell, UICollectionViewData
     
     override func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
         let attr = layoutAttributes
-        attr.size = CGSize(width: cellFrame.width - 2, height: 400)
+        attr.size = CGSize(width: Int(cellFrame.width - 2), height: (shoppingListData?.shoppingLists.count ?? 1)*100 + 150)
         return attr
     }
     

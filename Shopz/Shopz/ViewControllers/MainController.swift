@@ -7,23 +7,11 @@
 
 import UIKit
 
-class MainController: UITabBarController, UITabBarControllerDelegate, ModalViewDelegate {
+class MainController: UITabBarController, UITabBarControllerDelegate, ModalViewDelegate, UITextFieldDelegate, CustomNavigationDelegate {
     
     var auth: Auth? = nil
+    let lvc = LoginViewController()
     
-    let searchBarView: UIView = {
-        let view = UIView()
-        view.backgroundColor = UIColor.black
-        return view
-    }()
-    
-    let searchBar: UITextField = {
-        let textField = UITextField()
-        textField.placeholder = "Search Items"
-        textField.translatesAutoresizingMaskIntoConstraints = false
-        return textField
-    }()
-
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -32,42 +20,51 @@ class MainController: UITabBarController, UITabBarControllerDelegate, ModalViewD
         self.delegate = self
         
         self.tabBar.backgroundColor = .white
-        self.setupNavigationController()
         
     }
     
     func sendState(vc: UIViewController, _ state: Auth) {
         self.auth = state
+        if let auth = auth, auth.authState == true {
+            lvc.willMove(toParent: nil)
+            lvc.view.removeFromSuperview()
+            lvc.removeFromParent()
+            self.navigationController?.navigationBar.isHidden = false
+        }
     }
     
     func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
-        if viewController.tabBarItem.tag > 0 {
+        if viewController.tabBarItem.tag > 0 && viewController.tabBarItem.tag < 3 {
             if let auth = auth, !auth.authState {
-                let lvc = LoginViewController()
                 lvc.modalPresentationStyle = .fullScreen
                 lvc.modalTransitionStyle = .coverVertical
                 lvc.delegate = self
-                self.present(lvc, animated: true, completion: nil)
-                return false
+                viewController.addChild(lvc)
+                viewController.view.addSubview(lvc.view)
+                self.navigationController?.navigationBar.isHidden = true
+                lvc.displayFullScreen(on: viewController.view)
             }
+        } else {
+            self.navigationController?.navigationBar.isHidden = false
+        }
+        if viewController.tabBarItem.tag == 3 {
+            (self.navigationController as? CustomNavigationController)?.searchBar.becomeFirstResponder()
         }
         return true
     }
     
-    func setupNavigationController() {
-        searchBarView.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.navigationController?.navigationBar.frame.height ?? 200)
-        searchBarView.addSubview(searchBar)
-        NSLayoutConstraint.activate([
-            searchBar.centerXAnchor.constraint(equalTo: searchBarView.centerXAnchor),
-            searchBar.centerYAnchor.constraint(equalTo: searchBarView.centerYAnchor),
-            searchBar.heightAnchor.constraint(equalTo: searchBarView.heightAnchor, multiplier: 0.99),
-        ])
-        self.navigationItem.titleView = searchBarView
+    
+    func goToSearch() {
+        print("Going...")
     }
     
-    override func viewWillLayoutSubviews() {
-        searchBarView.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.navigationController?.navigationBar.frame.height ?? 200)
+    func onSearch(query: String?) {
+        print("Searching for \(query ?? "")...")
     }
     
-
+    func onLeft() {
+        self.dismiss(animated: true, completion: nil)
+        self.selectedIndex = 0
+    }
+    
 }

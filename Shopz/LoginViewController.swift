@@ -9,10 +9,6 @@ import UIKit
 
 class LoginViewController: UIViewController {
     
-    override open var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        return .portrait
-    }
-    
     // MARK: - UI Elements
     
     let topView: UIView = {
@@ -42,6 +38,7 @@ class LoginViewController: UIViewController {
         label.sizeToFit()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.contentMode = .center
+        label.adjustsFontSizeToFitWidth = true
         label.font = .systemFont(ofSize: 15, weight: .medium)
         return label
     }()
@@ -116,7 +113,7 @@ class LoginViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         view.backgroundColor = .systemGray6
         
         topView.addSubview(errorLabel)
@@ -190,6 +187,7 @@ class LoginViewController: UIViewController {
             signupLabel.centerYAnchor.constraint(equalTo: signUpView.centerYAnchor),
             signupButton.leftAnchor.constraint(equalTo: signupLabel.rightAnchor),
             signupButton.centerYAnchor.constraint(equalTo: signUpView.centerYAnchor),
+            signupButton.rightAnchor.constraint(equalTo: signUpView.rightAnchor),
         ])
     }
 }
