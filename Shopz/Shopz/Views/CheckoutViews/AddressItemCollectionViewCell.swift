@@ -13,6 +13,7 @@ class AddressItemCollectionViewCell: UICollectionViewCell {
     
     var address: String = "" {
         willSet {
+            addressTextView.text = newValue
             contentView.backgroundColor = .blue
             self.setupLayout()
         }
@@ -27,6 +28,8 @@ class AddressItemCollectionViewCell: UICollectionViewCell {
     let addressTextView: UITextView = {
         let textView = UITextView()
         textView.isEditable = false
+        textView.isSelectable = false
+        textView.textColor = .black
         textView.translatesAutoresizingMaskIntoConstraints = false
         return textView
     }()

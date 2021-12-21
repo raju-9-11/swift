@@ -55,6 +55,7 @@ class AboutCollectionViewCell: UICollectionViewCell {
     func setupLayout() {
         containerView.addSubview(aboutLabel)
         containerView.addSubview(aboutView)
+        aboutView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(onClick)))
         
         contentView.addSubview(containerView)
         
@@ -70,6 +71,11 @@ class AboutCollectionViewCell: UICollectionViewCell {
             aboutLabel.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 10),
             aboutLabel.leftAnchor.constraint(equalTo: containerView.leftAnchor, constant: 10),
         ])
+    }
+    
+    @objc
+    func onClick() {
+        print("Editing about...")
     }
     
     override func prepareForReuse() {

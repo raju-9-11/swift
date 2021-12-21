@@ -7,7 +7,7 @@
 
 import UIKit
 
-class SellerHomeViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
+class SellerHomeViewController: CustomViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     
     
     // MARK: Data
@@ -83,24 +83,6 @@ class SellerHomeViewController: UIViewController, UICollectionViewDataSource, UI
     // MARK: - LoadView
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.title = "Home"
-        view.backgroundColor = .white
-        
-        popularItemsList.delegate = self
-        popularItemsList.dataSource = self
-        popularItemsList.register(ItemThumbNailCollectionViewCell.self, forCellWithReuseIdentifier: popCellID)
-        
-        categoryList.delegate = self
-        categoryList.dataSource = self
-        categoryList.register(ItemThumbNailCollectionViewCell.self, forCellWithReuseIdentifier: popCellID)
-        
-        
-        popularItemsView.addSubview(popularItemsList)
-        popularItemsView.addSubview(popularItemsLabel)
-        view.addSubview(popularItemsView)
-        categoryView.addSubview(categoryLabel)
-        categoryView.addSubview(categoryList)
-        view.addSubview(categoryView)
         
         self.setupLayout()
         
@@ -127,7 +109,25 @@ class SellerHomeViewController: UIViewController, UICollectionViewDataSource, UI
     
     
     // MARK: - Layout and other functions
-    func setupLayout() {
+    override func setupLayout() {
+        self.title = "Home"
+        view.backgroundColor = .white
+        
+        popularItemsList.delegate = self
+        popularItemsList.dataSource = self
+        popularItemsList.register(ItemThumbNailCollectionViewCell.self, forCellWithReuseIdentifier: popCellID)
+        
+        categoryList.delegate = self
+        categoryList.dataSource = self
+        categoryList.register(ItemThumbNailCollectionViewCell.self, forCellWithReuseIdentifier: popCellID)
+        
+        
+        popularItemsView.addSubview(popularItemsList)
+        popularItemsView.addSubview(popularItemsLabel)
+        view.addSubview(popularItemsView)
+        categoryView.addSubview(categoryLabel)
+        categoryView.addSubview(categoryList)
+        view.addSubview(categoryView)
         NSLayoutConstraint.activate([
             popularItemsView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
             popularItemsView.centerXAnchor.constraint(equalTo: view.centerXAnchor),

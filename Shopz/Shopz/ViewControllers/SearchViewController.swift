@@ -7,7 +7,7 @@
 
 import UIKit
 
-class SearchViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+class SearchViewController: CustomViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
    
     let searchList: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -16,6 +16,7 @@ class SearchViewController: UIViewController, UICollectionViewDelegate, UICollec
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
         cv.register(SearchItemCollectionViewCell.self, forCellWithReuseIdentifier: SearchItemCollectionViewCell.cellID)
         cv.translatesAutoresizingMaskIntoConstraints = false
+        cv.backgroundColor = .clear
         return cv
     }()
     
@@ -23,8 +24,8 @@ class SearchViewController: UIViewController, UICollectionViewDelegate, UICollec
     
     let categoryList: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
-        layout.minimumLineSpacing = 5
-        layout.minimumInteritemSpacing = 5
+        layout.minimumLineSpacing = 0
+        layout.minimumInteritemSpacing = 0
         layout.scrollDirection = .horizontal
         layout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
         layout.minimumInteritemSpacing = 10
@@ -32,19 +33,20 @@ class SearchViewController: UIViewController, UICollectionViewDelegate, UICollec
         cv.register(CategoryItemCollectionViewCell.self, forCellWithReuseIdentifier: CategoryItemCollectionViewCell.cellID)
         cv.translatesAutoresizingMaskIntoConstraints = false
         cv.showsHorizontalScrollIndicator = false
+        cv.backgroundColor = .clear
         return cv
     }()
     
     let searchListData: [ItemData] = [
         ItemData(name: "Mobile", media: "house.fill", cost: 12),
         ItemData(name: "HeadPhones", media: "person.fill", cost: 34),
-        ItemData(name: "Watch", media: "", cost: 11),
+        ItemData(name: "Watch", media: "photo.fill", cost: 11),
         ItemData(name: "Mobile", media: "house.fill", cost: 12),
         ItemData(name: "HeadPhones", media: "person.fill", cost: 34),
-        ItemData(name: "Watch", media: "", cost: 11),
+        ItemData(name: "Watch", media: "photo.fill", cost: 11),
         ItemData(name: "Mobile", media: "house.fill", cost: 12),
         ItemData(name: "HeadPhones", media: "person.fill", cost: 34),
-        ItemData(name: "Watch", media: "", cost: 11),
+        ItemData(name: "Watch", media: "photo.fill", cost: 11),
     ]
     
     let categoryListData: [CategoryData] = [
@@ -61,17 +63,6 @@ class SearchViewController: UIViewController, UICollectionViewDelegate, UICollec
         super.viewDidLoad()
         self.view.backgroundColor = .white
         
-        searchList.dataSource = self
-        searchList.delegate = self
-        
-        categoryList.dataSource = self
-        categoryList.delegate = self
-        
-        view.addSubview(searchList)
-        view.addSubview(categoryList)
-        if let nvc = self.navigationController as? CustomNavigationController {
-            nvc.leftButton.addTarget(self, action: #selector(onLeft), for: .touchUpInside)
-        }
         self.setupLayout()
     }
     
@@ -113,7 +104,19 @@ class SearchViewController: UIViewController, UICollectionViewDelegate, UICollec
     }
     
     
-    func setupLayout() {
+    override func setupLayout() {
+        
+        searchList.dataSource = self
+        searchList.delegate = self
+        
+        categoryList.dataSource = self
+        categoryList.delegate = self
+        
+        view.addSubview(searchList)
+        view.addSubview(categoryList)
+        if let nvc = self.navigationController as? CustomNavigationController {
+            nvc.leftButton.addTarget(self, action: #selector(onLeft), for: .touchUpInside)
+        }
         NSLayoutConstraint.activate([
             categoryList.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             categoryList.widthAnchor.constraint(equalTo: view.widthAnchor),

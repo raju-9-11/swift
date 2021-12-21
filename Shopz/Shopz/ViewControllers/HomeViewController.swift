@@ -7,7 +7,7 @@
 
 import UIKit
 
-class HomeViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
+class HomeViewController: CustomViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     
     
     // MARK: Data
@@ -83,24 +83,6 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
     // MARK: - LoadView
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.title = "Home"
-        view.backgroundColor = .white
-        
-        popularItemsList.delegate = self
-        popularItemsList.dataSource = self
-        popularItemsList.register(ItemThumbNailCollectionViewCell.self, forCellWithReuseIdentifier: popCellID)
-        
-        categoryList.delegate = self
-        categoryList.dataSource = self
-        categoryList.register(ItemThumbNailCollectionViewCell.self, forCellWithReuseIdentifier: popCellID)
-        
-        
-        popularItemsView.addSubview(popularItemsList)
-        popularItemsView.addSubview(popularItemsLabel)
-        view.addSubview(popularItemsView)
-        categoryView.addSubview(categoryLabel)
-        categoryView.addSubview(categoryList)
-        view.addSubview(categoryView)
         
         self.setupLayout()        
         
@@ -128,7 +110,25 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
     
     
     // MARK: - Layout and other functions
-    func setupLayout() {
+    override func setupLayout() {
+        self.title = "Home"
+        view.backgroundColor = .white
+        
+        popularItemsList.delegate = self
+        popularItemsList.dataSource = self
+        popularItemsList.register(ItemThumbNailCollectionViewCell.self, forCellWithReuseIdentifier: popCellID)
+        
+        categoryList.delegate = self
+        categoryList.dataSource = self
+        categoryList.register(ItemThumbNailCollectionViewCell.self, forCellWithReuseIdentifier: popCellID)
+        
+        
+        popularItemsView.addSubview(popularItemsList)
+        popularItemsView.addSubview(popularItemsLabel)
+        view.addSubview(popularItemsView)
+        categoryView.addSubview(categoryLabel)
+        categoryView.addSubview(categoryList)
+        view.addSubview(categoryView)
         NSLayoutConstraint.activate([
             popularItemsView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
             popularItemsView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
@@ -156,5 +156,22 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
 
 }
 
+class CustomViewController: UIViewController, CustomViewControllerProtocol {
+    
+    var requiresAuth: Bool = false
+    
+    func setupLayout() {
+        // <#PLACEHOLDER#>
+    }
+    
+    func removeViews() {
+        self.view.subviews.forEach({ view in view.removeFromSuperview() })
+        self.children.forEach({ vc in vc.removeFromParent(); vc.willMove(toParent: nil) })
+    }
+}
 
 
+protocol CustomViewControllerProtocol {
+    func setupLayout()
+    func removeViews()
+}

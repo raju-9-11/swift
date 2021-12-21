@@ -7,8 +7,7 @@
 
 import UIKit
 
-class ProfileViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, ShoppingListCellDelegate {
-    
+class ProfileViewController: CustomViewController, UICollectionViewDataSource, UICollectionViewDelegate, ShoppingListCellDelegate {
     
     let containerView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -40,16 +39,18 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource, UICol
             ShoppingList(name: "Accessories"),
         ])
     ]
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+    }
+    
+    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+        self.requiresAuth = true
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemGray6
-
-        containerView.delegate = self
-        containerView.dataSource = self
-        
-        
-        view.addSubview(containerView)
         
         self.setupLayout()
         
@@ -100,7 +101,15 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource, UICol
         
     }
     
-    func setupLayout() {
+    override func setupLayout() {
+        
+        view.backgroundColor = .systemGray6
+
+        containerView.delegate = self
+        containerView.dataSource = self
+        
+        
+        view.addSubview(containerView)
         NSLayoutConstraint.activate([
             containerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             containerView.heightAnchor.constraint(equalTo: view.heightAnchor),

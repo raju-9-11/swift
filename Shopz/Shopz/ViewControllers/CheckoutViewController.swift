@@ -7,7 +7,7 @@
 
 import UIKit
 
-class CheckoutViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+class CheckoutViewController: CustomViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, AddAddressCellDelegate {
     
     let cartDetails: UILabel = {
         let label = UILabel()
@@ -82,6 +82,7 @@ class CheckoutViewController: UIViewController, UICollectionViewDelegate, UIColl
         let textField = UITextField()
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.placeholder = "Name on gift wrap"
+        textField.isHidden = true
         return textField
     }()
     
@@ -99,6 +100,8 @@ class CheckoutViewController: UIViewController, UICollectionViewDelegate, UIColl
         cv.translatesAutoresizingMaskIntoConstraints = false
         cv.contentInset = UIEdgeInsets(top: 5, left: 2, bottom: 5, right: 2)
         cv.register(AddressItemCollectionViewCell.self, forCellWithReuseIdentifier: AddressItemCollectionViewCell.cellID)
+        cv.register(AddAddressCollectionViewCell.self, forCellWithReuseIdentifier: AddAddressCollectionViewCell.cellID)
+        cv.backgroundColor = .clear
         return cv
     }()
     
@@ -109,13 +112,60 @@ class CheckoutViewController: UIViewController, UICollectionViewDelegate, UIColl
         return label
     }()
     
+    let continueButton: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle("Continue to Payment", for: .normal)
+        button.backgroundColor = .red
+        return button
+    }()
+    
     let addressListData: [String] = {
         return ["String string sgring asdf as ", "SDFSDF fsdfs , sdsdfs fsdfsd ", "dsfsdfsd", "String Sgring ,fsdfsd","String string sgring asdf as ", "SDFSDF fsdfs , sdsdfs fsdfsd ", "dsfsdfsd", "String Sgring ,fsdfsd"]
     }()
+    
+    let pvc = PaymentViewController()
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.setupLayout()
+        
+    }
+    
+    override func willMove(toParent parent: UIViewController?) {
+        super.willMove(toParent: parent)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return addressListData.count + 1
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        if indexPath.row == addressListData.count {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: AddAddressCollectionViewCell.cellID, for: indexPath) as! AddAddressCollectionViewCell
+            cell.setupLayout()
+            cell.delegate = self
+            return cell
+        }
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: AddressItemCollectionViewCell.cellID, for: indexPath) as! AddressItemCollectionViewCell
+        cell.address = addressListData[indexPath.row]
+        return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: collectionView.frame.width*0.48, height: collectionView.frame.width*0.48)
+    }
+    
+    func onAddClick() {
+        print("Add Clicked")
+    }
+    
+    override func setupLayout() {
         view.backgroundColor = .white
+        
+        continueButton.addTarget(self, action: #selector(onContinue), for: .touchUpInside)
+        giftWrapSwitch.addTarget(self, action: #selector(onGiftwrapToggle), for: .valueChanged)
         
         billingDetailsContainer.addSubview(totalItemsLabel)
         billingDetailsContainer.addSubview(totalItemsLabelCost)
@@ -132,39 +182,13 @@ class CheckoutViewController: UIViewController, UICollectionViewDelegate, UIColl
         addressList.dataSource = self
         addressList.delegate = self
         
+        
         view.addSubview(topView)
         view.addSubview(giftWrapView)
         view.addSubview(addressDetails)
         view.addSubview(addressList)
+        view.addSubview(continueButton)
         
-        self.setupLayout()
-        
-    }
-    
-    override func willMove(toParent parent: UIViewController?) {
-        super.willMove(toParent: parent)
-        if parent == nil {
-            self.navigationController?.navigationBar.isHidden = false
-        } else {
-            self.navigationController?.navigationBar.isHidden = true
-        }
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return addressListData.count
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: AddressItemCollectionViewCell.cellID, for: indexPath) as! AddressItemCollectionViewCell
-        cell.address = addressListData[indexPath.row]
-        return cell
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: collectionView.frame.width*0.48, height: collectionView.frame.width*0.48)
-    }
-    
-    func setupLayout() {
         NSLayoutConstraint.activate([
             topView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             topView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8),
@@ -202,8 +226,26 @@ class CheckoutViewController: UIViewController, UICollectionViewDelegate, UIColl
             addressList.topAnchor.constraint(equalTo: addressDetails.bottomAnchor),
             addressList.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8),
             addressList.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            addressList.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+            addressList.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            continueButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            continueButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
         ])
+    }
+    
+    @objc
+    func onContinue() {
+        pvc.modalPresentationStyle = .fullScreen
+        pvc.modalTransitionStyle = .coverVertical
+        self.present(pvc, animated: true)
+    }
+    
+    @objc
+    func onGiftwrapToggle(sender: UISwitch) {
+        if sender.isOn {
+            giftWrapText.isHidden = false
+        } else {
+            giftWrapText.isHidden = true
+        }
     }
 
 }

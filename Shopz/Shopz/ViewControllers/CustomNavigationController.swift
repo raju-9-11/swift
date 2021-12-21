@@ -48,6 +48,10 @@ class CustomNavigationController: UINavigationController, UITextFieldDelegate {
         searchBarView.addSubview(searchBar)
         searchBarView.addSubview(leftButton)
         self.navigationBar.addSubview(searchBarView)
+        self.navigationBar.setBackgroundImage(UIImage(), for: .default)
+        self.navigationBar.shadowImage = UIImage()
+        self.navigationBar.isTranslucent = true
+        self.view.backgroundColor = .clear
         
         NSLayoutConstraint.activate([
             searchBarView.widthAnchor.constraint(equalTo: navigationBar.widthAnchor, multiplier: 0.9),

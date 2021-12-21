@@ -7,7 +7,7 @@
 
 import UIKit
 
-class LoginViewController: UIViewController {
+class LoginViewController: CustomViewController {
     
     // MARK: - UI Elements
     
@@ -113,25 +113,6 @@ class LoginViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        view.backgroundColor = .systemGray6
-        
-        topView.addSubview(errorLabel)
-        view.addSubview(topView)
-        loginButton.addTarget(self, action: #selector(onLogin), for: .touchUpInside)
-        signupButton.addTarget(self.presentingViewController, action: #selector(onSignup), for: .touchUpInside)
-        
-        
-        signUpView.addSubview(signupLabel)
-        signUpView.addSubview(signupButton)
-        
-        containerView.addSubview(signInLabel)
-        containerView.addSubview(emailField)
-        containerView.addSubview(passwordField)
-        containerView.addSubview(loginButton)
-        containerView.addSubview(signUpView)
-        
-        view.addSubview(containerView)
         
         self.setupLayout()
     }
@@ -156,7 +137,26 @@ class LoginViewController: UIViewController {
         present(vc, animated: true)
     }
     
-    func setupLayout() {
+    override func setupLayout() {
+        
+        view.backgroundColor = .systemGray6
+        
+        topView.addSubview(errorLabel)
+        view.addSubview(topView)
+        loginButton.addTarget(self, action: #selector(onLogin), for: .touchUpInside)
+        signupButton.addTarget(self.presentingViewController, action: #selector(onSignup), for: .touchUpInside)
+        
+        
+        signUpView.addSubview(signupLabel)
+        signUpView.addSubview(signupButton)
+        
+        containerView.addSubview(signInLabel)
+        containerView.addSubview(emailField)
+        containerView.addSubview(passwordField)
+        containerView.addSubview(loginButton)
+        containerView.addSubview(signUpView)
+        
+        view.addSubview(containerView)
         NSLayoutConstraint.activate([
             errorLabel.centerXAnchor.constraint(equalTo: topView.centerXAnchor),
             errorLabel.centerYAnchor.constraint(equalTo: topView.centerYAnchor),

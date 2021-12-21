@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ProductViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, ImagesViewDelegate {
+class ProductViewController: CustomViewController, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, ImagesViewDelegate {
     
     let collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -37,12 +37,7 @@ class ProductViewController: UIViewController, UICollectionViewDelegate, UIColle
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
         
-        collectionView.dataSource = self
-        collectionView.delegate = self
-        
-        view.addSubview(collectionView)
         self.setupLayout()
     }
     
@@ -99,7 +94,13 @@ class ProductViewController: UIViewController, UICollectionViewDelegate, UIColle
         sender.view?.removeFromSuperview()
     }
     
-    func setupLayout() {
+    override func setupLayout() {
+        view.backgroundColor = .white
+        
+        collectionView.dataSource = self
+        collectionView.delegate = self
+        
+        view.addSubview(collectionView)
         NSLayoutConstraint.activate([
             collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             collectionView.widthAnchor.constraint(equalTo: view.widthAnchor),
@@ -135,6 +136,24 @@ class DescriptionElement: ProductDetailElement {
         self.cost = cost
         self.rating = rating
         self.seller = seller
+    }
+}
+
+class ReviewElement: ProductDetailElement {
+    var reviews: [Review] = []
+    
+    init(reviews: [Review]) {
+        self.reviews = reviews
+    }
+}
+
+class Review {
+    var review: String
+    var owner: String
+    var id = UUID()
+    init(review: String, owner: String ) {
+        self.review = review
+        self.owner = owner
     }
 }
 

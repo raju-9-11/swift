@@ -20,7 +20,6 @@ class MainController: UITabBarController, UITabBarControllerDelegate, ModalViewD
         self.delegate = self
         
         self.tabBar.backgroundColor = .white
-        
     }
     
     func sendState(vc: UIViewController, _ state: Auth) {
@@ -29,28 +28,38 @@ class MainController: UITabBarController, UITabBarControllerDelegate, ModalViewD
             lvc.willMove(toParent: nil)
             lvc.view.removeFromSuperview()
             lvc.removeFromParent()
-            self.navigationController?.navigationBar.isHidden = false
+            self.navigationController?.isNavigationBarHidden = false
         }
     }
     
     func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
-        if viewController.tabBarItem.tag > 0 && viewController.tabBarItem.tag < 3 {
+        if let vc = viewController as? CustomViewController, vc.requiresAuth {
             if let auth = auth, !auth.authState {
                 lvc.modalPresentationStyle = .fullScreen
                 lvc.modalTransitionStyle = .coverVertical
                 lvc.delegate = self
                 viewController.addChild(lvc)
+                self.navigationController?.isNavigationBarHidden = true
                 viewController.view.addSubview(lvc.view)
-                self.navigationController?.navigationBar.isHidden = true
                 lvc.displayFullScreen(on: viewController.view)
+                return true
             }
         } else {
-            self.navigationController?.navigationBar.isHidden = false
+            self.navigationController?.isNavigationBarHidden = false
         }
+        if let viewController = viewController as? CustomViewController {
+            viewController.removeViews()
+            viewController.setupLayout()
+        }
+        
         if viewController.tabBarItem.tag == 3 {
             (self.navigationController as? CustomNavigationController)?.searchBar.becomeFirstResponder()
         }
         return true
+    }
+    
+    func loadHome() {
+        print("Loading home...")
     }
     
     

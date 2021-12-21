@@ -7,7 +7,7 @@
 
 import UIKit
 
-class SignUpViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, TextFormElementDelegate, SubmitButtonDelegate {
+class SignUpViewController: CustomViewController, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, TextFormElementDelegate, SubmitButtonDelegate {
     
     // MARK: - UI Elements
     
@@ -84,21 +84,6 @@ class SignUpViewController: UIViewController, UICollectionViewDelegate, UICollec
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemGray6
-        
-        collectionView.delegate = self
-        collectionView.dataSource = self
-
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardNotification(notification:)),name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHideNotification(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
-        
-        view.addSubview(containerView)
-        containerView.addSubview(signUpLabel)
-        containerView.addSubview(collectionView)
-        signInButton.addTarget(self, action: #selector(onSignin), for: .touchUpInside)
-        signInView.addSubview(signInLabel)
-        signInView.addSubview(signInButton)
-        containerView.addSubview(signInView)
         self.setupLayout()
     }
     
@@ -195,7 +180,22 @@ class SignUpViewController: UIViewController, UICollectionViewDelegate, UICollec
         self.collectionViewBottomConstraint?.constant = 0
     }
     
-    func setupLayout() {
+    override func setupLayout() {
+        view.backgroundColor = .systemGray6
+        
+        collectionView.delegate = self
+        collectionView.dataSource = self
+
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardNotification(notification:)),name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHideNotification(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+        
+        view.addSubview(containerView)
+        containerView.addSubview(signUpLabel)
+        containerView.addSubview(collectionView)
+        signInButton.addTarget(self, action: #selector(onSignin), for: .touchUpInside)
+        signInView.addSubview(signInLabel)
+        signInView.addSubview(signInButton)
+        containerView.addSubview(signInView)
         collectionViewBottomConstraint = collectionView.bottomAnchor.constraint(equalTo: containerView.safeAreaLayoutGuide.bottomAnchor)
         collectionViewBottomConstraint?.isActive = true
         NSLayoutConstraint.activate([
