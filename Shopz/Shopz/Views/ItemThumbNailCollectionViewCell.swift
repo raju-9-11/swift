@@ -9,6 +9,8 @@ import UIKit
 
 class ItemThumbNailCollectionViewCell: UICollectionViewCell {
     
+    static let cellID = "ItemThumCell"
+    
     let imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints  = false

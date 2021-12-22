@@ -11,6 +11,8 @@ class DescriptionCollectionViewCell: UICollectionViewCell {
     
     static let cellID = "DescriptionCell"
     
+    var delegate: DescriptionCellDelegate?
+    
     var cellFrame = CGSize(width: 100, height: 100)
     
     let titleLabel: UILabel = {
@@ -32,6 +34,7 @@ class DescriptionCollectionViewCell: UICollectionViewCell {
         let label = UILabel()
         label.text = "4.4/5"
         label.textColor = .systemGray
+        label.contentMode = .left
         label.translatesAutoresizingMaskIntoConstraints = false 
         label.font = .italicSystemFont(ofSize: 10)
         return label
@@ -54,7 +57,7 @@ class DescriptionCollectionViewCell: UICollectionViewCell {
     let soldByLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Sold by"
+        label.text = "SOLD BY "
         return label
     }()
     
@@ -70,7 +73,18 @@ class DescriptionCollectionViewCell: UICollectionViewCell {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Add to Cart", for: .normal)
-        button.setTitleColor(.blue, for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        if #available(iOS 15, *) {
+            var config = UIButton.Configuration.filled()
+            config.contentInsets = NSDirectionalEdgeInsets(top: 5, leading: 10, bottom: 5, trailing: 10)
+            config.baseBackgroundColor = UIColor(red: 0.373, green: 0.353, blue: 0.969, alpha: 1)
+            config.cornerStyle = .medium
+            button.configuration = config
+        } else {
+            button.backgroundColor = UIColor(red: 0.373, green: 0.353, blue: 0.969, alpha: 1)
+            button.layer.cornerRadius = 6
+            button.contentEdgeInsets = UIEdgeInsets(top: 5, left: 10, bottom: 5, right: 10)
+        }
         return button
     }()
     
@@ -78,8 +92,48 @@ class DescriptionCollectionViewCell: UICollectionViewCell {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Buy Now", for: .normal)
-        button.setTitleColor(.blue, for: .normal)
+        button.setTitleColor(UIColor(red: 0.91, green: 0.051, blue: 0.322, alpha: 1), for: .normal)
+        if #available(iOS 15, *) {
+            var config = UIButton.Configuration.filled()
+            config.contentInsets = NSDirectionalEdgeInsets(top: 5, leading: 10, bottom: 5, trailing: 10)
+            config.baseBackgroundColor = UIColor(red: 0.996, green: 0.924, blue: 0.947, alpha: 1)
+            config.cornerStyle = .medium
+            button.configuration = config
+        } else {
+            button.backgroundColor = UIColor(red: 0.996, green: 0.924, blue: 0.947, alpha: 1)
+            button.layer.cornerRadius = 6
+            button.contentEdgeInsets = UIEdgeInsets(top: 5, left: 10, bottom: 5, right: 10)
+        }
         return button
+    }()
+    
+    let costRatings: UIStackView = {
+        let view = UIStackView()
+        view.distribution = .equalSpacing
+        view.axis = .horizontal
+        view.contentMode = .center
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
+    let buttonsView: UIStackView = {
+        let view = UIStackView()
+        view.distribution = .fillProportionally
+        view.spacing = 5
+        view.axis = .horizontal
+        view.contentMode = .center
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
+    let sellerView: UIStackView = {
+        let view = UIStackView()
+        view.distribution = .fillProportionally
+        view.spacing = 0
+        view.axis = .horizontal
+        view.contentMode = .center
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
     }()
     
     var data: DescriptionElement = DescriptionElement(description: "", title: "", cost: 0, rating: 0, seller: SellerData(name: "", imageMedia: "")) {
@@ -94,34 +148,42 @@ class DescriptionCollectionViewCell: UICollectionViewCell {
     }
     
     func setupLayout() {
-        contentView.addSubview(costlabel)
-        contentView.addSubview(ratingsLabel)
-        contentView.addSubview(addToCart)
-        contentView.addSubview(buyNow)
-        contentView.addSubview(textView)
-        contentView.addSubview(soldByLabel)
-        contentView.addSubview(sellerButton)
+        sellerButton.addTarget(self, action: #selector(onSellerClick), for: .touchUpInside)
+        costRatings.addArrangedSubview(costlabel)
+        costRatings.addArrangedSubview(ratingsLabel)
+        buttonsView.addArrangedSubview(addToCart)
+        buttonsView.addArrangedSubview(buyNow)
+        sellerView.addArrangedSubview(soldByLabel)
+        sellerView.addArrangedSubview(sellerButton)
         contentView.addSubview(titleLabel)
+        contentView.addSubview(costRatings)
+        contentView.addSubview(sellerView)
+        contentView.addSubview(buttonsView)
+        contentView.addSubview(textView)
         
         NSLayoutConstraint.activate([
             titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor),
             titleLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            costlabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor),
-            costlabel.leftAnchor.constraint(equalTo: contentView.leftAnchor),
-            ratingsLabel.rightAnchor.constraint(equalTo: contentView.rightAnchor),
-            ratingsLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor),
-            addToCart.topAnchor.constraint(equalTo: ratingsLabel.bottomAnchor),
-            addToCart.rightAnchor.constraint(equalTo: contentView.centerXAnchor),
-            buyNow.topAnchor.constraint(equalTo: ratingsLabel.bottomAnchor),
-            buyNow.leftAnchor.constraint(equalTo: contentView.centerXAnchor),
-            soldByLabel.topAnchor.constraint(equalTo: buyNow.bottomAnchor),
-            soldByLabel.rightAnchor.constraint(equalTo: contentView.centerXAnchor),
-            sellerButton.topAnchor.constraint(equalTo: buyNow.bottomAnchor),
-            sellerButton.leftAnchor.constraint(equalTo: soldByLabel.rightAnchor),
+            costRatings.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 10),
+            costRatings.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.8),
+            costRatings.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            costRatings.heightAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 0.1),
+            buttonsView.topAnchor.constraint(equalTo: costRatings.bottomAnchor, constant: 10),
+            buttonsView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.8),
+            buttonsView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            buttonsView.heightAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 0.12),
+            sellerView.topAnchor.constraint(equalTo: buttonsView.bottomAnchor, constant: 10),
+            sellerView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            sellerView.heightAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 0.1),
             textView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.9),
             textView.topAnchor.constraint(equalTo: sellerButton.bottomAnchor),
             textView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
         ])
+    }
+    
+    @objc
+    func onSellerClick() {
+        delegate?.displaySeller(sellerData: data.seller)
     }
     
     override func prepareForReuse() {
@@ -135,4 +197,8 @@ class DescriptionCollectionViewCell: UICollectionViewCell {
         return attr
     }
    
+}
+
+protocol DescriptionCellDelegate {
+    func displaySeller(sellerData: SellerData)
 }

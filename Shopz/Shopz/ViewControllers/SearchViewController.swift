@@ -30,6 +30,7 @@ class SearchViewController: CustomViewController, UICollectionViewDelegate, UICo
         layout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
         layout.minimumInteritemSpacing = 10
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        cv.contentInset = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 0)
         cv.register(CategoryItemCollectionViewCell.self, forCellWithReuseIdentifier: CategoryItemCollectionViewCell.cellID)
         cv.translatesAutoresizingMaskIntoConstraints = false
         cv.showsHorizontalScrollIndicator = false
@@ -50,8 +51,8 @@ class SearchViewController: CustomViewController, UICollectionViewDelegate, UICo
     ]
     
     let categoryListData: [CategoryData] = [
-        CategoryData(name: "TEST"),
-        CategoryData(name: "TEST"),
+        CategoryData(name: "TESTinasda"),
+        CategoryData(name: "TESTasdasd"),
         CategoryData(name: "TEST"),
         CategoryData(name: "TEST"),
         CategoryData(name: "TEST"),
@@ -103,7 +104,6 @@ class SearchViewController: CustomViewController, UICollectionViewDelegate, UICo
         pvc.view.removeFromSuperview()
     }
     
-    
     override func setupLayout() {
         
         searchList.dataSource = self
@@ -122,11 +122,11 @@ class SearchViewController: CustomViewController, UICollectionViewDelegate, UICo
             categoryList.widthAnchor.constraint(equalTo: view.widthAnchor),
             categoryList.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             categoryList.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.06),
-            searchList.topAnchor.constraint(equalTo: categoryList.bottomAnchor),
-            searchList.widthAnchor.constraint(equalTo: view.widthAnchor),
+            searchList.topAnchor.constraint(equalTo: categoryList.bottomAnchor, constant: 10),
+            searchList.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.95),
             searchList.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            searchList.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            searchList.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
         ])
     }
-
+    
 }

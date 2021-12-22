@@ -92,7 +92,7 @@ class FormTextFieldCollectionViewCell: UICollectionViewCell, UITextFieldDelegate
         contentView.addSubview(textField)
         contentView.addSubview(errorLabel)
         NSLayoutConstraint.activate([
-            textField.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.9),
+            textField.widthAnchor.constraint(equalTo: contentView.widthAnchor),
             textField.heightAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 0.6),
             textField.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             textField.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),

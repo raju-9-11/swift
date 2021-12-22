@@ -16,7 +16,7 @@ class CategoryItemCollectionViewCell: UICollectionViewCell {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.sizeToFit()
         label.textColor = .white
-        label.font = .systemFont(ofSize: 12, weight: .semibold)
+        label.font = .systemFont(ofSize: 10, weight: .heavy)
         label.text = "PLACEHOLDER"
         return label
     }()
@@ -54,10 +54,10 @@ class CategoryItemCollectionViewCell: UICollectionViewCell {
         
         NSLayoutConstraint.activate([
             containerView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.8),
-            containerView.heightAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 0.8),
+            containerView.heightAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 0.6),
             containerView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             containerView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            nameLabel.leftAnchor.constraint(equalTo: containerView.leftAnchor, constant: 10),
+            nameLabel.rightAnchor.constraint(equalTo: closeButton.leftAnchor, constant: -5),
             nameLabel.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
             closeButton.leftAnchor.constraint(equalTo: nameLabel.rightAnchor),
             closeButton.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
@@ -65,9 +65,6 @@ class CategoryItemCollectionViewCell: UICollectionViewCell {
         ])
     }
     
-    override func layoutSubviews() {
-        super.layoutSubviews()
-    }
     
     override func prepareForReuse() {
         super.prepareForReuse()
@@ -77,7 +74,7 @@ class CategoryItemCollectionViewCell: UICollectionViewCell {
     override func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
         let attr = layoutAttributes
         attr.size = cellSize
-        attr.size.width = CGFloat(categoryData.name.count)*14 + 40
+        attr.size.width = max(CGFloat(categoryData.name.count)*10 + 40, 100)
         return attr
     }
 }

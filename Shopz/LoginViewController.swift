@@ -26,9 +26,13 @@ class LoginViewController: CustomViewController {
         return view
     }()
     
-    let signUpView: UIView = {
-        let view = UIView()
+    let signUpView: UIStackView = {
+        let view = UIStackView()
         view.translatesAutoresizingMaskIntoConstraints = false
+        view.axis = .horizontal
+        view.spacing = 0
+        view.distribution = .fillProportionally
+        view.contentMode = .scaleAspectFit
         return view
     }()
     
@@ -147,8 +151,8 @@ class LoginViewController: CustomViewController {
         signupButton.addTarget(self.presentingViewController, action: #selector(onSignup), for: .touchUpInside)
         
         
-        signUpView.addSubview(signupLabel)
-        signUpView.addSubview(signupButton)
+        signUpView.addArrangedSubview(signupLabel)
+        signUpView.addArrangedSubview(signupButton)
         
         containerView.addSubview(signInLabel)
         containerView.addSubview(emailField)
@@ -180,14 +184,8 @@ class LoginViewController: CustomViewController {
             loginButton.topAnchor.constraint(equalTo: passwordField.bottomAnchor, constant: 20),
             loginButton.widthAnchor.constraint(equalTo: containerView.widthAnchor, multiplier: 0.8),
             signUpView.topAnchor.constraint(equalTo: loginButton.bottomAnchor, constant: 20),
-            signUpView.widthAnchor.constraint(equalTo: containerView.widthAnchor, multiplier: 0.8),
             signUpView.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
             signUpView.heightAnchor.constraint(equalToConstant: 40),
-            signupLabel.leftAnchor.constraint(equalTo: signUpView.leftAnchor),
-            signupLabel.centerYAnchor.constraint(equalTo: signUpView.centerYAnchor),
-            signupButton.leftAnchor.constraint(equalTo: signupLabel.rightAnchor),
-            signupButton.centerYAnchor.constraint(equalTo: signUpView.centerYAnchor),
-            signupButton.rightAnchor.constraint(equalTo: signUpView.rightAnchor),
         ])
     }
 }

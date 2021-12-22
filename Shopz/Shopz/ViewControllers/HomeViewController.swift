@@ -19,8 +19,8 @@ class HomeViewController: CustomViewController, UICollectionViewDataSource, UICo
     // MARK: - UI Elements
     let popularItemsList: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
-        layout.minimumLineSpacing = 5
-        layout.minimumInteritemSpacing = 5
+        layout.minimumLineSpacing = 10
+        layout.minimumInteritemSpacing = 10
         layout.scrollDirection = .horizontal
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
         cv.bounces = true
@@ -31,7 +31,18 @@ class HomeViewController: CustomViewController, UICollectionViewDataSource, UICo
         return cv
     }()
     
-    let popCellID = "PopCellID"
+    lazy var itemSize: CGSize = {
+        let frame = CGSize(width: view.frame.width * 0.8, height: view.frame.width*0.8)
+        
+        var side: CGFloat = 100
+        var excessWidth: CGFloat = frame.width.truncatingRemainder(dividingBy: side)
+        while(excessWidth > 10) {
+            side += 2
+            excessWidth = frame.width.truncatingRemainder(dividingBy: side)
+        }
+        print(excessWidth)
+        return CGSize(width: side, height: side)
+    }()
     
     let popularItemsLabel: UILabel = {
         let label = UILabel()
@@ -50,7 +61,7 @@ class HomeViewController: CustomViewController, UICollectionViewDataSource, UICo
     
     let categoryList: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
-        layout.minimumInteritemSpacing = 5
+        layout.minimumInteritemSpacing = 0
         layout.minimumLineSpacing = 10
         layout.sectionInset = UIEdgeInsets(top: 10, left: 5, bottom: 10, right: 5)
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
@@ -95,19 +106,14 @@ class HomeViewController: CustomViewController, UICollectionViewDataSource, UICo
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        if collectionView == categoryList {
-            return CGSize(width: collectionView.frame.width*0.3, height: collectionView.frame.width*0.3)
-        }
-        return CGSize(width: collectionView.frame.height*0.95, height: collectionView.frame.height*0.95)
+        return itemSize
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: popCellID, for: indexPath) as! ItemThumbNailCollectionViewCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ItemThumbNailCollectionViewCell.cellID, for: indexPath) as! ItemThumbNailCollectionViewCell
         cell.data = collectionView == popularItemsList ? popularItems[indexPath.row] : categories[indexPath.row]
         return cell
     }
-    
-    
     
     // MARK: - Layout and other functions
     override func setupLayout() {
@@ -116,12 +122,11 @@ class HomeViewController: CustomViewController, UICollectionViewDataSource, UICo
         
         popularItemsList.delegate = self
         popularItemsList.dataSource = self
-        popularItemsList.register(ItemThumbNailCollectionViewCell.self, forCellWithReuseIdentifier: popCellID)
+        popularItemsList.register(ItemThumbNailCollectionViewCell.self, forCellWithReuseIdentifier: ItemThumbNailCollectionViewCell.cellID)
         
         categoryList.delegate = self
         categoryList.dataSource = self
-        categoryList.register(ItemThumbNailCollectionViewCell.self, forCellWithReuseIdentifier: popCellID)
-        
+        categoryList.register(ItemThumbNailCollectionViewCell.self, forCellWithReuseIdentifier: ItemThumbNailCollectionViewCell.cellID)
         
         popularItemsView.addSubview(popularItemsList)
         popularItemsView.addSubview(popularItemsLabel)
@@ -129,6 +134,7 @@ class HomeViewController: CustomViewController, UICollectionViewDataSource, UICo
         categoryView.addSubview(categoryLabel)
         categoryView.addSubview(categoryList)
         view.addSubview(categoryView)
+        
         NSLayoutConstraint.activate([
             popularItemsView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
             popularItemsView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
@@ -139,15 +145,15 @@ class HomeViewController: CustomViewController, UICollectionViewDataSource, UICo
             popularItemsList.topAnchor.constraint(equalTo: popularItemsLabel.bottomAnchor, constant: 5),
             popularItemsList.centerXAnchor.constraint(equalTo: popularItemsView.centerXAnchor),
             popularItemsList.heightAnchor.constraint(equalTo: popularItemsView.heightAnchor, multiplier: 0.8),
-            popularItemsList.widthAnchor.constraint(equalTo: popularItemsView.widthAnchor),
+            popularItemsList.widthAnchor.constraint(equalTo: popularItemsView.widthAnchor, multiplier: 0.95),
             categoryView.topAnchor.constraint(equalTo: popularItemsView.bottomAnchor, constant: 10),
             categoryView.widthAnchor.constraint(equalTo: view.widthAnchor),
             categoryView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            categoryView.heightAnchor.constraint(equalTo: view.heightAnchor),
+            categoryView.heightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.heightAnchor, constant: -10),
             categoryLabel.topAnchor.constraint(equalTo: categoryView.safeAreaLayoutGuide.topAnchor, constant: 10),
             categoryLabel.centerXAnchor.constraint(equalTo: categoryView.centerXAnchor),
             categoryList.topAnchor.constraint(equalTo: categoryLabel.bottomAnchor, constant: 5),
-            categoryList.widthAnchor.constraint(equalTo: categoryView.widthAnchor),
+            categoryList.widthAnchor.constraint(equalTo: categoryView.widthAnchor, multiplier: 0.9),
             categoryList.centerXAnchor.constraint(equalTo: categoryView.centerXAnchor),
             categoryList.bottomAnchor.constraint(equalTo: categoryView.bottomAnchor),
         ])
@@ -161,7 +167,7 @@ class CustomViewController: UIViewController, CustomViewControllerProtocol {
     var requiresAuth: Bool = false
     
     func setupLayout() {
-        // <#PLACEHOLDER#>
+        //PLACEHOLDER
     }
     
     func removeViews() {

@@ -132,6 +132,8 @@ class OrderHistoryViewController: CustomViewController, UICollectionViewDataSour
     }
     
     func addReview(item: ItemData) {
+        prodVC.removeViews()
+        prodVC.setupLayout()
         prodVC.productData = item
         self.addChild(prodVC)
         self.willMove(toParent: self)

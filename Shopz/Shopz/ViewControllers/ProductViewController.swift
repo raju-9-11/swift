@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ProductViewController: CustomViewController, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, ImagesViewDelegate {
+class ProductViewController: CustomViewController, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, ImagesViewDelegate, DescriptionCellDelegate {
     
     let collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -20,19 +20,30 @@ class ProductViewController: CustomViewController, UICollectionViewDelegate, UIC
         cv.backgroundColor = .clear
         cv.register(ProductDetailsTopCollectionViewCell.self, forCellWithReuseIdentifier: ProductDetailsTopCollectionViewCell.cellID)
         cv.register(DescriptionCollectionViewCell.self, forCellWithReuseIdentifier: DescriptionCollectionViewCell.cellID)
+        cv.register(ReviewsCollectionViewCell.self, forCellWithReuseIdentifier: ReviewsCollectionViewCell.cellID)
         return cv
     }()
     
+    let sellerVC = SellerHomeViewController()
+    
     var productData = ItemData(name: "", media: "", cost: 0) {
         willSet {
-            cells = [getImageData(with: newValue), getDescriptionData(with: newValue)]
+            cells = [getImageData(with: newValue), getDescriptionData(with: newValue), getReviews(with: newValue)]
             collectionView.reloadData()
         }
     }
     
     var cells: [ProductDetailElement] = [
         ImagesViewElement(images: Array(repeating: UIImage(systemName: "photo.fill"), count: 5)),
-        DescriptionElement(description: "The Grip-Rite #8 x 3 in. 16D Steel Bright Finish Duplex Nails (30 lb.-Pack) are perfect for framing, scaffolding and building temporary structures. These diamond point nails feature a smooth shank and double head design for easy nail removal.", title: "Steel Duplex", cost: 58, rating: 4.4, seller: SellerData(name: "Pacman", imageMedia: ""))
+        DescriptionElement(description: "The Grip-Rite #8 x 3 in. 16D Steel Bright Finish Duplex Nails (30 lb.-Pack) are perfect for framing, scaffolding and building temporary structures. These diamond point nails feature a smooth shank and double head design for easy nail removal.", title: "Steel Duplex", cost: 58, rating: 4.4, seller: SellerData(name: "Pacman", imageMedia: "")),
+        ReviewElement(reviews: [
+            Review(review: "Bad", owner: "moues"),
+            Review(review: "Really bad", owner: "tom"),
+            Review(review: "Worse", owner: "Pacman"),
+            Review(review: "bad", owner: "Test"),
+            Review(review: "Good", owner: "TEsting"),
+            Review(review: "Bad", owner: "tesing"),
+        ])
     ]
     
     override func viewDidLoad() {
@@ -50,12 +61,20 @@ class ProductViewController: CustomViewController, UICollectionViewDelegate, UIC
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProductDetailsTopCollectionViewCell.cellID, for: indexPath) as! ProductDetailsTopCollectionViewCell
             cell.imageData = item
             cell.delegate = self
-            cell.cellFrame = CGSize(width: collectionView.frame.width, height: collectionView.frame.height*0.4)
+            cell.cellFrame = CGSize(width: collectionView.frame.width, height: collectionView.frame.height*0.35)
             return cell
         }
         if let item = cells[indexPath.row] as? DescriptionElement {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: DescriptionCollectionViewCell.cellID, for: indexPath) as! DescriptionCollectionViewCell
             cell.data = item
+            cell.delegate = self
+            cell.cellFrame = CGSize(width: collectionView.frame.width, height: collectionView.frame.height*0.45)
+            return cell
+        }
+        
+        if let item = cells[indexPath.row] as? ReviewElement {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ReviewsCollectionViewCell.cellID, for: indexPath) as! ReviewsCollectionViewCell
+            cell.reviewElementData = item
             cell.cellFrame = CGSize(width: collectionView.frame.width, height: collectionView.frame.height)
             return cell
         }
@@ -71,6 +90,26 @@ class ProductViewController: CustomViewController, UICollectionViewDelegate, UIC
     
     func getDescriptionData(with itemData: ItemData) -> DescriptionElement {
         return DescriptionElement(description: "The Grip-Rite #8 x 3 in. 16D Steel Bright Finish Duplex Nails (30 lb.-Pack) are perfect for framing, scaffolding and building temporary structures. These diamond point nails feature a smooth shank and double head design for easy nail removal.", title: itemData.name, cost: 58, rating: 4.4, seller: SellerData(name: "Pacman", imageMedia: ""))
+    }
+    
+    func displaySeller(sellerData: SellerData) {
+        sellerVC.willMove(toParent: self)
+        sellerVC.sellerData = sellerData
+        self.addChild(sellerVC)
+        self.view.addSubview(sellerVC.view)
+        sellerVC.displayFullScreen(on: self.view)
+    }
+    
+    
+    func getReviews(with itemData: ItemData) -> ReviewElement {
+        return ReviewElement(reviews: [
+            Review(review: "Bad", owner: "moues"),
+            Review(review: "Really bad", owner: "tom"),
+            Review(review: "Worse", owner: "Pacman"),
+            Review(review: "bad", owner: "Test"),
+            Review(review: "Good", owner: "TEsting"),
+            Review(review: "Bad", owner: "tesing"),
+        ])
     }
     
     func sendImage(_ image: UIImage?) {
@@ -105,7 +144,7 @@ class ProductViewController: CustomViewController, UICollectionViewDelegate, UIC
             collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             collectionView.widthAnchor.constraint(equalTo: view.widthAnchor),
             collectionView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            collectionView.heightAnchor.constraint(equalTo: view.heightAnchor),
+            collectionView.heightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.heightAnchor),
         ])
     }
 

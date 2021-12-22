@@ -48,6 +48,7 @@ class CartViewController: CustomViewController, UICollectionViewDataSource, UICo
         layout.minimumInteritemSpacing = 2
         layout.scrollDirection = .vertical
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        cv.contentInset = UIEdgeInsets(top: 5, left: 0, bottom: 5, right: 0)
         cv.register(CartItemCollectionViewCell.self, forCellWithReuseIdentifier: CartItemCollectionViewCell.cellID)
         cv.translatesAutoresizingMaskIntoConstraints = false
         cv.backgroundColor = .clear
@@ -173,13 +174,13 @@ class CartViewController: CustomViewController, UICollectionViewDataSource, UICo
             titleLabel.leftAnchor.constraint(equalTo: containerView.leftAnchor, constant: 20),
             titleLabel.topAnchor.constraint(equalTo: containerView.safeAreaLayoutGuide.topAnchor),
             collectionView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor),
-            collectionView.heightAnchor.constraint(equalTo: containerView.safeAreaLayoutGuide.heightAnchor, multiplier: 0.85),
+            collectionView.bottomAnchor.constraint(equalTo: buttonsView.topAnchor, constant: -10),
             collectionView.widthAnchor.constraint(equalTo: containerView.widthAnchor, multiplier: 0.9),
             collectionView.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
-            buttonsView.topAnchor.constraint(equalTo: collectionView.bottomAnchor, constant: 10),
-            buttonsView.bottomAnchor.constraint(equalTo: containerView.safeAreaLayoutGuide.bottomAnchor),
-            buttonsView.widthAnchor.constraint(equalTo: containerView.widthAnchor),
+            buttonsView.heightAnchor.constraint(equalTo: containerView.safeAreaLayoutGuide.heightAnchor, multiplier: 0.05),
+            buttonsView.widthAnchor.constraint(equalTo: containerView.widthAnchor, multiplier: 0.95),
             buttonsView.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
+            buttonsView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -5),
         ])
     }
     
@@ -224,4 +225,5 @@ struct ItemData {
     var name: String
     var media: String
     var cost: Double
+    var rating: Double = 0
 }

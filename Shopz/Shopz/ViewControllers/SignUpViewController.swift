@@ -7,7 +7,7 @@
 
 import UIKit
 
-class SignUpViewController: CustomViewController, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, TextFormElementDelegate, SubmitButtonDelegate {
+class SignUpViewController: CustomViewController, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, TextFormElementDelegate, SubmitButtonDelegate, SignInFormCellDelegate {
     
     // MARK: - UI Elements
     
@@ -23,36 +23,10 @@ class SignUpViewController: CustomViewController, UICollectionViewDelegate, UICo
         let label = UILabel()
         label.text = "Sign Up"
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.sizeToFit()
         label.font = .systemFont(ofSize: 36, weight: .heavy)
         return label
     }()
     
-    let signInView: UIView = {
-        let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
-    
-    let signInLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Already have an account? "
-        label.sizeToFit()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.contentMode = .center
-        label.adjustsFontSizeToFitWidth = true
-        label.font = .systemFont(ofSize: 15, weight: .medium)
-        return label
-    }()
-    
-    let signInButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("Sign In", for: .normal)
-        button.titleLabel?.font = .systemFont(ofSize: 16, weight: .heavy)
-        button.setTitleColor(UIColor(red: 0.692, green: 0.582, blue: 0.582, alpha: 1), for: .normal)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        return button
-    }()
     
     var collectionViewBottomConstraint: NSLayoutConstraint?
     
@@ -67,18 +41,22 @@ class SignUpViewController: CustomViewController, UICollectionViewDelegate, UICo
         cv.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "Cell")
         cv.register(FormButtonCollectionViewCell.self, forCellWithReuseIdentifier: FormButtonCollectionViewCell.buttonCellID)
         cv.register(FormTextFieldCollectionViewCell.self, forCellWithReuseIdentifier: FormTextFieldCollectionViewCell.textfieldCellID)
+        cv.register(FormSignInCollectionViewCell.self, forCellWithReuseIdentifier: FormSignInCollectionViewCell.buttonCellID)
         return cv
     }()
     
     
     var elements:[FormElement] = [
-        TextFieldElement(text: "", placeholder: "Enter Email", error: "Email error", index: 0, type: .email, tag: "email"),
-        TextFieldElement(text: "", placeholder: "Enter Full name", error: "Name Error", index: 1, type: .plain, tag: "name") ,
-        TextFieldElement(text: "", placeholder: "Enter Password", error: "Password error", index: 2, type: .password, tag: "password"),
-        TextFieldElement(text: "", placeholder: "Confirm Password", error: "Password error", index: 3, type: .password, tag: "password"),
-        TextFieldElement(text: "", placeholder: "Enter Country", error: "Country error", index: 4, type: .plain, tag: "country"),
-        TextFieldElement(text: "", placeholder: "Enter City", error: "City error", index: 5, type: .plain, tag: "city"),
-        ButtonElement(title: "Sign up", index: 4)
+        TextFieldElement(text: "", placeholder: "Enter first name", error: "Name Error", index: 0, type: .plain, tag: "name") ,
+        TextFieldElement(text: "", placeholder: "Enter last name", error: "Name Error", index: 1, type: .plain, tag: "name") ,
+        TextFieldElement(text: "", placeholder: "Enter Email", error: "Email error", index: 2, type: .email, tag: "email"),
+        TextFieldElement(text: "", placeholder: "Enter Password", error: "Password error", index: 3, type: .password, tag: "password"),
+        TextFieldElement(text: "", placeholder: "Confirm Password", error: "Password error", index: 4, type: .password, tag: "password"),
+        TextFieldElement(text: "", placeholder: "Enter Country", error: "Country error", index: 5, type: .plain, tag: "country"),
+        TextFieldElement(text: "", placeholder: "Enter City", error: "City error", index: 6, type: .plain, tag: "city"),
+        ButtonElement(title: "Sign up", index: 4),
+        PlainElement()
+        
     ]
     
 
@@ -97,28 +75,38 @@ class SignUpViewController: CustomViewController, UICollectionViewDelegate, UICo
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        if let buttonElement = elements[indexPath.row] as? ButtonElement {
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier:FormButtonCollectionViewCell.buttonCellID, for: indexPath) as! FormButtonCollectionViewCell
-            cell.buttonComponentProp = buttonElement
-            cell.delegate = self
-            return cell
-        }
-        if let textFieldElement = elements[indexPath.row] as? TextFieldElement {
+        switch(elements[indexPath.row]) {
+        case let item as TextFieldElement:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FormTextFieldCollectionViewCell.textfieldCellID, for: indexPath) as! FormTextFieldCollectionViewCell
-            cell.textFieldProp = textFieldElement
+            cell.textFieldProp = item
             cell.delegate = self
             return cell
+        case let item as ButtonElement:
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier:FormButtonCollectionViewCell.buttonCellID, for: indexPath) as! FormButtonCollectionViewCell
+            cell.buttonComponentProp = item
+            cell.delegate = self
+            return cell
+        case _ as PlainElement:
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FormSignInCollectionViewCell.buttonCellID, for: indexPath) as! FormSignInCollectionViewCell
+            cell.delegate = self
+            return cell
+        default:
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath)
+            return cell
         }
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath)
-        return cell
+        
     }
 
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        if let _ = elements[indexPath.row] as? ButtonElement {
-            return CGSize(width: collectionView.frame.size.width, height: 50)
+        switch(elements[indexPath.row]) {
+        case let item as TextFieldElement:
+            return CGSize(width: item.index < 2 ? collectionView.frame.width*0.45 : collectionView.frame.width, height: 70)
+        case _ as ButtonElement:
+            return CGSize(width: collectionView.frame.width, height: 50)
+        default:
+            return CGSize(width: collectionView.frame.width, height: 70)
         }
-        return CGSize(width: collectionView.frame.size.width, height: 70)
     }
     
     func notifyChange(textFieldProp: TextFieldElement) {
@@ -163,8 +151,7 @@ class SignUpViewController: CustomViewController, UICollectionViewDelegate, UICo
         self.dismiss(animated: true)
     }
     
-    @objc
-    func onSignin() {
+    func sendSignIn() {
         self.dismiss(animated: true, completion: nil)
     }
     
@@ -192,10 +179,7 @@ class SignUpViewController: CustomViewController, UICollectionViewDelegate, UICo
         view.addSubview(containerView)
         containerView.addSubview(signUpLabel)
         containerView.addSubview(collectionView)
-        signInButton.addTarget(self, action: #selector(onSignin), for: .touchUpInside)
-        signInView.addSubview(signInLabel)
-        signInView.addSubview(signInButton)
-        containerView.addSubview(signInView)
+        
         collectionViewBottomConstraint = collectionView.bottomAnchor.constraint(equalTo: containerView.safeAreaLayoutGuide.bottomAnchor)
         collectionViewBottomConstraint?.isActive = true
         NSLayoutConstraint.activate([
@@ -208,15 +192,6 @@ class SignUpViewController: CustomViewController, UICollectionViewDelegate, UICo
             collectionView.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
             collectionView.topAnchor.constraint(equalTo: signUpLabel.bottomAnchor, constant: 20),
             collectionView.widthAnchor.constraint(equalTo: containerView.widthAnchor, multiplier: 0.8),
-            signInView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -10),
-            signInView.widthAnchor.constraint(equalTo: containerView.widthAnchor, multiplier: 0.8),
-            signInView.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
-            signInView.heightAnchor.constraint(equalToConstant: 40),
-            signInLabel.leftAnchor.constraint(equalTo: signInView.leftAnchor),
-            signInLabel.centerYAnchor.constraint(equalTo: signInView.centerYAnchor),
-            signInButton.leftAnchor.constraint(equalTo: signInLabel.rightAnchor),
-            signInButton.centerYAnchor.constraint(equalTo: signInView.centerYAnchor),
-            signInButton.rightAnchor.constraint(equalTo: signInView.rightAnchor),
         ])
     }
 
@@ -278,6 +253,10 @@ class TextFieldElement: FormElement {
         self.type = type
         self.tag = tag
     }
+}
+
+class PlainElement: FormElement{
+    
 }
 
 enum FieldType {

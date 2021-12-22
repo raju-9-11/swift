@@ -9,6 +9,11 @@ import UIKit
 
 class SellerHomeViewController: CustomViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     
+    var sellerData: SellerData = SellerData(name: "Pacman", imageMedia: "") {
+        willSet {
+            self.loadData()
+        }
+    }
     
     // MARK: Data
     lazy var popularItems: [ ItemThumbNailModel ]  = {
@@ -150,6 +155,10 @@ class SellerHomeViewController: CustomViewController, UICollectionViewDataSource
             categoryList.centerXAnchor.constraint(equalTo: categoryView.centerXAnchor),
             categoryList.bottomAnchor.constraint(equalTo: categoryView.bottomAnchor),
         ])
+    }
+    
+    func loadData() {
+        // Data Loading here
     }
 
 

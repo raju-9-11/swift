@@ -27,9 +27,11 @@ class ProfileViewController: CustomViewController, UICollectionViewDataSource, U
         return cv
     }()
     
+    let svc = CartViewController()
+    
     var containerData: [ProfileViewElement] = [
         ProfileData(name: "Pacman", bgImageMedia: "https://docs.swift.org/swift-book/_images/memory_shopping_2x.png", profileImageMedia: "https://www.gravatar.com/avatar/acee100932e6b180a64cf7a58ccab6d6.jpg?d=https%3A%2F%2Fwolverine.raywenderlich.com%2Fv3-resources%2Fimages%2Fdefault-account-avatar_2x.png&s=480", email: "test@email.com"),
-        AboutData(about: ""),
+        AboutData(about: "My about"),
         ShoppingListData(shoppingLists: [
             ShoppingList(name: "Tech"),
             ShoppingList(name: "Clothes"),
@@ -67,10 +69,11 @@ class ProfileViewController: CustomViewController, UICollectionViewDataSource, U
     
     func listItemClicked(indexPath: IndexPath, shoppingListData: ShoppingList?) {
         if let listData = shoppingListData {
-            let svc = CartViewController()
             svc.listDetails = listData
-            svc.modalPresentationStyle = .overCurrentContext
-            self.present(svc, animated: true)
+            svc.willMove(toParent: self)
+            self.addChild(svc)
+            self.view.addSubview(svc.view)
+            svc.displayFullScreen(on: self.view)
             
         }
     }
