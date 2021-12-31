@@ -39,7 +39,7 @@ class LoginViewController: CustomViewController {
     let signupLabel: UILabel = {
         let label = UILabel()
         label.text = "Don't have an account? "
-        label.sizeToFit()
+        label.textColor = .black
         label.translatesAutoresizingMaskIntoConstraints = false
         label.contentMode = .center
         label.adjustsFontSizeToFitWidth = true
@@ -60,7 +60,7 @@ class LoginViewController: CustomViewController {
         let label = UILabel()
         label.text = "Sign In"
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.sizeToFit()
+        label.textColor = .black
         label.font = .systemFont(ofSize: 36, weight: .heavy)
         return label
     }()
@@ -77,18 +77,36 @@ class LoginViewController: CustomViewController {
     
     let emailField: UITextField = {
         let textField = UITextField()
+        textField.backgroundColor = .clear
         textField.borderStyle = .roundedRect
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.placeholder = "Enter Email"
+        textField.layer.borderColor = UIColor.gray.cgColor
+        textField.layer.borderWidth = 1
+        textField.layer.cornerRadius = 5
+        textField.tintColor = .darkGray
+        textField.textColor = .black
+        textField.attributedPlaceholder = NSAttributedString(
+            string: "Enter Email",
+            attributes: [NSAttributedString.Key.foregroundColor: UIColor.darkGray]
+        )
         return textField
     }()
     
     let passwordField: UITextField = {
         let textField = UITextField()
         textField.borderStyle = .roundedRect
+        textField.backgroundColor = .clear
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.isSecureTextEntry = true
-        textField.placeholder = "Enter Password"
+        textField.layer.borderColor = UIColor.gray.cgColor
+        textField.layer.borderWidth = 1
+        textField.layer.cornerRadius = 5
+        textField.attributedPlaceholder = NSAttributedString(
+            string: "Enter Password",
+            attributes: [NSAttributedString.Key.foregroundColor: UIColor.darkGray]
+        )
+        textField.textColor = .black
         return textField
     }()
     
@@ -141,15 +159,20 @@ class LoginViewController: CustomViewController {
         present(vc, animated: true)
     }
     
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesBegan(touches, with: event)
+        self.view.endEditing(true)
+    }
+    
     override func setupLayout() {
         
-        view.backgroundColor = .systemGray6
+        view.backgroundColor = .systemGray
         
         topView.addSubview(errorLabel)
         view.addSubview(topView)
+        
         loginButton.addTarget(self, action: #selector(onLogin), for: .touchUpInside)
         signupButton.addTarget(self.presentingViewController, action: #selector(onSignup), for: .touchUpInside)
-        
         
         signUpView.addArrangedSubview(signupLabel)
         signUpView.addArrangedSubview(signupButton)
@@ -161,6 +184,7 @@ class LoginViewController: CustomViewController {
         containerView.addSubview(signUpView)
         
         view.addSubview(containerView)
+        
         NSLayoutConstraint.activate([
             errorLabel.centerXAnchor.constraint(equalTo: topView.centerXAnchor),
             errorLabel.centerYAnchor.constraint(equalTo: topView.centerYAnchor),

@@ -17,9 +17,12 @@ class FormTextFieldCollectionViewCell: UICollectionViewCell, UITextFieldDelegate
         let textField = UITextField()
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.borderStyle = .roundedRect
+        textField.layer.borderColor = UIColor.gray.cgColor
         textField.layer.borderWidth = 1
-        textField.layer.borderColor = UIColor.systemGray.cgColor
-        textField.layer.cornerRadius = 6
+        textField.layer.cornerRadius = 5
+        textField.tintColor = .darkGray
+        textField.textColor = .black
+        textField.backgroundColor = .clear
         return textField
     }()
     
@@ -58,7 +61,12 @@ class FormTextFieldCollectionViewCell: UICollectionViewCell, UITextFieldDelegate
             }
             errorLabel.text = newValue.error
             errorState = newValue.errorState
-            textField.placeholder = newValue.placeholder
+            textField.attributedPlaceholder = NSAttributedString(
+                string: newValue.placeholder,
+                attributes: [
+                    NSAttributedString.Key.foregroundColor: UIColor.darkGray
+                ]
+            )
             self.setupLayout()
         }
     }

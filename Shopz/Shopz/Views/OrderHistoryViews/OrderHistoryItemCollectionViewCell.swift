@@ -34,6 +34,7 @@ class OrderHistoryItemCollectionViewCell: UICollectionViewCell {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "$ 20"
+        label.font = .boldSystemFont(ofSize: 20)
         label.textColor = .systemGray2
         return label
     }()
@@ -51,9 +52,11 @@ class OrderHistoryItemCollectionViewCell: UICollectionViewCell {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Add Review", for: .normal)
-        button.backgroundColor = UIColor(red: 0.933, green: 0.502, blue: 0.502, alpha: 1)
         button.tintColor = .systemRed
-        button.titleLabel?.numberOfLines = 2
+        button.contentEdgeInsets = UIEdgeInsets(top: 5, left: 10, bottom: 5, right: 10)
+        button.layer.cornerRadius = 6
+        button.titleLabel?.adjustsFontSizeToFitWidth = true
+        button.backgroundColor = UIColor(red: 0.933, green: 0.502, blue: 0.502, alpha: 1)
         return button
     }()
     
@@ -61,8 +64,10 @@ class OrderHistoryItemCollectionViewCell: UICollectionViewCell {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Return Product", for: .normal)
-        button.backgroundColor = .red
-        button.titleLabel?.numberOfLines = 2
+        button.layer.cornerRadius = 6
+        button.titleLabel?.adjustsFontSizeToFitWidth = true
+        button.contentEdgeInsets = UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5)
+        button.backgroundColor = .systemRed
         return button
     }()
     
@@ -71,7 +76,8 @@ class OrderHistoryItemCollectionViewCell: UICollectionViewCell {
         let stackView = UIStackView(arrangedSubviews: [addReview, returnProduct])
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .horizontal
-        stackView.distribution = .fillEqually
+        stackView.spacing = 3
+        stackView.distribution = .fillProportionally
         stackView.contentMode = .scaleAspectFit
         return stackView
     }()
@@ -95,12 +101,7 @@ class OrderHistoryItemCollectionViewCell: UICollectionViewCell {
             nameLabel.leftAnchor.constraint(equalTo: imageView.rightAnchor, constant: 20),
             costLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor),
             costLabel.leftAnchor.constraint(equalTo: nameLabel.leftAnchor),
-//            addReview.leftAnchor.constraint(equalTo: nameLabel.leftAnchor),
-//            addReview.topAnchor.constraint(equalTo: costLabel.bottomAnchor),
-//            returnProduct.leftAnchor.constraint(equalTo: addReview.rightAnchor),
-//            returnProduct.topAnchor.constraint(equalTo: costLabel.bottomAnchor),
-//            returnProduct.rightAnchor.constraint(equalTo: contentView.rightAnchor),
-            buttonsView.topAnchor.constraint(equalTo: costLabel.bottomAnchor),
+            buttonsView.bottomAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.bottomAnchor, constant: -5),
             buttonsView.leftAnchor.constraint(equalTo: nameLabel.leftAnchor),
             buttonsView.rightAnchor.constraint(equalTo: contentView.rightAnchor),
         ])

@@ -97,7 +97,6 @@ class ProductViewController: CustomViewController, UICollectionViewDelegate, UIC
         sellerVC.sellerData = sellerData
         self.addChild(sellerVC)
         self.view.addSubview(sellerVC.view)
-        sellerVC.displayFullScreen(on: self.view)
     }
     
     
@@ -204,16 +203,5 @@ class SellerData {
     init(name: String, imageMedia: String) {
         self.name = name
         self.imageMedia = imageMedia
-    }
-}
-
-public extension UIViewController {
-    func displayFullScreen(on view: UIView) {
-        NSLayoutConstraint.activate([
-            self.view.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            self.view.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor),
-            self.view.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
-            self.view.heightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.heightAnchor),
-        ])
     }
 }

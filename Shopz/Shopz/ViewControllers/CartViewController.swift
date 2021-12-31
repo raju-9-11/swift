@@ -119,6 +119,9 @@ class CartViewController: CustomViewController, UICollectionViewDataSource, UICo
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+        DispatchQueue.main.async {
+            self.tabBarItem.badgeValue = "\(self.listItems.count)"
+        }
         self.requiresAuth = true
     }
 
@@ -215,7 +218,6 @@ class CartViewController: CustomViewController, UICollectionViewDataSource, UICo
         cvc.willMove(toParent: self)
         self.addChild(cvc)
         self.view.addSubview(cvc.view)
-        cvc.displayFullScreen(on: self.view)
     }
     
 }

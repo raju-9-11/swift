@@ -11,8 +11,6 @@ class AddAddressCollectionViewCell: UICollectionViewCell {
     
     static let cellID = "AddAddress"
     
-    var delegate: AddAddressCellDelegate?
-    
     let addButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(systemName: "plus")?.withRenderingMode(.alwaysTemplate), for: .normal)
@@ -22,16 +20,42 @@ class AddAddressCollectionViewCell: UICollectionViewCell {
         return button
     }()
     
+    let label: UITextView = {
+        let textView = UITextView()
+        textView.isEditable = false
+        textView.isSelectable = false
+        textView.textColor = .black
+        textView.contentMode = .center
+        textView.textAlignment = .center
+        textView.backgroundColor = .clear
+        textView.translatesAutoresizingMaskIntoConstraints = false
+        textView.isUserInteractionEnabled = false
+        textView.text = "Add Address"
+        textView.isScrollEnabled = false
+        textView.font = .systemFont(ofSize: 15)
+        return textView
+    }()
+    
+    lazy var stack: UIStackView = {
+        let stack = UIStackView(arrangedSubviews: [addButton, label])
+        stack.alignment = .center
+        stack.distribution = .fillProportionally
+        stack.spacing = 2
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        stack.axis = .vertical
+        return stack
+    }()
+    
     
     func setupLayout() {
-        contentView.backgroundColor = .blue
-        contentView.addSubview(addButton)
-        addButton.addTarget(self, action: #selector(addClicked), for: .touchUpInside)
+        contentView.layer.borderWidth = 2
+        contentView.layer.borderColor = UIColor(red: 0.373, green: 0.353, blue: 0.969, alpha: 1).cgColor
+        contentView.layer.cornerRadius = 6
+        contentView.addSubview(stack)
         NSLayoutConstraint.activate([
-            addButton.heightAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 0.8),
-            addButton.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.8),
-            addButton.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            addButton.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            stack.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            stack.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            stack.widthAnchor.constraint(equalTo: contentView.widthAnchor)
         ])
     }
     
@@ -40,13 +64,4 @@ class AddAddressCollectionViewCell: UICollectionViewCell {
         self.removeViews()
     }
     
-    @objc
-    func addClicked() {
-        self.delegate?.onAddClick()
-    }
-    
-}
-
-protocol AddAddressCellDelegate {
-    func onAddClick()
 }

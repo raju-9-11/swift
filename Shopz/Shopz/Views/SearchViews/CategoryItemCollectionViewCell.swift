@@ -53,15 +53,14 @@ class CategoryItemCollectionViewCell: UICollectionViewCell {
         containerView.backgroundColor = .blue.withAlphaComponent(0.5)
         
         NSLayoutConstraint.activate([
-            containerView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.8),
+            containerView.widthAnchor.constraint(equalTo: contentView.widthAnchor),
             containerView.heightAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 0.6),
             containerView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             containerView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            nameLabel.rightAnchor.constraint(equalTo: closeButton.leftAnchor, constant: -5),
+            nameLabel.leftAnchor.constraint(equalTo: containerView.leftAnchor, constant: 10),
             nameLabel.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
-            closeButton.leftAnchor.constraint(equalTo: nameLabel.rightAnchor),
+            closeButton.rightAnchor.constraint(equalTo: containerView.rightAnchor, constant: -5),
             closeButton.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
-            closeButton.rightAnchor.constraint(equalTo: containerView.rightAnchor, constant: -10),
         ])
     }
     
@@ -74,7 +73,7 @@ class CategoryItemCollectionViewCell: UICollectionViewCell {
     override func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
         let attr = layoutAttributes
         attr.size = cellSize
-        attr.size.width = max(CGFloat(categoryData.name.count)*10 + 40, 100)
+        attr.size.width = max(CGFloat(categoryData.name.count)*10 + 10, 70)
         return attr
     }
 }

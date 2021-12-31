@@ -40,7 +40,6 @@ class HomeViewController: CustomViewController, UICollectionViewDataSource, UICo
             side += 2
             excessWidth = frame.width.truncatingRemainder(dividingBy: side)
         }
-        print(excessWidth)
         return CGSize(width: side, height: side)
     }()
     

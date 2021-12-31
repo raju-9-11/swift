@@ -55,7 +55,6 @@ class ProfileViewController: CustomViewController, UICollectionViewDataSource, U
         super.viewDidLoad()
         
         self.setupLayout()
-        
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -73,7 +72,6 @@ class ProfileViewController: CustomViewController, UICollectionViewDataSource, U
             svc.willMove(toParent: self)
             self.addChild(svc)
             self.view.addSubview(svc.view)
-            svc.displayFullScreen(on: self.view)
             
         }
     }
@@ -105,8 +103,8 @@ class ProfileViewController: CustomViewController, UICollectionViewDataSource, U
     }
     
     override func setupLayout() {
-        
-        view.backgroundColor = .systemGray6
+
+        view.backgroundColor = .systemGray
 
         containerView.delegate = self
         containerView.dataSource = self
@@ -176,5 +174,17 @@ class ShoppingList {
     
     init(name: String) {
         self.name = name
+    }
+}
+
+extension UIImage {
+    func decodedImage() -> UIImage {
+        guard let cgImage = cgImage else { return self }
+        let size = CGSize(width: cgImage.width, height: cgImage.height)
+        let colorSpace = CGColorSpaceCreateDeviceRGB()
+        let context = CGContext(data: nil, width: Int(size.width), height: Int(size.height), bitsPerComponent: 8, bytesPerRow: cgImage.bytesPerRow, space: colorSpace, bitmapInfo: CGImageAlphaInfo.noneSkipFirst.rawValue)
+        context?.draw(cgImage, in: CGRect(origin: .zero, size: size))
+        guard let decodedImage = context?.makeImage() else { return self }
+        return UIImage(cgImage: decodedImage)
     }
 }

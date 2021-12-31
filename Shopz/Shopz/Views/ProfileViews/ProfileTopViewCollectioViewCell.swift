@@ -35,7 +35,7 @@ class ProfileTopViewCollectioViewCell: UICollectionViewCell {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.image = UIImage(systemName: "photo.fill")
-        imageView.backgroundColor = .black.withAlphaComponent(0.5)
+        imageView.layer.backgroundColor = UIColor.black.withAlphaComponent(0.5).cgColor
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
         return imageView
@@ -88,9 +88,9 @@ class ProfileTopViewCollectioViewCell: UICollectionViewCell {
         NSLayoutConstraint.activate([
             profileTopView.heightAnchor.constraint(equalTo: contentView.heightAnchor),
             profileTopView.widthAnchor.constraint(equalTo: contentView.widthAnchor),
-            profileTopView.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor),
+            profileTopView.topAnchor.constraint(equalTo: contentView.topAnchor),
             profileTopView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            bgImage.topAnchor.constraint(equalTo: profileTopView.safeAreaLayoutGuide.topAnchor),
+            bgImage.topAnchor.constraint(equalTo: profileTopView.topAnchor, constant: -2),
             bgImage.widthAnchor.constraint(equalTo: profileTopView.widthAnchor),
             bgImage.heightAnchor.constraint(equalTo: profileTopView.heightAnchor, multiplier: 0.6),
             bgImage.centerXAnchor.constraint(equalTo: profileTopView.centerXAnchor),

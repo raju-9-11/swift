@@ -143,7 +143,6 @@ class ReviewsCollectionViewCell: UICollectionViewCell, UITableViewDataSource, UI
         addReviewView.sizeToFit()
         addReviewView.layoutSubviews()
         addReviewView.layoutIfNeeded()
-        print(addReviewView.frame.height)
         attr.size.height = CGFloat(reviewElementData.reviews.count * 100) + 250
         return attr
     }

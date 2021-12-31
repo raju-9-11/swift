@@ -9,11 +9,16 @@ import UIKit
 
 class PaymentViewController: CustomViewController, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
     
-    let cartDetails: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Cart Details"
-        return label
+    lazy var cartDetails: UILabel = {
+        return titleLabel(text: "Cart Details")
+    }()
+    
+    let backGroundView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .gray.withAlphaComponent(0.5)
+        view.layer.cornerRadius = 7
+        return view
     }()
     
     let topView: UIView = {
@@ -22,10 +27,11 @@ class PaymentViewController: CustomViewController, UICollectionViewDelegate, UIC
         return view
     }()
     
-    let billingDetailsContainer: UIView = {
-        let view = UIView()
-        view.backgroundColor = .gray
-        view.layer.cornerRadius = 7
+    let billingDetailsContainer: UIStackView = {
+        let view = UIStackView()
+        view.axis = .vertical
+        view.spacing = 5
+        view.distribution = .fillProportionally
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -137,50 +143,63 @@ class PaymentViewController: CustomViewController, UICollectionViewDelegate, UIC
         useGiftCard.addTarget(self, action: #selector(onUseGiftCard), for: .touchUpInside)
         cancelPayment.addTarget(self, action: #selector(onCancelPayment), for: .touchUpInside)
         
-        billingDetailsContainer.addSubview(totalLabel)
-        billingDetailsContainer.addSubview(totalLabelCost)
+        billingDetailsContainer.addArrangedSubview(newStackView(views: [totalLabel, totalLabelCost]))
         topView.addSubview(cartDetails)
+        topView.addSubview(backGroundView)
         topView.addSubview(billingDetailsContainer)
         view.addSubview(topView)
-        view.addSubview(savedCardsLabel)
-        view.addSubview(paymentCardsCollectionView)
-        view.addSubview(addNewCard)
-        view.addSubview(completePayment)
-        view.addSubview(useGiftCard)
-        view.addSubview(cancelPayment)
+//        view.addSubview(savedCardsLabel)
+//        view.addSubview(paymentCardsCollectionView)
+//        view.addSubview(addNewCard)
+//        view.addSubview(completePayment)
+//        view.addSubview(useGiftCard)
+//        view.addSubview(cancelPayment)
         NSLayoutConstraint.activate([
             topView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            topView.widthAnchor.constraint(equalTo: view.widthAnchor),
+            topView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8),
             topView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            topView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.1),
-            cartDetails.topAnchor.constraint(equalTo: topView.topAnchor, constant: 10),
-            cartDetails.leftAnchor.constraint(equalTo: topView.leftAnchor, constant: 10),
-            billingDetailsContainer.topAnchor.constraint(equalTo: cartDetails.bottomAnchor),
-            billingDetailsContainer.bottomAnchor.constraint(equalTo: topView.bottomAnchor),
-            billingDetailsContainer.centerXAnchor.constraint(equalTo: topView.centerXAnchor),
-            billingDetailsContainer.widthAnchor.constraint(equalTo: topView.widthAnchor, multiplier: 0.9),
-            totalLabel.leftAnchor.constraint(equalTo: billingDetailsContainer.leftAnchor),
-            totalLabel.centerYAnchor.constraint(equalTo: billingDetailsContainer.centerYAnchor),
-            totalLabelCost.rightAnchor.constraint(equalTo: billingDetailsContainer.rightAnchor),
-            totalLabelCost.centerYAnchor.constraint(equalTo: billingDetailsContainer.centerYAnchor),
-            savedCardsLabel.topAnchor.constraint(equalTo: topView.bottomAnchor),
-            savedCardsLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20),
-            paymentCardsCollectionView.topAnchor.constraint(equalTo: savedCardsLabel.bottomAnchor),
-            paymentCardsCollectionView.widthAnchor.constraint(equalTo: view.widthAnchor),
-            paymentCardsCollectionView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.15),
-            paymentCardsCollectionView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            addNewCard.topAnchor.constraint(equalTo: paymentCardsCollectionView.bottomAnchor),
-            addNewCard.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20),
-            useGiftCard.bottomAnchor.constraint(equalTo: cancelPayment.topAnchor),
-            useGiftCard.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8),
-            useGiftCard.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            completePayment.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            completePayment.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8),
-            completePayment.bottomAnchor.constraint(equalTo: useGiftCard.topAnchor),
-            cancelPayment.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-            cancelPayment.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8),
-            cancelPayment.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            cartDetails.leftAnchor.constraint(equalTo: topView.leftAnchor, constant: 5),
+            cartDetails.topAnchor.constraint(equalTo: topView.topAnchor, constant: 20),
+            billingDetailsContainer.centerYAnchor.constraint(equalTo: backGroundView.centerYAnchor),
+            billingDetailsContainer.widthAnchor.constraint(equalTo: topView.widthAnchor),
+            billingDetailsContainer.centerXAnchor.constraint(equalTo: backGroundView.centerXAnchor),
+            backGroundView.topAnchor.constraint(equalTo: cartDetails.bottomAnchor, constant: 5),
+            backGroundView.heightAnchor.constraint(equalTo: billingDetailsContainer.heightAnchor, multiplier: 1.5),
+            backGroundView.centerXAnchor.constraint(equalTo: topView.centerXAnchor),
+            backGroundView.widthAnchor.constraint(equalTo: billingDetailsContainer.widthAnchor, multiplier: 1.1),
+//            savedCardsLabel.topAnchor.constraint(equalTo: topView.bottomAnchor),
+//            savedCardsLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20),
+//            paymentCardsCollectionView.topAnchor.constraint(equalTo: savedCardsLabel.bottomAnchor),
+//            paymentCardsCollectionView.widthAnchor.constraint(equalTo: view.widthAnchor),
+//            paymentCardsCollectionView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.15),
+//            paymentCardsCollectionView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+//            addNewCard.topAnchor.constraint(equalTo: paymentCardsCollectionView.bottomAnchor),
+//            addNewCard.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20),
+//            useGiftCard.bottomAnchor.constraint(equalTo: cancelPayment.topAnchor),
+//            useGiftCard.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8),
+//            useGiftCard.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+//            completePayment.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+//            completePayment.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8),
+//            completePayment.bottomAnchor.constraint(equalTo: useGiftCard.topAnchor),
+//            cancelPayment.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+//            cancelPayment.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8),
+//            cancelPayment.centerXAnchor.constraint(equalTo: view.centerXAnchor),
         ])
+    }
+    
+    func titleLabel(text: String) -> UILabel {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = text
+        label.font = .monospacedSystemFont(ofSize: 20, weight: .heavy)
+        return label
+    }
+    
+    func newStackView(views: [UIView]) -> UIStackView {
+        let stack = UIStackView(arrangedSubviews: views)
+        stack.distribution = .equalSpacing
+        stack.axis = .horizontal
+        return stack
     }
     
     @objc
@@ -198,6 +217,10 @@ class PaymentViewController: CustomViewController, UICollectionViewDelegate, UIC
     @objc
     func onUseGiftCard() {
         print("Getting your gift cards...")
+    }
+    
+    override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
+        super.dismiss(animated: flag, completion: completion)
     }
     
     @objc

@@ -24,8 +24,8 @@ class SearchViewController: CustomViewController, UICollectionViewDelegate, UICo
     
     let categoryList: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
-        layout.minimumLineSpacing = 0
-        layout.minimumInteritemSpacing = 0
+        layout.minimumLineSpacing = 5
+        layout.minimumInteritemSpacing = 5
         layout.scrollDirection = .horizontal
         layout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
         layout.minimumInteritemSpacing = 10
@@ -87,9 +87,9 @@ class SearchViewController: CustomViewController, UICollectionViewDelegate, UICo
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if collectionView == searchList {
             pvc.productData = searchListData[indexPath.row]
+            pvc.willMove(toParent: self)
             self.addChild(pvc)
             self.view.addSubview(pvc.view)
-            pvc.displayFullScreen(on: self.view)
         }
     }
     
@@ -97,12 +97,6 @@ class SearchViewController: CustomViewController, UICollectionViewDelegate, UICo
         return CGSize(width: collectionView.frame.width - 2, height: 100)
     }
     
-    @objc
-    func onLeft() {
-        pvc.willMove(toParent: nil)
-        pvc.removeFromParent()
-        pvc.view.removeFromSuperview()
-    }
     
     override func setupLayout() {
         
@@ -114,9 +108,6 @@ class SearchViewController: CustomViewController, UICollectionViewDelegate, UICo
         
         view.addSubview(searchList)
         view.addSubview(categoryList)
-        if let nvc = self.navigationController as? CustomNavigationController {
-            nvc.leftButton.addTarget(self, action: #selector(onLeft), for: .touchUpInside)
-        }
         NSLayoutConstraint.activate([
             categoryList.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             categoryList.widthAnchor.constraint(equalTo: view.widthAnchor),

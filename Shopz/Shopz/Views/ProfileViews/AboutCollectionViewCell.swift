@@ -29,6 +29,7 @@ class AboutCollectionViewCell: UICollectionViewCell {
         textView.text = aboutData.about
         textView.textAlignment = .center
         textView.isEditable = false
+        textView.backgroundColor = .clear
         textView.contentInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         return textView
     }()

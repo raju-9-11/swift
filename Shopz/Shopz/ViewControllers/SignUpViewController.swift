@@ -22,6 +22,7 @@ class SignUpViewController: CustomViewController, UICollectionViewDelegate, UICo
     let signUpLabel: UILabel = {
         let label = UILabel()
         label.text = "Sign Up"
+        label.textColor = .black
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .systemFont(ofSize: 36, weight: .heavy)
         return label
@@ -37,6 +38,7 @@ class SignUpViewController: CustomViewController, UICollectionViewDelegate, UICo
         layout.scrollDirection = .vertical
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
         cv.backgroundColor = .clear
+        cv.showsVerticalScrollIndicator = false
         cv.translatesAutoresizingMaskIntoConstraints = false
         cv.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "Cell")
         cv.register(FormButtonCollectionViewCell.self, forCellWithReuseIdentifier: FormButtonCollectionViewCell.buttonCellID)
@@ -167,8 +169,13 @@ class SignUpViewController: CustomViewController, UICollectionViewDelegate, UICo
         self.collectionViewBottomConstraint?.constant = 0
     }
     
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesBegan(touches, with: event)
+        self.view.endEditing(true)
+    }
+    
     override func setupLayout() {
-        view.backgroundColor = .systemGray6
+        view.backgroundColor = .systemGray
         
         collectionView.delegate = self
         collectionView.dataSource = self

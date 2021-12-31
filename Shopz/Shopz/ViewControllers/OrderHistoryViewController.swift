@@ -128,7 +128,7 @@ class OrderHistoryViewController: CustomViewController, UICollectionViewDataSour
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: collectionView.frame.width - 2, height: 100)
+        return CGSize(width: collectionView.frame.width - 2, height: 120)
     }
     
     func addReview(item: ItemData) {
@@ -138,7 +138,6 @@ class OrderHistoryViewController: CustomViewController, UICollectionViewDataSour
         self.addChild(prodVC)
         self.willMove(toParent: self)
         self.view.addSubview(prodVC.view)
-        prodVC.displayFullScreen(on: self.view)
     }
     
     func returnProduct(item: ItemData) {
@@ -151,7 +150,6 @@ class OrderHistoryViewController: CustomViewController, UICollectionViewDataSour
         cvc.willMove(toParent: self)
         self.addChild(cvc)
         self.view.addSubview(cvc.view)
-        cvc.displayFullScreen(on: self.view)
     }
     
 }

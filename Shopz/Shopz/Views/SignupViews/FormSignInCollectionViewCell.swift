@@ -31,6 +31,7 @@ class FormSignInCollectionViewCell: UICollectionViewCell {
         label.text = "Already have an account? "
         label.translatesAutoresizingMaskIntoConstraints = false
         label.contentMode = .center
+        label.textColor = .black
         label.adjustsFontSizeToFitWidth = true
         label.font = .systemFont(ofSize: 15, weight: .medium)
         return label

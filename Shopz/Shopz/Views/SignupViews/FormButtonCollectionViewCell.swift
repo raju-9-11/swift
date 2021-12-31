@@ -47,7 +47,7 @@ class FormButtonCollectionViewCell: UICollectionViewCell {
         contentView.addSubview(button)
         NSLayoutConstraint.activate([
             button.heightAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 0.8),
-            button.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.9),
+            button.widthAnchor.constraint(equalTo: contentView.widthAnchor),
             button.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             button.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
         ])
