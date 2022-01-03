@@ -13,11 +13,11 @@ class CartItemCollectionViewCell: UICollectionViewCell {
     
     var delegate: CartItemDelegate?
     
-    var itemData: ItemData? {
+    var itemData: CartItemViewItem? {
         willSet {
             if newValue != nil {
-                nameLabel.text = newValue?.name
-                costLabel.text = "$ \(newValue?.cost ?? 0) "
+                nameLabel.text = newValue?.itemData.name
+                costLabel.text = "$ \(newValue?.itemData.cost ?? 0) "
                 self.setupLayout()
             }
         }
@@ -47,6 +47,14 @@ class CartItemCollectionViewCell: UICollectionViewCell {
         return imageView
     }()
     
+    let bottomLine: UIView = {
+        let view = UIView()
+        view.layer.cornerRadius = 1
+        view.backgroundColor = .systemGray
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
     let closeButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -60,6 +68,7 @@ class CartItemCollectionViewCell: UICollectionViewCell {
         contentView.addSubview(nameLabel)
         contentView.addSubview(costLabel)
         contentView.addSubview(closeButton)
+        contentView.addSubview(bottomLine)
         closeButton.addTarget(self, action: #selector(onDelete), for: .touchUpInside)
         
         NSLayoutConstraint.activate([
@@ -67,19 +76,23 @@ class CartItemCollectionViewCell: UICollectionViewCell {
             imageView.heightAnchor.constraint(equalTo: contentView.heightAnchor),
             imageView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.25),
             imageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            nameLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            nameLabel.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor, constant: 5),
             nameLabel.leftAnchor.constraint(equalTo: imageView.rightAnchor, constant: 20),
             costLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor),
             costLabel.leftAnchor.constraint(equalTo: nameLabel.leftAnchor),
             closeButton.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             closeButton.rightAnchor.constraint(equalTo: contentView.rightAnchor, constant: -20),
+            bottomLine.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            bottomLine.leftAnchor.constraint(equalTo: imageView.rightAnchor),
+            bottomLine.heightAnchor.constraint(equalToConstant: 1),
+            bottomLine.rightAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.rightAnchor),
         ])
     }
     
     @objc
     func onDelete() {
         guard let itemData = self.itemData else { return }
-        delegate?.removeItem(itemData: itemData)
+        delegate?.removeItem(item: itemData)
     }
     
     override func prepareForReuse() {
@@ -91,5 +104,5 @@ class CartItemCollectionViewCell: UICollectionViewCell {
 }
 
 protocol CartItemDelegate {
-    func removeItem(itemData: ItemData)
+    func removeItem(item: CartItemViewItem)
 }

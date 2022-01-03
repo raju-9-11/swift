@@ -21,6 +21,8 @@ class API {
             case invalidURL
             case missingData
         }
+    
+    let mySession = URLSession(configuration: URLSessionConfiguration.default)
 
     func fetchArticles(pageSize: Int, page: Int, query: String, completion: @escaping(Result<ArticleData, Error>) -> Void) {
         
@@ -37,7 +39,8 @@ class API {
         request.httpMethod = "GET"
         request.allHTTPHeaderFields = API.headers
         
-        let dataTask = URLSession.shared.dataTask(with: request as URLRequest) { data, _, error in
+        
+        let dataTask = mySession.dataTask(with: request as URLRequest) { data, _, error in
             if let error = error {
                 completion(.failure(error))
                 print("error!!!")
@@ -75,7 +78,7 @@ class API {
 
         do {
             let (data, response) = try await URLSession.shared.data(for: request as URLRequest)
-            guard (response as? HTTPURLResponse)?.statusCode == 200 else { return  nil}
+            guard (response as? HTTPURLResponse)?.statusCode == 200 else { return  nil }
             let ad = try JSONDecoder().decode(ArticleData.self, from: data)
             return ad
         }

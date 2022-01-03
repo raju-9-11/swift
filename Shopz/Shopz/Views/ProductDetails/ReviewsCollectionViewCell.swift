@@ -99,6 +99,7 @@ class ReviewsCollectionViewCell: UICollectionViewCell, UITableViewDataSource, UI
         addReviewView.addSubview(addReviewButton)
         addReviewTextView.refreshControl?.addTarget(self, action: #selector(onText), for: .allEvents)
         contentView.addSubview(addReviewView)
+        reviewList.isUserInteractionEnabled = false
         
         NSLayoutConstraint.activate([
             titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor),

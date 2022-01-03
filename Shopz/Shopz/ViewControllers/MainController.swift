@@ -104,6 +104,7 @@ class MainController: UITabBarController, UITabBarControllerDelegate, ModalViewD
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         print("Searching: \(searchBar.text ?? "")")
+        self.onDismiss()
     }
     
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {

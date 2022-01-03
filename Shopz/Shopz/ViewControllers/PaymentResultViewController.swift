@@ -37,7 +37,7 @@ class PaymentResultViewController: UIViewController {
     
     @objc
     func onGoHome() {
-        self.presentingViewController?.presentingViewController?.dismiss(animated: true, completion: nil)
+        NotificationCenter.default.post(name: NSNotification.Name.paymentCompletion, object: nil, userInfo: ["Status": "success"])
     }
 
 }

@@ -39,6 +39,7 @@ class ReviewItemTableViewCell: UITableViewCell {
         textview.textColor = .gray
         textview.isEditable = false
         textview.isSelectable = false
+        textview.isUserInteractionEnabled = false
         textview.backgroundColor = .clear
         return textview
     }()

@@ -110,8 +110,8 @@ class OrderHistoryViewController: CustomViewController, UICollectionViewDataSour
             titleLabel.leftAnchor.constraint(equalTo: containerView.leftAnchor, constant: 20),
             titleLabel.topAnchor.constraint(equalTo: containerView.safeAreaLayoutGuide.topAnchor),
             collectionView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor),
-            collectionView.heightAnchor.constraint(equalTo: containerView.safeAreaLayoutGuide.heightAnchor, multiplier: 0.85),
-            collectionView.widthAnchor.constraint(equalTo: containerView.widthAnchor, multiplier: 0.9),
+            collectionView.bottomAnchor.constraint(equalTo: containerView.safeAreaLayoutGuide.bottomAnchor),
+            collectionView.widthAnchor.constraint(equalTo: containerView.widthAnchor),
             collectionView.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
         ])
     }

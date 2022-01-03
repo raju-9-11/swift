@@ -26,6 +26,9 @@
 		9D5E29A6275F7B4A00ED86ED /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D5E29A5275F7B4A00ED86ED /* HomeViewController.swift */; };
 		9D5E29AB275F7B4B00ED86ED /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9D5E29AA275F7B4B00ED86ED /* Assets.xcassets */; };
 		9D5E29AE275F7B4B00ED86ED /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9D5E29AC275F7B4B00ED86ED /* LaunchScreen.storyboard */; };
+		9D7D23772782D13D00EE2B96 /* AddCardButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D7D23762782D13D00EE2B96 /* AddCardButton.swift */; };
+		9D7D23792782E0D300EE2B96 /* CartTitleCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D7D23782782E0D300EE2B96 /* CartTitleCollectionViewCell.swift */; };
+		9D7D237B2782E14B00EE2B96 /* CartButtonsCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D7D237A2782E14B00EE2B96 /* CartButtonsCollectionViewCell.swift */; };
 		9D9B16C827685F8A00BE8456 /* Auth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D9B16C727685F8A00BE8456 /* Auth.swift */; };
 		9D9B16CA2768769600BE8456 /* ModalViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D9B16C92768769600BE8456 /* ModalViewDelegate.swift */; };
 		9D9B16CC27689BE300BE8456 /* FormTextFieldCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D9B16CB27689BE300BE8456 /* FormTextFieldCollectionViewCell.swift */; };
@@ -75,6 +78,9 @@
 		9D5E29AA275F7B4B00ED86ED /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		9D5E29AD275F7B4B00ED86ED /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		9D5E29AF275F7B4B00ED86ED /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		9D7D23762782D13D00EE2B96 /* AddCardButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCardButton.swift; sourceTree = "<group>"; };
+		9D7D23782782E0D300EE2B96 /* CartTitleCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartTitleCollectionViewCell.swift; sourceTree = "<group>"; };
+		9D7D237A2782E14B00EE2B96 /* CartButtonsCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartButtonsCollectionViewCell.swift; sourceTree = "<group>"; };
 		9D9B16C727685F8A00BE8456 /* Auth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Auth.swift; sourceTree = "<group>"; };
 		9D9B16C92768769600BE8456 /* ModalViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalViewDelegate.swift; sourceTree = "<group>"; };
 		9D9B16CB27689BE300BE8456 /* FormTextFieldCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormTextFieldCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -176,6 +182,7 @@
 			isa = PBXGroup;
 			children = (
 				9D3DD7E5277F10D200AED9C7 /* CheckBox.swift */,
+				9D7D23762782D13D00EE2B96 /* AddCardButton.swift */,
 			);
 			path = CustomElements;
 			sourceTree = "<group>";
@@ -259,6 +266,8 @@
 			isa = PBXGroup;
 			children = (
 				9DA655D2276B55970006AB4C /* CartItemCollectionViewCell.swift */,
+				9D7D23782782E0D300EE2B96 /* CartTitleCollectionViewCell.swift */,
+				9D7D237A2782E14B00EE2B96 /* CartButtonsCollectionViewCell.swift */,
 			);
 			path = CartViews;
 			sourceTree = "<group>";
@@ -373,6 +382,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9D14297F2772027A00BC82E6 /* ReviewsCollectionViewCell.swift in Sources */,
+				9D7D23792782E0D300EE2B96 /* CartTitleCollectionViewCell.swift in Sources */,
 				9D9B16CC27689BE300BE8456 /* FormTextFieldCollectionViewCell.swift in Sources */,
 				9D1F09362770503E000BF602 /* DescriptionCollectionViewCell.swift in Sources */,
 				9DE006C22771BE390025840F /* OrderHistoryViewController.swift in Sources */,
@@ -405,11 +415,13 @@
 				9D3DD7E6277F10D200AED9C7 /* CheckBox.swift in Sources */,
 				9D5E29A6275F7B4A00ED86ED /* HomeViewController.swift in Sources */,
 				9D9D9D972767555300FD1D54 /* ItemThumbNailModel.swift in Sources */,
+				9D7D23772782D13D00EE2B96 /* AddCardButton.swift in Sources */,
 				9D5E29A2275F7B4A00ED86ED /* AppDelegate.swift in Sources */,
 				9D1F09382770560D000BF602 /* ProductDetailsTopCollectionViewCell.swift in Sources */,
 				9DA99A162771A1FF00B8053B /* CardItemCollectionViewCell.swift in Sources */,
 				9DBF3B712769FBDF009EFB26 /* ProfileTopViewCollectioViewCell.swift in Sources */,
 				9D9B16CA2768769600BE8456 /* ModalViewDelegate.swift in Sources */,
+				9D7D237B2782E14B00EE2B96 /* CartButtonsCollectionViewCell.swift in Sources */,
 				9DBF3B77276A17D9009EFB26 /* ShoppingListSubCollectionViewCell.swift in Sources */,
 				9D38D2C1277352AB003C08AE /* FormSignInCollectionViewCell.swift in Sources */,
 				9DE006C52771BEB90025840F /* OrderHistoryItemCollectionViewCell.swift in Sources */,

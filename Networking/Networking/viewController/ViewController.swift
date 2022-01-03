@@ -84,7 +84,7 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
         super.loadView()
         view.backgroundColor = .gray
         
-        self.getData(query: searchQuery, pageSize: 10, page: currPage)
+        self.getData(query: searchQuery, pageSize: 20, page: currPage)
         
         collectionView.delegate = self
         collectionView.dataSource = self

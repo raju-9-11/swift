@@ -7,7 +7,7 @@
 
 import UIKit
 
-class CheckoutViewController: CustomViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, CheckBoxDelegate {
+class CheckoutViewController: CustomViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, CheckBoxDelegate, UITextFieldDelegate {
     
     lazy var cartDetails: UILabel = {
         return titleLabel(text: "Cart Details")
@@ -102,6 +102,7 @@ class CheckoutViewController: CustomViewController, UICollectionViewDelegate, UI
         cv.register(AddressItemCollectionViewCell.self, forCellWithReuseIdentifier: AddressItemCollectionViewCell.cellID)
         cv.register(AddAddressCollectionViewCell.self, forCellWithReuseIdentifier: AddAddressCollectionViewCell.cellID)
         cv.backgroundColor = .clear
+        cv.showsVerticalScrollIndicator = false
         return cv
     }()
     
@@ -163,6 +164,7 @@ class CheckoutViewController: CustomViewController, UICollectionViewDelegate, UI
         } else {
             onAddClick()
         }
+        self.view.endEditing(true)
     }
     
     func onAddClick() {
@@ -177,6 +179,7 @@ class CheckoutViewController: CustomViewController, UICollectionViewDelegate, UI
     override func setupLayout() {
         view.backgroundColor = .white
         
+        giftWrapText.delegate = self
         continueButton.addTarget(self, action: #selector(onContinue), for: .touchUpInside)
         giftWrapSwitch.delegate = self
         
@@ -191,6 +194,7 @@ class CheckoutViewController: CustomViewController, UICollectionViewDelegate, UI
         
         addressList.dataSource = self
         addressList.delegate = self
+        NotificationCenter.default.addObserver(self, selector: #selector(paymentComplete), name: NSNotification.Name.paymentCompletion, object: nil)
         
         topView.addSubview(backGroundView)
         view.addSubview(topView)
@@ -222,8 +226,12 @@ class CheckoutViewController: CustomViewController, UICollectionViewDelegate, UI
             addressList.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             addressList.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -5),
             continueButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            continueButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            continueButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10),
         ])
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.paymentCompletion, object: nil)
     }
     
     func newStackView(views: [UIView]) -> UIStackView {
@@ -249,13 +257,36 @@ class CheckoutViewController: CustomViewController, UICollectionViewDelegate, UI
         return label
     }
     
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        if textField == giftWrapText {
+            self.view.endEditing(true)
+        }
+        return true
+    }
+    
+    @objc
+    func paymentComplete(_ notification: Notification) {
+        if let stat = (notification.userInfo as? [String: Any])?["Status"] as? String {
+            if stat == "success" {
+                print("Payment Success")
+            }
+        }
+        print("Payment Complete")
+        self.dismiss(animated: true, completion: nil)
+        self.willMove(toParent: nil)
+        if let vc = self.parent as? CartViewController {
+            vc.updateCart()
+        }
+        self.view.removeFromSuperview()
+        self.removeFromParent()
+    }
+    
     @objc
     func onContinue() {
         pvc.modalPresentationStyle = .fullScreen
         pvc.modalTransitionStyle = .coverVertical
         self.present(pvc, animated: true)
     }
-    
     
     func onToggle(_ elem: CheckBox) {
         if !elem.isOn {
@@ -276,4 +307,10 @@ class CheckoutViewController: CustomViewController, UICollectionViewDelegate, UI
         }
     }
 
+}
+
+extension Notification.Name {
+    static var paymentCompletion: Notification.Name {
+          return .init(rawValue: "Payment.Complete")
+    }
 }

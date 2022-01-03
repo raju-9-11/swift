@@ -36,25 +36,16 @@ class PaymentViewController: CustomViewController, UICollectionViewDelegate, UIC
         return view
     }()
     
-    let totalLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Total Cost"
-        return label
+    lazy var totalLabel: UILabel = {
+        return defaultLabel(text: "Total Cost")
     }()
     
-    let totalLabelCost: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "$ 0"
-        return label
+    lazy var totalLabelCost: UILabel = {
+        return defaultLabel(text: "$ 0")
     }()
     
-    let savedCardsLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Your Saved Cards"
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
+    lazy var savedCardsLabel: UILabel = {
+        return titleLabel(text: "Your Saved Cards")
     }()
     
     let paymentCardsCollectionView: UICollectionView = {
@@ -69,37 +60,26 @@ class PaymentViewController: CustomViewController, UICollectionViewDelegate, UIC
         return cv
     }()
     
-    let addNewCard: UIButton = {
-        let button = UIButton()
+    let addNewCard: AddCardButton = {
+        let button = AddCardButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setImage(UIImage(systemName: "plus")?.withRenderingMode(.alwaysTemplate), for: .normal)
         button.setTitle("Add Card", for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.tintColor = .white
         return button
     }()
     
     
-    let completePayment: UIButton = {
-        let button = UIButton()
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("Complete Payment", for: .normal)
-        button.backgroundColor = UIColor(red: 0.373, green: 0.353, blue: 0.969, alpha: 1)
-        return button
+    lazy var completePayment: UIButton = {
+        return defaultButton(title: "Complete Payment", color: UIColor(red: 0.373, green: 0.353, blue: 0.969, alpha: 1))
     }()
     
-    let useGiftCard: UIButton = {
-        let button = UIButton()
-        button.setTitle("Use Gift card", for: .normal)
-        button.backgroundColor = UIColor(red: 0.965, green: 0.416, blue: 0.549, alpha: 1)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        return button
+    lazy var useGiftCard: UIButton = {
+        return defaultButton(title: "Use GiftCard", color: UIColor(red: 0.965, green: 0.416, blue: 0.549, alpha: 1))
     }()
     
-    let cancelPayment: UIButton = {
-        let button = UIButton()
-        button.backgroundColor = .red
-        button.setTitle("Cancel Payment", for: .normal)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        return button
+    lazy var cancelPayment: UIButton = {
+        return defaultButton(title: "Cancel Payment", color: UIColor.red)
     }()
     
     let cards : [CardData] = {
@@ -148,17 +128,17 @@ class PaymentViewController: CustomViewController, UICollectionViewDelegate, UIC
         topView.addSubview(backGroundView)
         topView.addSubview(billingDetailsContainer)
         view.addSubview(topView)
-//        view.addSubview(savedCardsLabel)
-//        view.addSubview(paymentCardsCollectionView)
-//        view.addSubview(addNewCard)
-//        view.addSubview(completePayment)
-//        view.addSubview(useGiftCard)
-//        view.addSubview(cancelPayment)
+        view.addSubview(savedCardsLabel)
+        view.addSubview(paymentCardsCollectionView)
+        view.addSubview(addNewCard)
+        view.addSubview(completePayment)
+        view.addSubview(useGiftCard)
+        view.addSubview(cancelPayment)
         NSLayoutConstraint.activate([
             topView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             topView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8),
             topView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            cartDetails.leftAnchor.constraint(equalTo: topView.leftAnchor, constant: 5),
+            cartDetails.leftAnchor.constraint(equalTo: topView.leftAnchor),
             cartDetails.topAnchor.constraint(equalTo: topView.topAnchor, constant: 20),
             billingDetailsContainer.centerYAnchor.constraint(equalTo: backGroundView.centerYAnchor),
             billingDetailsContainer.widthAnchor.constraint(equalTo: topView.widthAnchor),
@@ -167,23 +147,23 @@ class PaymentViewController: CustomViewController, UICollectionViewDelegate, UIC
             backGroundView.heightAnchor.constraint(equalTo: billingDetailsContainer.heightAnchor, multiplier: 1.5),
             backGroundView.centerXAnchor.constraint(equalTo: topView.centerXAnchor),
             backGroundView.widthAnchor.constraint(equalTo: billingDetailsContainer.widthAnchor, multiplier: 1.1),
-//            savedCardsLabel.topAnchor.constraint(equalTo: topView.bottomAnchor),
-//            savedCardsLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20),
-//            paymentCardsCollectionView.topAnchor.constraint(equalTo: savedCardsLabel.bottomAnchor),
-//            paymentCardsCollectionView.widthAnchor.constraint(equalTo: view.widthAnchor),
-//            paymentCardsCollectionView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.15),
-//            paymentCardsCollectionView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-//            addNewCard.topAnchor.constraint(equalTo: paymentCardsCollectionView.bottomAnchor),
-//            addNewCard.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20),
-//            useGiftCard.bottomAnchor.constraint(equalTo: cancelPayment.topAnchor),
-//            useGiftCard.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8),
-//            useGiftCard.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-//            completePayment.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-//            completePayment.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8),
-//            completePayment.bottomAnchor.constraint(equalTo: useGiftCard.topAnchor),
-//            cancelPayment.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-//            cancelPayment.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8),
-//            cancelPayment.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            savedCardsLabel.topAnchor.constraint(equalTo: backGroundView.bottomAnchor, constant: 10),
+            savedCardsLabel.leftAnchor.constraint(equalTo: topView.leftAnchor),
+            paymentCardsCollectionView.topAnchor.constraint(equalTo: savedCardsLabel.bottomAnchor, constant: 5),
+            paymentCardsCollectionView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor),
+            paymentCardsCollectionView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.15),
+            paymentCardsCollectionView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor),
+            addNewCard.topAnchor.constraint(equalTo: paymentCardsCollectionView.bottomAnchor, constant: 10),
+            addNewCard.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20),
+            useGiftCard.bottomAnchor.constraint(equalTo: cancelPayment.topAnchor, constant: -10),
+            useGiftCard.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8),
+            useGiftCard.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            completePayment.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            completePayment.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8),
+            completePayment.bottomAnchor.constraint(equalTo: useGiftCard.topAnchor, constant: -10),
+            cancelPayment.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            cancelPayment.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8),
+            cancelPayment.centerXAnchor.constraint(equalTo: view.centerXAnchor),
         ])
     }
     
@@ -193,6 +173,32 @@ class PaymentViewController: CustomViewController, UICollectionViewDelegate, UIC
         label.text = text
         label.font = .monospacedSystemFont(ofSize: 20, weight: .heavy)
         return label
+    }
+    
+    func defaultLabel(text: String ) -> UILabel {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = text
+        label.font = .monospacedSystemFont(ofSize: 15, weight: .semibold)
+        return label
+    }
+    
+    func defaultButton(title: String, color: UIColor) -> UIButton {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle(title, for: .normal)
+        if #available(iOS 15, *) {
+            var config = UIButton.Configuration.filled()
+            config.contentInsets = NSDirectionalEdgeInsets(top: 5, leading: 10, bottom: 5, trailing: 10)
+            config.baseBackgroundColor = color
+            config.cornerStyle = .medium
+            button.configuration = config
+        } else {
+            button.backgroundColor = color
+            button.contentEdgeInsets = UIEdgeInsets(top: 5, left: 10, bottom: 5, right: 10)
+            button.layer.cornerRadius = 6
+        }
+        return button
     }
     
     func newStackView(views: [UIView]) -> UIStackView {
@@ -217,10 +223,6 @@ class PaymentViewController: CustomViewController, UICollectionViewDelegate, UIC
     @objc
     func onUseGiftCard() {
         print("Getting your gift cards...")
-    }
-    
-    override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
-        super.dismiss(animated: flag, completion: completion)
     }
     
     @objc
