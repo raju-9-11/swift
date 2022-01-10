@@ -8,5 +8,5 @@
 import UIKit
 
 protocol ModalViewDelegate {
-    func sendState(vc: UIViewController, _ state: Auth)
+    func sendState(vc: UIViewController, _ state: Auth?)
 }

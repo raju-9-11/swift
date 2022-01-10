@@ -11,10 +11,15 @@ class HomeViewController: CustomViewController, UICollectionViewDataSource, UICo
     
     
     // MARK: Data
-    lazy var popularItems: [ ItemThumbNailModel ]  = {
-        return [ItemThumbNailModel(name: "Vivo Y21", id: 0, media: "https://sathya.in/media/55438/catalog/vivo-mobile-y21-midnight-blue4gb-ram128gb-storage-3.jpg"), ItemThumbNailModel(name: "Smart watch", id: 1, media: "https://m.media-amazon.com/images/I/61OUIIXnPqL._AC_SX522_.jpg"), ItemThumbNailModel(name: "Iphone 13", id: 0, media: "https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/iphone-13-pro-max-gold-select?wid=940&hei=1112&fmt=png-alpha&.v=1631652956000")]
-    }()
+    var popularItems: [ ItemThumbNailModel ]  = []
     
+    
+    override var auth: Auth?  {
+        willSet {
+            self.removeViews()
+            self.setupLayout()
+        }
+    }
     
     // MARK: - UI Elements
     let popularItemsList: UICollectionView = {
@@ -70,9 +75,7 @@ class HomeViewController: CustomViewController, UICollectionViewDataSource, UICo
         return cv
     }()
     
-    let categories: [ItemThumbNailModel] = {
-        return [ ItemThumbNailModel(name: "Mobile", id: 0, media: "https://sathya.in/media/55438/catalog/vivo-mobile-y21-midnight-blue4gb-ram128gb-storage-3.jpg"), ItemThumbNailModel(name: "Ear Phones", id: 1, media: "https://5.imimg.com/data5/CD/JV/NH/SELLER-3057075/phone-earphone-500x500.jpg"), ItemThumbNailModel(name: "Smart Watches", id: 2, media: "https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/iphone-13-pro-max-gold-select?wid=940&hei=1112&fmt=png-alpha&.v=1631652956000"), ItemThumbNailModel(name: "Speakers", id: 3, media: "https://d287ku8w5owj51.cloudfront.net/images/products/hero/creative-t15-wireless/hero-creative-t15-wireless.jpg?width=750"), ItemThumbNailModel(name: "Accessories", id: 4, media: "https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/satechi-accessories-1608141402.jpg?crop=1.00xw:0.502xh;0,0.455xh&resize=1200:*")]
-    }()
+    var categories: [ItemThumbNailModel] = []
     
     let categoryView: UIView = {
         let view = UIView()
@@ -93,9 +96,7 @@ class HomeViewController: CustomViewController, UICollectionViewDataSource, UICo
     // MARK: - LoadView
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        self.setupLayout()        
-        
+        self.setupLayout()          
     }
     
     // MARK: - CollectionView delegate
@@ -114,8 +115,18 @@ class HomeViewController: CustomViewController, UICollectionViewDataSource, UICo
         return cell
     }
     
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+    }
+    
+    init(nibName nibNameOrNil: String? = nil, bundle nibBundleOrNil: Bundle? = nil, auth: Auth?) {
+        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+        self.auth = auth
+    }
+    
     // MARK: - Layout and other functions
     override func setupLayout() {
+        self.loadData()
         self.title = "Home"
         view.backgroundColor = .white
         
@@ -157,11 +168,27 @@ class HomeViewController: CustomViewController, UICollectionViewDataSource, UICo
             categoryList.bottomAnchor.constraint(equalTo: categoryView.bottomAnchor),
         ])
     }
+    
+    
+    func loadData() {
+        self.categories = getCategories()
+        self.popularItems = getPopularItems()
+    }
+    
+    func getCategories() -> [ItemThumbNailModel] {
+        return [ ItemThumbNailModel(name: "Mobile", id: 0, media: "https://sathya.in/media/55438/catalog/vivo-mobile-y21-midnight-blue4gb-ram128gb-storage-3.jpg"), ItemThumbNailModel(name: "Ear Phones", id: 1, media: "https://5.imimg.com/data5/CD/JV/NH/SELLER-3057075/phone-earphone-500x500.jpg"), ItemThumbNailModel(name: "Smart Watches", id: 2, media: "https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/iphone-13-pro-max-gold-select?wid=940&hei=1112&fmt=png-alpha&.v=1631652956000"), ItemThumbNailModel(name: "Speakers", id: 3, media: "https://d287ku8w5owj51.cloudfront.net/images/products/hero/creative-t15-wireless/hero-creative-t15-wireless.jpg?width=750"), ItemThumbNailModel(name: "Accessories", id: 4, media: "https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/satechi-accessories-1608141402.jpg?crop=1.00xw:0.502xh;0,0.455xh&resize=1200:*")]
+    }
+    
+    func getPopularItems() -> [ItemThumbNailModel] {
+        return [ItemThumbNailModel(name: "Vivo Y21", id: 0, media: "https://sathya.in/media/55438/catalog/vivo-mobile-y21-midnight-blue4gb-ram128gb-storage-3.jpg"), ItemThumbNailModel(name: "Smart watch", id: 1, media: "https://m.media-amazon.com/images/I/61OUIIXnPqL._AC_SX522_.jpg"), ItemThumbNailModel(name: "Iphone 13", id: 0, media: "https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/iphone-13-pro-max-gold-select?wid=940&hei=1112&fmt=png-alpha&.v=1631652956000")]
+    }
 
 
 }
 
-class CustomViewController: UIViewController, CustomViewControllerProtocol {
+class CustomViewController: UIViewController {
+    
+    var auth: Auth? = nil
     
     var requiresAuth: Bool = false
     
@@ -169,14 +196,13 @@ class CustomViewController: UIViewController, CustomViewControllerProtocol {
         //PLACEHOLDER
     }
     
+//    override func viewDidDisappear(_ animated: Bool) {
+//        super.viewWillAppear(animated)
+//        self.children.forEach({ vc in vc.view.removeFromSuperview();vc.willMove(toParent: nil);vc.removeFromParent() })
+//    }
+//    
     func removeViews() {
         self.view.subviews.forEach({ view in view.removeFromSuperview() })
-        self.children.forEach({ vc in vc.removeFromParent(); vc.willMove(toParent: nil) })
+        self.children.forEach({ vc in vc.willMove(toParent: nil);vc.removeFromParent() })
     }
-}
-
-
-protocol CustomViewControllerProtocol {
-    func setupLayout()
-    func removeViews()
 }

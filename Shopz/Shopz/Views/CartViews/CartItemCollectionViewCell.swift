@@ -13,11 +13,11 @@ class CartItemCollectionViewCell: UICollectionViewCell {
     
     var delegate: CartItemDelegate?
     
-    var itemData: CartItemViewItem? {
+    var itemData: ItemData? {
         willSet {
             if newValue != nil {
-                nameLabel.text = newValue?.itemData.name
-                costLabel.text = "$ \(newValue?.itemData.cost ?? 0) "
+                nameLabel.text = newValue?.name
+                costLabel.text = "$ \(newValue?.cost ?? 0) "
                 self.setupLayout()
             }
         }
@@ -104,5 +104,5 @@ class CartItemCollectionViewCell: UICollectionViewCell {
 }
 
 protocol CartItemDelegate {
-    func removeItem(item: CartItemViewItem)
+    func removeItem(item: ItemData)
 }

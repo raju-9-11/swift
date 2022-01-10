@@ -17,8 +17,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         self.window = UIWindow(frame: UIScreen.main.bounds)
         self.window?.makeKeyAndVisible()
 
-        let newAuthSate = Auth()
-        newAuthSate.authState = false
+        let newAuthSate: Auth? = nil
+        if ApplicationDB.shared.initDB() {
+            ApplicationDB.shared.addUser(firstName: "John", lastName: "Doe", email: "test@xyz.com", ph: "+919789019982", country: "India", city: "Chennai", password: "Passwd", about: "TEST")
+            ApplicationDB.shared.readData(name: "users")
+//            ApplicationDB.shared.clearDB(tableName: "users")
+        }
+        
         let vc = MainController(auth: newAuthSate)
 
         let cvc = UINavigationController(rootViewController: vc)

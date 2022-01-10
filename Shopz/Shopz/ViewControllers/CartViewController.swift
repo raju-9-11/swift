@@ -11,29 +11,31 @@ class CartViewController: CustomViewController, UICollectionViewDataSource, UICo
     
     var cartTitle: String = "Cart"
     var buttonsView: ButtonsViewState = .checkout
-    
-    var listDetails: ShoppingList? {
+    override var auth: Auth? {
         willSet {
             if newValue != nil {
-                self.listItems = getList()
-                self.cartTitle = newValue?.name ?? "Untitled"
-                buttonsView = .all
-                label.text = "\(self.cartTitle) is Empty"
-                collectionView.reloadData()
+                self.removeViews()
+                self.setupLayout()
             }
         }
     }
     
-    lazy var listItems: [ItemData] = getCart() {
+    var listDetails: ShoppingList? {
+        didSet {
+            if listDetails != nil {
+                self.cartTitle = listDetails?.name ?? "Untitled"
+                buttonsView = .all
+                label.text = "\(self.cartTitle) is Empty"
+            }
+            self.loadData()
+        }
+    }
+    
+    lazy var listItems: [ItemData] = [] {
         willSet {
             self.tabBarItem.badgeValue = "\(newValue.count)"
-            if newValue.isEmpty {
-                self.collectionView.isHidden = true
-                self.placeholderView.isHidden = false
-            } else {
-                self.collectionView.isHidden = false
-                self.placeholderView.isHidden = true
-            }
+            self.collectionView.isHidden = newValue.isEmpty
+            self.placeholderView.isHidden = !newValue.isEmpty
         }
         
     }
@@ -65,17 +67,8 @@ class CartViewController: CustomViewController, UICollectionViewDataSource, UICo
             label.centerXAnchor.constraint(equalTo: imageView.centerXAnchor),
         ])
         view.backgroundColor = .white
-        view.isHidden = true
         return view
     }()
-    
-    var cartViewItems: [CartViewItem] {
-        get {
-            var items: [CartViewItem] = []
-            self.listItems.forEach({ item in items.append(CartItemViewItem(itemData: item))})
-            return [CartTitleViewItem(titleName: self.cartTitle)] + items + [CartButtonsViewItem(state: .checkout)]
-        }
-    }
     
     let collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -85,10 +78,11 @@ class CartViewController: CustomViewController, UICollectionViewDataSource, UICo
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
         cv.contentInset = UIEdgeInsets(top: 5, left: 0, bottom: 5, right: 0)
         cv.register(CartItemCollectionViewCell.self, forCellWithReuseIdentifier: CartItemCollectionViewCell.cellID)
-        cv.register(CartTitleCollectionViewCell.self, forCellWithReuseIdentifier: CartTitleCollectionViewCell.cellID)
-        cv.register(CartButtonsCollectionViewCell.self, forCellWithReuseIdentifier: CartButtonsCollectionViewCell.cellID)
+        cv.register(CartTitleCollectionViewCell.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: CartTitleCollectionViewCell.cellID)
+        cv.register(CartButtonsCollectionViewCell.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: CartButtonsCollectionViewCell.cellID)
         cv.translatesAutoresizingMaskIntoConstraints = false
         cv.backgroundColor = .clear
+        cv.isHidden = true
         return cv
     }()
     
@@ -98,18 +92,22 @@ class CartViewController: CustomViewController, UICollectionViewDataSource, UICo
         super.init(coder: coder)
     }
     
-    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+    init(nibName nibNameOrNil: String? = nil, bundle nibBundleOrNil: Bundle? = nil, auth: Auth?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+        self.auth = auth
         DispatchQueue.main.async {
-            self.tabBarItem.badgeValue = "\(self.listItems.count)"
+            if auth != nil {
+                self.tabBarItem.badgeValue = "\(self.listItems.count)"
+            }
         }
         self.requiresAuth = true
     }
 
-
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.setupLayout()
+        if (requiresAuth && auth != nil) || ( !requiresAuth ) 	{
+            self.setupLayout()
+        }
     }
     
     
@@ -138,9 +136,13 @@ class CartViewController: CustomViewController, UICollectionViewDataSource, UICo
     
     override func setupLayout() {
         view.backgroundColor = .white
-        
+        self.loadData()
         collectionView.dataSource = self
         collectionView.delegate = self
+        if let layout = (collectionView.collectionViewLayout as? UICollectionViewFlowLayout) {
+            layout.headerReferenceSize = CGSize(width: collectionView.frame.width, height: 50)
+            layout.footerReferenceSize = CGSize(width: collectionView.frame.width, height: 50)
+        }
 
         view.addSubview(collectionView)
         view.addSubview(placeholderView)
@@ -156,48 +158,48 @@ class CartViewController: CustomViewController, UICollectionViewDataSource, UICo
             placeholderView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
             placeholderView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor),
         ])
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return cartViewItems.count
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        switch cartViewItems[indexPath.row] {
-        case let item as CartItemViewItem :
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CartItemCollectionViewCell.cellID, for: indexPath) as! CartItemCollectionViewCell
-            cell.itemData = item
-            cell.delegate = self
-            return cell
-        case _ as CartButtonsViewItem:
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CartButtonsCollectionViewCell.cellID, for: indexPath) as! CartButtonsCollectionViewCell
-            cell.state = buttonsView
-            cell.delegate = self
-            return cell
-        default:
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CartTitleCollectionViewCell.cellID, for: indexPath) as! CartTitleCollectionViewCell
-            cell.title = cartTitle
-            return cell
-        }
         
     }
     
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        switch cartViewItems[indexPath.row] {
-        case _ as CartTitleViewItem :
-            return CGSize(width: collectionView.frame.width - 2, height: 50)
-        case _ as CartButtonsViewItem:
-            return CGSize(width: collectionView.frame.width - 2, height: 50)
-        default:
-            return CGSize(width: collectionView.frame.width - 2, height: 100)
+    func loadData() {
+        if listDetails != nil {
+            self.listItems = getList()
         }
+        self.listItems = getCart()
+        collectionView.reloadData()
     }
     
-    func removeItem(item: CartItemViewItem) {
-        for (index, listItem ) in cartViewItems.enumerated() {
-            guard let listItem = listItem as? CartItemViewItem else { continue }
-            if item.itemData.id == listItem.itemData.id {
-                listItems.remove(at: index - 1)
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return listItems.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CartItemCollectionViewCell.cellID, for: indexPath) as! CartItemCollectionViewCell
+        cell.itemData = listItems[indexPath.row]
+        cell.delegate = self
+        return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: collectionView.frame.width - 2, height: 100)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        if kind == UICollectionView.elementKindSectionFooter {
+            let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: CartButtonsCollectionViewCell.cellID, for: indexPath) as! CartButtonsCollectionViewCell
+            headerView.delegate = self
+            headerView.state = buttonsView
+            return headerView
+        }
+        let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: CartTitleCollectionViewCell.cellID, for: indexPath) as! CartTitleCollectionViewCell
+        headerView.title = cartTitle
+        return headerView
+    }
+    
+    func removeItem(item: ItemData) {
+        for (index, listItem ) in listItems.enumerated() {
+            if item.id == listItem.id {
+                listItems.remove(at: index)
                 collectionView.deleteItems(at: [IndexPath(row: index, section: 0)])
                 self.collectionView.reloadData()
                 break
@@ -207,6 +209,7 @@ class CartViewController: CustomViewController, UICollectionViewDataSource, UICo
     
     func updateCart() {
         print("Updating Cart")
+        self.collectionView.reloadData()
     }
     
     @objc
@@ -223,31 +226,6 @@ class CartViewController: CustomViewController, UICollectionViewDataSource, UICo
         self.removeFromParent()
     }
     
-}
-
-class CartViewItem {
-    let uuid = UUID()
-}
-
-class CartTitleViewItem : CartViewItem {
-    var titleName: String = "Cart"
-    init(titleName: String ) {
-        self.titleName = titleName
-    }
-}
-
-class CartItemViewItem: CartViewItem {
-    var itemData: ItemData
-    init(itemData: ItemData) {
-        self.itemData = itemData
-    }
-}
-
-class CartButtonsViewItem: CartViewItem {
-    var state: ButtonsViewState
-    init(state: ButtonsViewState) {
-        self.state = state
-    }
 }
 
 struct ItemData {

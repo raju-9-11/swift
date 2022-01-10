@@ -9,30 +9,22 @@ import UIKit
 
 class OrderHistoryViewController: CustomViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, OrderHistoryItemDelegate {
     
-    var listDetails: ShoppingList? {
+    override var auth: Auth? {
         willSet {
-            if newValue != nil {
-                self.listItems = getList()
-                self.titleLabel.text = newValue?.name
-            }
+            self.removeViews()
+            self.setupLayout()
         }
     }
     
-    lazy var listItems: [ItemData] = getCart() {
+    var listItems: [ItemData] = [] {
         willSet {
-            
+            self.collectionView.isHidden = newValue.isEmpty
+            self.placeholderView.isHidden = !newValue.isEmpty
         }
     }
     
     let prodVC = ProductViewController()
-    
-    let titleLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Order History"
-        label.font = .systemFont(ofSize: 25, weight: .semibold)
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
+
     
     let collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -41,32 +33,61 @@ class OrderHistoryViewController: CustomViewController, UICollectionViewDataSour
         layout.scrollDirection = .vertical
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
         cv.register(OrderHistoryItemCollectionViewCell.self, forCellWithReuseIdentifier: OrderHistoryItemCollectionViewCell.cellID)
+        cv.register(CartTitleCollectionViewCell.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: CartTitleCollectionViewCell.cellID)
         cv.translatesAutoresizingMaskIntoConstraints = false
         cv.backgroundColor = .clear
+        cv.isHidden = true
         return cv
     }()
     
-    let cvc = CheckoutViewController()
     
-    let containerView: UIView = {
+    let label: UILabel = {
+        let label = UILabel()
+        label.text = "No Items Bought yet"
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = .monospacedSystemFont(ofSize: 10, weight: .regular)
+        label.textColor = .darkGray
+        return label
+    }()
+    
+    lazy var placeholderView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
+        let imageView = UIImageView(image: UIImage(named: "EmptyCart"))
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.contentMode = .scaleAspectFit
+        imageView.clipsToBounds = true
+        view.addSubview(imageView)
+        view.addSubview(label)
+        NSLayoutConstraint.activate([
+            imageView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.5),
+            imageView.widthAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.5),
+            imageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            imageView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            label.topAnchor.constraint(equalTo: imageView.centerYAnchor, constant: 50),
+            label.centerXAnchor.constraint(equalTo: imageView.centerXAnchor),
+        ])
+        view.backgroundColor = .white
         return view
     }()
+    
+    let cvc = CheckoutViewController()
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
     }
     
-    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+    init(nibName nibNameOrNil: String? = nil, bundle nibBundleOrNil: Bundle? = nil, auth: Auth?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+        self.auth = auth
         self.requiresAuth = true
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        self.setupLayout()
+        if (requiresAuth && auth != nil) || ( !requiresAuth ){
+            self.setupLayout()
+        }
     }
     
     func getList() -> [ItemData] {
@@ -93,27 +114,31 @@ class OrderHistoryViewController: CustomViewController, UICollectionViewDataSour
     }
     
     override func setupLayout() {
-        view.backgroundColor = .white
         
+        view.backgroundColor = .white
+        self.loadData()
         collectionView.dataSource = self
         collectionView.delegate = self
+        (collectionView.collectionViewLayout as? UICollectionViewFlowLayout)?.headerReferenceSize = CGSize(width: view.frame.width, height: 50)
         
-        containerView.addSubview(titleLabel)
-        containerView.addSubview(collectionView)
-        view.addSubview(containerView)
+        view.addSubview(placeholderView)
+        view.addSubview(collectionView)
         
         NSLayoutConstraint.activate([
-            containerView.heightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.heightAnchor),
-            containerView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.95),
-            containerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            containerView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            titleLabel.leftAnchor.constraint(equalTo: containerView.leftAnchor, constant: 20),
-            titleLabel.topAnchor.constraint(equalTo: containerView.safeAreaLayoutGuide.topAnchor),
-            collectionView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor),
-            collectionView.bottomAnchor.constraint(equalTo: containerView.safeAreaLayoutGuide.bottomAnchor),
-            collectionView.widthAnchor.constraint(equalTo: containerView.widthAnchor),
-            collectionView.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
+            collectionView.topAnchor.constraint(equalTo: view.topAnchor),
+            collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            collectionView.widthAnchor.constraint(equalTo: view.widthAnchor),
+            collectionView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            placeholderView.widthAnchor.constraint(equalTo: self.view.widthAnchor),
+            placeholderView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor),
+            placeholderView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+            placeholderView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor),
         ])
+    }
+    
+    func loadData() {
+        self.listItems = getList()
+        self.collectionView.reloadData()
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -125,6 +150,12 @@ class OrderHistoryViewController: CustomViewController, UICollectionViewDataSour
         cell.itemData = listItems[indexPath.row]
         cell.delegate = self
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: CartTitleCollectionViewCell.cellID, for: indexPath) as! CartTitleCollectionViewCell
+        headerView.title = "Order History"
+        return headerView
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {

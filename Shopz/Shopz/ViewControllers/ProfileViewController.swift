@@ -9,6 +9,15 @@ import UIKit
 
 class ProfileViewController: CustomViewController, UICollectionViewDataSource, UICollectionViewDelegate, ShoppingListCellDelegate {
     
+    override var auth: Auth? {
+        willSet {
+            if newValue != nil {
+                self.removeViews()
+                self.setupLayout()
+            }
+        }
+    }
+    
     let containerView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
@@ -27,7 +36,7 @@ class ProfileViewController: CustomViewController, UICollectionViewDataSource, U
         return cv
     }()
     
-    let svc = CartViewController()
+    var svc: CartViewController? = nil
     
     var containerData: [ProfileViewElement] = [
         ProfileData(name: "Pacman", bgImageMedia: "https://docs.swift.org/swift-book/_images/memory_shopping_2x.png", profileImageMedia: "https://www.gravatar.com/avatar/acee100932e6b180a64cf7a58ccab6d6.jpg?d=https%3A%2F%2Fwolverine.raywenderlich.com%2Fv3-resources%2Fimages%2Fdefault-account-avatar_2x.png&s=480", email: "test@email.com"),
@@ -46,15 +55,17 @@ class ProfileViewController: CustomViewController, UICollectionViewDataSource, U
         super.init(coder: coder)
     }
     
-    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+    init(nibName nibNameOrNil: String? = nil, bundle nibBundleOrNil: Bundle? = nil, auth: Auth?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+        self.auth = auth
         self.requiresAuth = true
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        self.setupLayout()
+        if (requiresAuth && auth != nil) || ( !requiresAuth ){
+            self.setupLayout()
+        }
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -67,11 +78,12 @@ class ProfileViewController: CustomViewController, UICollectionViewDataSource, U
     }
     
     func listItemClicked(indexPath: IndexPath, shoppingListData: ShoppingList?) {
-        if let listData = shoppingListData {
-            svc.listDetails = listData
-            svc.willMove(toParent: self)
-            self.addChild(svc)
-            self.view.addSubview(svc.view)
+        svc = CartViewController(auth: auth)
+        if let listData = shoppingListData, svc != nil {
+            svc!.listDetails = listData
+            svc!.willMove(toParent: self)
+            self.addChild(svc!)
+            self.view.addSubview(svc!.view)
             
         }
     }

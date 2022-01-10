@@ -8,6 +8,13 @@
 import UIKit
 
 class SearchViewController: CustomViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+    
+    override var auth: Auth? {
+        willSet {
+            self.removeViews()
+            self.setupLayout()
+        }
+    }
    
     let searchList: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -59,12 +66,21 @@ class SearchViewController: CustomViewController, UICollectionViewDelegate, UICo
         CategoryData(name: "TEST"),
         CategoryData(name: "TEST"),
     ]
-
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+    }
+    
+    init(nibName nibNameOrNil: String? = nil, bundle nibBundleOrNil: Bundle? = nil, auth: Auth?) {
+        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+        self.auth = auth
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.view.backgroundColor = .white
-        
-        self.setupLayout()
+        if (requiresAuth && auth != nil) || ( !requiresAuth ){
+            self.setupLayout()
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -99,7 +115,7 @@ class SearchViewController: CustomViewController, UICollectionViewDelegate, UICo
     
     
     override func setupLayout() {
-        
+        view.backgroundColor = .white
         searchList.dataSource = self
         searchList.delegate = self
         
