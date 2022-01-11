@@ -45,27 +45,17 @@ class SearchViewController: CustomViewController, UICollectionViewDelegate, UICo
         return cv
     }()
     
-    let searchListData: [ItemData] = [
-        ItemData(name: "Mobile", media: "house.fill", cost: 12),
-        ItemData(name: "HeadPhones", media: "person.fill", cost: 34),
-        ItemData(name: "Watch", media: "photo.fill", cost: 11),
-        ItemData(name: "Mobile", media: "house.fill", cost: 12),
-        ItemData(name: "HeadPhones", media: "person.fill", cost: 34),
-        ItemData(name: "Watch", media: "photo.fill", cost: 11),
-        ItemData(name: "Mobile", media: "house.fill", cost: 12),
-        ItemData(name: "HeadPhones", media: "person.fill", cost: 34),
-        ItemData(name: "Watch", media: "photo.fill", cost: 11),
-    ]
+    var searchListData: [Product] = StorageDB.getProducts() {
+        willSet {
+            
+        }
+    }
     
-    let categoryListData: [CategoryData] = [
-        CategoryData(name: "TESTinasda"),
-        CategoryData(name: "TESTasdasd"),
-        CategoryData(name: "TEST"),
-        CategoryData(name: "TEST"),
-        CategoryData(name: "TEST"),
-        CategoryData(name: "TEST"),
-        CategoryData(name: "TEST"),
-    ]
+    var categoryListData: [Category] = StorageDB.getCategories() {
+        willSet {
+            
+        }
+    }
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)

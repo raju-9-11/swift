@@ -27,8 +27,8 @@ class Auth: NSObject {
         return hashed.compactMap { String(format: "%02x", $0) }.joined()
     }
     
-    static func verifyPassword(password: String , hashPassword: String) -> Bool {
-        return false
+    static func verifyPassword(password: String , hashPassword: String, salt: String) -> Bool {
+        return self.hashPassword(password: password, salt: salt) == hashPassword
     }
     
     static func saltGen() -> String {

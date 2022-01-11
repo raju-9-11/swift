@@ -52,11 +52,11 @@ class SearchItemCollectionViewCell: UICollectionViewCell {
         return label
     }()
     
-    var data: ItemData = ItemData(name: "", media: "", cost: 0) {
+    var data: Product = Product(product_id: 0, product_name: "", seller_id: 0, image_media: "", shipping_cost: 0, description: "", price: 0, rating: 0, category: "") {
         willSet {
-            nameLabel.text = newValue.name
-            costLabel.text = "$ \(newValue.cost)"
-            imageView.image = UIImage(systemName: newValue.media)
+            nameLabel.text = newValue.product_name
+            costLabel.text = "$ \(newValue.price)"
+            imageView.image = UIImage(systemName: newValue.image_media)
             ratingLabel.text = "\(newValue.rating)/5.0"
             self.setupLayout()
         }
@@ -78,6 +78,7 @@ class SearchItemCollectionViewCell: UICollectionViewCell {
             imageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             nameLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
             nameLabel.leftAnchor.constraint(equalTo: imageView.rightAnchor, constant: 10),
+            nameLabel.rightAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.rightAnchor, constant: -10),
             costLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor),
             costLabel.leftAnchor.constraint(equalTo: nameLabel.leftAnchor),
             ratingLabel.bottomAnchor.constraint(equalTo: bottomLine.topAnchor, constant: -5),

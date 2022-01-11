@@ -37,12 +37,31 @@ class ApplicationDB {
         return true
     }
     
-    func initDB() -> Bool {
-        return openDB() && createTable(tableName: "users")
+    func closeDB() {
+        sqlite3_close(db)
     }
     
-    func createTable(tableName: String) -> Bool {
-        if sqlite3_exec(db, "create table if not exists \(tableName) (id integer primary key autoincrement, firstname text, lastname text, password text, password_salt, about text, email text, ph text, city text, country text)", nil, nil, nil) != SQLITE_OK {
+    func initDB() -> Bool {
+        return openDB() && createTable(tableName: "users", with: [
+            "id": "integer primary key autoincrement",
+            "firstname": "text",
+            "lastname": "text",
+            "password": "text",
+            "password_salt": "text",
+            "about": "text",
+            "email": "text",
+            "ph": "text",
+            "city": "text",
+            "country": "text"
+        ]) && createTable(tableName: "cart_items", with: [
+            "id":"integer primary key",
+            "product_id": "integer",
+        ])
+    }
+    
+    func createTable(tableName: String, with queryComponents : [String: String]) -> Bool {
+        let valuesString = queryComponents.map({ key, value in return "\(key) \(value)" }).joined(separator: ",")
+        if sqlite3_exec(db, "create table if not exists \(tableName) (\(valuesString))", nil, nil, nil) != SQLITE_OK {
             let errmsg = String(cString: sqlite3_errmsg(db)!)
             print("error creating table: \(errmsg)")
             return false
@@ -50,10 +69,26 @@ class ApplicationDB {
         return true
     }
     
-    func addUser(firstName: String, lastName: String, email: String, ph: String, country: String, city: String, password: String, about: String = "") {
+    func addUser(firstName: String, lastName: String, email: String, ph: String, country: String, city: String, password: String, about: String = "") -> Bool {
         
         var statement: OpaquePointer?
         let salt = Auth.saltGen()
+        var userExists = false
+        switch self.verifyUser(email: email, password: password) {
+        case .success(_):
+            userExists = true
+        case .failure(let err):
+            switch err {
+            case .userNotFound:
+                userExists = true
+            default:
+                userExists = false
+            }
+        }
+        
+        if userExists {
+            return false
+        }
         print(Auth.hashPassword(password: password, salt: salt))
         
         sqlite3_prepare(db, "insert into users (firstname, lastname, email, ph, country, city, password, password_salt, about) values (?, ?, ?, ?, ?, ?, ?, ?, ?)", -1, &statement, nil)
@@ -67,15 +102,47 @@ class ApplicationDB {
         sqlite3_bind_text(statement, 8, "\(salt)", -1, SQLITE_TRANSIENT)
         sqlite3_bind_text(statement, 9, "\(about)", -1, SQLITE_TRANSIENT)
         sqlite3_step(statement)
+        
+        return true
     }
     
-    func readData(name: String) {
+    func verifyUser(email: String, password: String) -> Result<User, UserFetchError> {
         var statement: OpaquePointer?
         
-        let query = "select id, firstname, lastname, email, ph, country, city, password, password_salt, about from users"
-        
-        if sqlite3_prepare(db, query, -1, &statement, nil) != SQLITE_OK {
+        if sqlite3_prepare(db, "select id ,firstname, lastname, email, ph, country, city, password, password_salt, about from users where email='\(email)'", -1, &statement, nil) != SQLITE_OK {
             print("Error \(String(cString: sqlite3_errmsg(db)))")
+            return .failure(.dataNotFound)
+        }
+        
+        if sqlite3_step(statement) == SQLITE_ROW {
+            if Auth.verifyPassword(password: password, hashPassword: String(cString: sqlite3_column_text(statement, 7)), salt: String(cString: sqlite3_column_text(statement, 8))) {
+                return .success(
+                    User(
+                        id: Int(sqlite3_column_int64(statement, 0)),
+                        firstName: String(cString: sqlite3_column_text(statement, 1)),
+                        lastName: String(cString: sqlite3_column_text(statement, 2)),
+                        email: String(cString: sqlite3_column_text(statement, 3)),
+                        ph: String(cString: sqlite3_column_text(statement, 4)),
+                        country: String(cString: sqlite3_column_text(statement, 5)),
+                        about: String(cString: sqlite3_column_text(statement, 9))
+                ))
+            } else {
+                return .failure(.invalidPassword)
+            }
+        }
+        
+        return .failure(.userNotFound)
+        
+        
+        
+    }
+    
+    func readUsers() {
+        var statement: OpaquePointer?
+        
+        if sqlite3_prepare(db, "select id, firstname, lastname, email, ph, country, city, password, password_salt, about from users", -1, &statement, nil) != SQLITE_OK {
+            print("Error \(String(cString: sqlite3_errmsg(db)))")
+            return
         }
         
         var id: Int = -1
@@ -143,5 +210,33 @@ class ApplicationDB {
         }
     }
     
+    
+    enum UserFetchError: Error {
+        case invalidPassword, userNotFound, dataNotFound
+    }
+    
 }
+
+//        if ApplicationDB.shared.initDB() {
+//            if ApplicationDB.shared.addUser(firstName: "John", lastName: "Doe", email: "test@xyz.com", ph: "+919789019982", country: "India", city: "Chennai", password: "Passwd", about: "TEST") {
+//                print("user Created")
+//            } else {
+//                print("User Exists")
+//            }
+//            ApplicationDB.shared.readUsers()
+//            switch ApplicationDB.shared.verifyUser(email: "test@xyz.com", password: "Passwd") {
+//            case .success(let user):
+//                print("user found: \(user.firstName)")
+//            case .failure(let err):
+//                switch err {
+//                case .invalidPassword:
+//                    print("Password Invalid")
+//                case .userNotFound:
+//                    print("User Not Found")
+//                case .dataNotFound:
+//                    print("Unable to read data try again later")
+//                }
+//            }
+//        }
+
  

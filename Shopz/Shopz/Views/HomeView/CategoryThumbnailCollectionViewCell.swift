@@ -1,15 +1,15 @@
 //
-//  ItemThumbNailCollectionViewcellCollectionViewCell.swift
+//  CategoryThumbnailCollectionViewCell.swift
 //  Shopz
 //
-//  Created by Rajkumar S on 13/12/21.
+//  Created by Rajkumar S on 11/01/22.
 //
 
 import UIKit
 
-class ItemThumbNailCollectionViewCell: UICollectionViewCell {
+class CategoryThumbnailCollectionViewCell: UICollectionViewCell {
     
-    static let cellID = "ItemThumCell"
+    static let cellID = "CategoryItemThumCell"
     
     let imageView: UIImageView = {
         let imageView = UIImageView()
@@ -30,7 +30,7 @@ class ItemThumbNailCollectionViewCell: UICollectionViewCell {
         return label
     }()
     
-    lazy var data: ItemThumbNailModel = ItemThumbNailModel(name: "TEST", id: 0, media: "TEST") {
+    lazy var data: Category = Category(id: 0, name: "TEST", media: "TEST") {
         willSet {
             self.downloadImage(url: newValue.media)
             self.label.text = newValue.name
@@ -64,11 +64,11 @@ class ItemThumbNailCollectionViewCell: UICollectionViewCell {
             imageView.topAnchor.constraint(equalTo: contentView.topAnchor),
             label.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10),
             label.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            label.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.8)
         ])
     }
     
     func downloadImage(url: String) {
         
     }
-    
 }

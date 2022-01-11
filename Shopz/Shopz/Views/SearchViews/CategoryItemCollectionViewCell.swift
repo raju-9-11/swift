@@ -39,7 +39,7 @@ class CategoryItemCollectionViewCell: UICollectionViewCell {
     
     var cellSize = CGSize(width: 100, height: 10)
     
-    var categoryData = CategoryData(name: "PLACEHOLDER") {
+    var categoryData = Category(id: 0, name: "PLACEHOLDER", media: "") {
         willSet {
             nameLabel.text = newValue.name
             self.setupLayout()
@@ -75,15 +75,6 @@ class CategoryItemCollectionViewCell: UICollectionViewCell {
         attr.size = cellSize
         attr.size.width = max(CGFloat(categoryData.name.count)*10 + 10, 70)
         return attr
-    }
-}
-
-class CategoryData {
-    var id = UUID()
-    var name: String
-    
-    init(name: String) {
-        self.name = name
     }
 }
 

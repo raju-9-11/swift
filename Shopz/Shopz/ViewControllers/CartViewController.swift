@@ -31,7 +31,7 @@ class CartViewController: CustomViewController, UICollectionViewDataSource, UICo
         }
     }
     
-    lazy var listItems: [ItemData] = [] {
+    lazy var listItems: [Product] = [] {
         willSet {
             self.tabBarItem.badgeValue = "\(newValue.count)"
             self.collectionView.isHidden = newValue.isEmpty
@@ -111,26 +111,13 @@ class CartViewController: CustomViewController, UICollectionViewDataSource, UICo
     }
     
     
-    func getList() -> [ItemData] {
-        let cart = [
-            ItemData(name: "samsung y12", media: "https://sathya.in/media/55438/catalog/vivo-mobile-y21-midnight-blue4gb-ram128gb-storage-3.jpg", cost: 22),
-            ItemData(name: "samsung y12", media: "https://sathya.in/media/55438/catalog/vivo-mobile-y21-midnight-blue4gb-ram128gb-storage-3.jpg", cost: 22),
-            ItemData(name: "samsung y12", media: "https://sathya.in/media/55438/catalog/vivo-mobile-y21-midnight-blue4gb-ram128gb-storage-3.jpg", cost: 22),
-            ItemData(name: "samsung y12", media: "https://sathya.in/media/55438/catalog/vivo-mobile-y21-midnight-blue4gb-ram128gb-storage-3.jpg", cost: 22),
-            ItemData(name: "samsung y12", media: "https://sathya.in/media/55438/catalog/vivo-mobile-y21-midnight-blue4gb-ram128gb-storage-3.jpg", cost: 22),
-        ]
+    func getList() -> [Product] {
+        let cart = StorageDB.getProducts()
         return cart
     }
     
-    func getCart() -> [ItemData] {
-        let shoppingList = [
-            ItemData(name: "Iphone", media: "https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/iphone-13-pro-max-gold-select?wid=940&hei=1112&fmt=png-alpha&.v=1631652956000", cost: 33),
-            ItemData(name: "Iphone", media: "https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/iphone-13-pro-max-gold-select?wid=940&hei=1112&fmt=png-alpha&.v=1631652956000", cost: 33),
-            ItemData(name: "Iphone", media: "https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/iphone-13-pro-max-gold-select?wid=940&hei=1112&fmt=png-alpha&.v=1631652956000", cost: 33),
-            ItemData(name: "Iphone", media: "https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/iphone-13-pro-max-gold-select?wid=940&hei=1112&fmt=png-alpha&.v=1631652956000", cost: 33),
-            ItemData(name: "Iphone", media: "https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/iphone-13-pro-max-gold-select?wid=940&hei=1112&fmt=png-alpha&.v=1631652956000", cost: 33),
-            ItemData(name: "Iphone", media: "https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/iphone-13-pro-max-gold-select?wid=940&hei=1112&fmt=png-alpha&.v=1631652956000", cost: 33),
-        ]
+    func getCart() -> [Product] {
+        let shoppingList = StorageDB.getProducts()
         return shoppingList
     }
     
@@ -196,9 +183,9 @@ class CartViewController: CustomViewController, UICollectionViewDataSource, UICo
         return headerView
     }
     
-    func removeItem(item: ItemData) {
+    func removeItem(item: Product) {
         for (index, listItem ) in listItems.enumerated() {
-            if item.id == listItem.id {
+            if item.product_id == listItem.product_id {
                 listItems.remove(at: index)
                 collectionView.deleteItems(at: [IndexPath(row: index, section: 0)])
                 self.collectionView.reloadData()
@@ -226,12 +213,4 @@ class CartViewController: CustomViewController, UICollectionViewDataSource, UICo
         self.removeFromParent()
     }
     
-}
-
-struct ItemData {
-    var id = UUID()
-    var name: String
-    var media: String
-    var cost: Double
-    var rating: Double = 0
 }

@@ -1,805 +1,269 @@
 {
+    "categories": [
+        {
+            "id": 0,
+            "name": "electronics",
+            "media": "https://ecommerce.ccc2020.fr/wp-content/uploads/2020/10/electronic-gadgets.jpeg"
+        }, {
+            "id": 1,
+            "name": "jewelery",
+            "media": "https://previews.123rf.com/images/bestpetphotos/bestpetphotos1712/bestpetphotos171200392/91835305-fashion-jewelrys-fashion-jewels-as-background-jewelery-texture-a-lot-of-jewells-in-texture-jewellery.jpg"
+        }, {
+            "id": 2,
+            "name": "men's clothing",
+            "media": "https://previews.123rf.com/images/cookelma/cookelma0803/cookelma080300026/2687368-men-s-clothes-and-accessories-on-a-white-background.jpg"
+        }, {
+            "id": 3,
+            "name": "women's clothing",
+            "media": "https://media.istockphoto.com/vectors/female-fashion-summer-apparel-collection-womens-clothes-icons-and-vector-id1202795176"
+        }, {
+            "id": 4,
+            "name": "appliances",
+            "media": "https://5.imimg.com/data5/OV/KM/CR/ANDROID-37090388/product-jpeg-500x500.jpg"
+        }, {
+            "id": 5,
+            "name": "food",
+            "media": "https://images.everydayhealth.com/images/diet-nutrition/34da4c4e-82c3-47d7-953d-121945eada1e00-giveitup-unhealthyfood.jpg?sfvrsn=a31d8d32_0"
+        }, {
+            "id": 6,
+            "name": "nutrition",
+            "media": "https://ichef.bbci.co.uk/images/ic/1280xn/p088g9c6.jpg"
+        }, {
+            "id": 7,
+            "name": "grocery",
+            "media": "https://media.self.com/photos/599c997a774b667d3bbe1214/16:9/w_1279,h_719,c_limit/groceries-family-month.jpg"
+        }, {
+            "id": 8,
+            "name": "sports",
+            "media": "https://etimg.etb2bimg.com/photo/74881928.cms"
+        }, {
+            "id": 9,
+            "name": "construction",
+            "media": "https://www.designingbuildings.co.uk/w/images/3/3b/Construction_management.jpg"
+        }
+    ],
+    "sellers": [
+    ],
     "products": [
         {
           "product_id": 1,
-          "product_name": "Zyvox",
-          "description": "Ourebia ourebi",
-          "price": 862.61,
-          "seller_name": "Sergeant Tinto",
-          "shipping_cost": 151,
-          "image_media": "http://dummyimage.com/106x100.png/dddddd/000000"
-        }, {
+          "product_name": " Fjallraven - Foldsack No. 1 Backpack, Fits 15 Laptops",
+          "price": 109.95,
+          "shipping_cost": 11,
+          "image_media": "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg",
+          "rating": 5,
+          "seller_id": 5,
+          "category": "jewelery",
+          "description": "Your perfect pack for everyday use and walks in the forest. Stash your laptop (up to 15 inches) in the padded sleeve, your everyday"
+        },
+        {
           "product_id": 2,
-          "product_name": "Visine A",
-          "description": "Rhea americana",
-          "price": 909.0,
-          "seller_name": "Carl Este",
-          "shipping_cost": 141,
-          "image_media": "http://dummyimage.com/238x100.png/dddddd/000000"
-        }, {
+          "product_name": " Mens Casual Premium Slim Fit T-Shirts ",
+          "price": 22.3,
+          "shipping_cost": 2.23,
+          "image_media": "https://fakestoreapi.com/img/71-3HjGNDUL._AC_SY879._SX._UX._SY._UY_.jpg",
+          "rating": 5,
+          "seller_id": 19,
+          "category": "men's clothing",
+          "description": "Slim-fitting style, contrast raglan long sleeve, three-button henley placket, light weight & soft fabric for breathable and comfortable wearing. And Solid stitched shirts with round neck made for durability and a great fit for casual fashion wear and diehard baseball fans. The Henley style round neckline includes a three-button placket."
+        },
+        {
           "product_id": 3,
-          "product_name": "Relief",
-          "description": "Cacatua galerita",
-          "price": 709.67,
-          "seller_name": "Pammi Stiegers",
-          "shipping_cost": 83,
-          "image_media": "http://dummyimage.com/175x100.png/5fa2dd/ffffff"
-        }, {
+          "product_name": " Mens Cotton Jacket",
+          "price": 55.99,
+          "shipping_cost": 5.6,
+          "image_media": "https://fakestoreapi.com/img/71li-ujtlUL._AC_UX679_.jpg",
+          "rating": 0,
+          "seller_id": 12,
+          "category": "food",
+          "description": "great outerwear jackets for Spring/Autumn/Winter, suitable for many occasions, such as working, hiking, camping, mountain/rock climbing, cycling, traveling or other outdoors. Good gift choice for you or your family member. A warm hearted love to Father, husband or son in this thanksgiving or Christmas Day."
+        },
+        {
           "product_id": 4,
-          "product_name": "Synthroid",
-          "description": "Phalacrocorax varius",
-          "price": 963.43,
-          "seller_name": "Arie Bufton",
-          "shipping_cost": 88,
-          "image_media": "http://dummyimage.com/102x100.png/cc0000/ffffff"
-        }, {
+          "product_name": " Mens Casual Slim Fit",
+          "price": 15.99,
+          "shipping_cost": 1.6,
+          "image_media": "https://fakestoreapi.com/img/71YXzeOuslL._AC_UY879_.jpg",
+          "rating": 5,
+          "seller_id": 13,
+          "category": "nutrition",
+          "description": "The color could be slightly different between on the screen and in practice. / Please note that body builds vary by person, therefore, detailed size information should be reviewed below on the product description."
+        },
+        {
           "product_id": 5,
-          "product_name": "Golden Pear Antibacterial Foaming Hand Wash",
-          "description": "Oncorhynchus nerka",
-          "price": 246.41,
-          "seller_name": "Maynord Doche",
-          "shipping_cost": 141,
-          "image_media": "http://dummyimage.com/100x100.png/cc0000/ffffff"
-        }, {
+          "product_name": " John Hardy Women's Legends Naga Gold & Silver Dragon Station Chain Bracelet",
+          "price": 695,
+          "shipping_cost": 69.5,
+          "image_media": "https://fakestoreapi.com/img/71pWzhdJNwL._AC_UL640_QL65_ML3_.jpg",
+          "rating": 5,
+          "seller_id": 16,
+          "category": "grocery",
+          "description": "From our Legends Collection, the Naga was inspired by the mythical water dragon that protects the ocean's pearl. Wear facing inward to be bestowed with love and abundance, or outward for protection."
+        },
+        {
           "product_id": 6,
-          "product_name": "HELMINTHOSPORIUM SATIVUM",
-          "description": "Equus hemionus",
-          "price": 961.47,
-          "seller_name": "Garwin Walliker",
-          "shipping_cost": 283,
-          "image_media": "http://dummyimage.com/183x100.png/cc0000/ffffff"
-        }, {
+          "product_name": " Solid Gold Petite Micropave ",
+          "price": 168,
+          "shipping_cost": 16.8,
+          "image_media": "https://fakestoreapi.com/img/61sbMiUnoGL._AC_UL640_QL65_ML3_.jpg",
+          "rating": 5,
+          "seller_id": 19,
+          "category": "women's clothing",
+          "description": "Satisfaction Guaranteed. Return or exchange any order within 30 days.Designed and sold by Hafeez Center in the United States. Satisfaction Guaranteed. Return or exchange any order within 30 days."
+        },
+        {
           "product_id": 7,
-          "product_name": "Levofloxacin",
-          "description": "Capra ibex",
-          "price": 898.05,
-          "seller_name": "Flynn Hullbrook",
-          "shipping_cost": 284,
-          "image_media": "http://dummyimage.com/230x100.png/dddddd/000000"
-        }, {
+          "product_name": " White Gold Plated Princess",
+          "price": 9.99,
+          "shipping_cost": 1,
+          "image_media": "https://fakestoreapi.com/img/71YAIFU48IL._AC_UL640_QL65_ML3_.jpg",
+          "rating": 5,
+          "seller_id": 12,
+          "category": "electronics",
+          "description": "Classic Created Wedding Engagement Solitaire Diamond Promise Ring for Her. Gifts to spoil your love more for Engagement, Wedding, Anniversary, Valentine's Day..."
+        },
+        {
           "product_id": 8,
-          "product_name": "Diazepam",
-          "description": "Catharacta skua",
-          "price": 122.09,
-          "seller_name": "Curt Camelli",
-          "shipping_cost": 222,
-          "image_media": "http://dummyimage.com/150x100.png/ff4444/ffffff"
-        }, {
+          "product_name": " Pierced Owl Rose Gold Plated Stainless Steel Double",
+          "price": 10.99,
+          "shipping_cost": 1.1,
+          "image_media": "https://fakestoreapi.com/img/51UDEzMJVpL._AC_UL640_QL65_ML3_.jpg",
+          "rating": 0,
+          "seller_id": 12,
+          "category": "construction",
+          "description": "Rose Gold Plated Double Flared Tunnel Plug Earrings. Made of 316L Stainless Steel"
+        },
+        {
           "product_id": 9,
-          "product_name": "3LAB Aqua BB SPF 40 BROAD SPECTRUM 03",
-          "description": "Ovis canadensis",
-          "price": 247.61,
-          "seller_name": "Anatol Linham",
-          "shipping_cost": 285,
-          "image_media": "http://dummyimage.com/222x100.png/ff4444/ffffff"
-        }, {
+          "product_name": " WD 2TB Elements Portable External Hard Drive - USB 3.0 ",
+          "price": 64,
+          "shipping_cost": 6.4,
+          "image_media": "https://fakestoreapi.com/img/61IBBVJvSDL._AC_SY879_.jpg",
+          "rating": 5,
+          "seller_id": 7,
+          "category": "men's clothing",
+          "description": "USB 3.0 and USB 2.0 Compatibility Fast data transfers Improve PC Performance High Capacity; Compatibility Formatted NTFS for Windows 10, Windows 8.1, Windows 7; Reformatting may be required for other operating systems; Compatibility may vary depending on user’s hardware configuration and operating system"
+        },
+        {
           "product_id": 10,
-          "product_name": "Softlips Berry",
-          "description": "Hyaena brunnea",
-          "price": 407.38,
-          "seller_name": "Felicia Clemmow",
-          "shipping_cost": 116,
-          "image_media": "http://dummyimage.com/221x100.png/ff4444/ffffff"
-        }, {
+          "product_name": " SanDisk SSD PLUS 1TB Internal SSD - SATA III 6 Gb/s",
+          "price": 109,
+          "shipping_cost": 10.9,
+          "image_media": "https://fakestoreapi.com/img/61U7T1koQqL._AC_SX679_.jpg",
+          "rating": 5,
+          "seller_id": 1,
+          "category": "women's clothing",
+          "description": "Easy upgrade for faster boot up, shutdown, application load and response (As compared to 5400 RPM SATA 2.5” hard drive; Based on published specifications and internal benchmarking tests using PCMark vantage scores) Boosts burst write performance, making it ideal for typical PC workloads The perfect balance of performance and reliability Read/write speeds of up to 535MB/s/450MB/s (Based on internal testing; Performance may vary depending upon drive capacity, host device, OS and application.)"
+        },
+        {
           "product_id": 11,
-          "product_name": "Tracleer",
-          "description": "Lutra canadensis",
-          "price": 122.18,
-          "seller_name": "Melodie Alyukin",
-          "shipping_cost": 262,
-          "image_media": "http://dummyimage.com/225x100.png/dddddd/000000"
-        }, {
+          "product_name": " Silicon Power 256GB SSD 3D NAND A55 SLC Cache Performance Boost SATA III 2.5",
+          "price": 109,
+          "shipping_cost": 10.9,
+          "image_media": "https://fakestoreapi.com/img/71kWymZ+c+L._AC_SX679_.jpg",
+          "rating": 5,
+          "seller_id": 14,
+          "category": "women's clothing",
+          "description": "3D NAND flash are applied to deliver high transfer speeds Remarkable transfer speeds that enable faster bootup and improved overall system performance. The advanced SLC Cache Technology allows performance boost and longer lifespan 7mm slim design suitable for Ultrabooks and Ultra-slim notebooks. Supports TRIM command, Garbage Collection technology, RAID, and ECC (Error Checking & Correction) to provide the optimized performance and enhanced reliability."
+        },
+        {
           "product_id": 12,
-          "product_name": "Loblolly Pine",
-          "description": "Canis lupus lycaon",
-          "price": 737.2,
-          "seller_name": "Malvina Tye",
-          "shipping_cost": 227,
-          "image_media": "http://dummyimage.com/125x100.png/dddddd/000000"
-        }, {
+          "product_name": " WD 4TB Gaming Drive Works with Playstation 4 Portable External Hard Drive",
+          "price": 114,
+          "shipping_cost": 11.4,
+          "image_media": "https://fakestoreapi.com/img/61mtL65D4cL._AC_SX679_.jpg",
+          "rating": 5,
+          "seller_id": 1,
+          "category": "appliances",
+          "description": "Expand your PS4 gaming experience, Play anywhere Fast and easy, setup Sleek design with high capacity, 3-year manufacturer's limited warranty"
+        },
+        {
           "product_id": 13,
-          "product_name": "Labetalol Hydrochloride",
-          "description": "Panthera pardus",
-          "price": 998.77,
-          "seller_name": "Dannel Brunn",
-          "shipping_cost": 54,
-          "image_media": "http://dummyimage.com/152x100.png/ff4444/ffffff"
-        }, {
+          "product_name": " Acer SB220Q bi 21.5 inches Full HD (1920 x 1080) IPS Ultra-Thin",
+          "price": 599,
+          "shipping_cost": 59.9,
+          "image_media": "https://fakestoreapi.com/img/81QpkIctqPL._AC_SX679_.jpg",
+          "rating": 0,
+          "seller_id": 11,
+          "category": "nutrition",
+          "description": "21. 5 inches Full HD (1920 x 1080) widescreen IPS display And Radeon free Sync technology. No compatibility for VESA Mount Refresh Rate: 75Hz - Using HDMI port Zero-frame design | ultra-thin | 4ms response time | IPS panel Aspect ratio - 16: 9. Color Supported - 16. 7 million colors. Brightness - 250 nit Tilt angle -5 degree to 15 degree. Horizontal viewing angle-178 degree. Vertical viewing angle-178 degree 75 hertz"
+        },
+        {
           "product_id": 14,
-          "product_name": "Mucinex",
-          "description": "Tamiasciurus hudsonicus",
-          "price": 196.22,
-          "seller_name": "Frederico Smitton",
-          "shipping_cost": 257,
-          "image_media": "http://dummyimage.com/152x100.png/ff4444/ffffff"
-        }, {
+          "product_name": " Samsung 49-Inch CHG90 144Hz Curved Gaming Monitor (LC49HG90DMNXZA) – Super Ultrawide Screen QLED ",
+          "price": 999.99,
+          "shipping_cost": 100,
+          "image_media": "https://fakestoreapi.com/img/81Zt42ioCgL._AC_SX679_.jpg",
+          "rating": 4,
+          "seller_id": 12,
+          "category": "grocery",
+          "description": "49 INCH SUPER ULTRAWIDE 32:9 CURVED GAMING MONITOR with dual 27 inch screen side by side QUANTUM DOT (QLED) TECHNOLOGY, HDR support and factory calibration provides stunningly realistic and accurate color and contrast 144HZ HIGH REFRESH RATE and 1ms ultra fast response time work to eliminate motion blur, ghosting, and reduce input lag"
+        },
+        {
           "product_id": 15,
-          "product_name": "Banana Boat Ultra Defense SPF 60 Canada",
-          "description": "Nannopterum harrisi",
-          "price": 554.94,
-          "seller_name": "Zedekiah McGilvra",
-          "shipping_cost": 175,
-          "image_media": "http://dummyimage.com/127x100.png/cc0000/ffffff"
-        }, {
+          "product_name": " BIYLACLESEN Women's 3-in-1 Snowboard Jacket Winter Coats",
+          "price": 56.99,
+          "shipping_cost": 5.7,
+          "image_media": "https://fakestoreapi.com/img/51Y5NI-I5jL._AC_UX679_.jpg",
+          "rating": 1,
+          "seller_id": 6,
+          "category": "sports",
+          "description": "Note:The Jackets is US standard size, Please choose size as your usual wear Material: 100% Polyester; Detachable Liner Fabric: Warm Fleece. Detachable Functional Liner: Skin Friendly, Lightweigt and Warm.Stand Collar Liner jacket, keep you warm in cold weather. Zippered Pockets: 2 Zippered Hand Pockets, 2 Zippered Pockets on Chest (enough to keep cards or keys)and 1 Hidden Pocket Inside.Zippered Hand Pockets and Hidden Pocket keep your things secure. Humanized Design: Adjustable and Detachable Hood and Adjustable cuff to prevent the wind and water,for a comfortable fit. 3 in 1 Detachable Design provide more convenience, you can separate the coat and inner as needed, or wear it together. It is suitable for different season and help you adapt to different climates"
+        },
+        {
           "product_id": 16,
-          "product_name": "MIGERGOT",
-          "description": "Pedetes capensis",
-          "price": 154.67,
-          "seller_name": "Giacomo Collisson",
-          "shipping_cost": 133,
-          "image_media": "http://dummyimage.com/221x100.png/5fa2dd/ffffff"
-        }, {
+          "product_name": " Lock and Love Women's Removable Hooded Faux Leather Moto Biker Jacket",
+          "price": 29.95,
+          "shipping_cost": 3,
+          "image_media": "https://fakestoreapi.com/img/81XH0e8fefL._AC_UY879_.jpg",
+          "rating": 2,
+          "seller_id": 2,
+          "category": "sports",
+          "description": "100% POLYURETHANE(shell) 100% POLYESTER(lining) 75% POLYESTER 25% COTTON (SWEATER), Faux leather material for style and comfort / 2 pockets of front, 2-For-One Hooded denim style faux leather jacket, Button detail on waist / Detail stitching at sides, HAND WASH ONLY / DO NOT BLEACH / LINE DRY / DO NOT IRON"
+        },
+        {
           "product_id": 17,
-          "product_name": "Bromfenac",
-          "description": "Phalacrocorax carbo",
-          "price": 840.91,
-          "seller_name": "Tyne Blenkin",
-          "shipping_cost": 115,
-          "image_media": "http://dummyimage.com/146x100.png/ff4444/ffffff"
-        }, {
+          "product_name": " Rain Jacket Women Windbreaker Striped Climbing Raincoats",
+          "price": 39.99,
+          "shipping_cost": 4,
+          "image_media": "https://fakestoreapi.com/img/71HblAHs5xL._AC_UY879_-2.jpg",
+          "rating": 5,
+          "seller_id": 19,
+          "category": "sports",
+          "description": "Lightweight perfet for trip or casual wear---Long sleeve with hooded, adjustable drawstring waist design. Button and zipper front closure raincoat, fully stripes Lined and The Raincoat has 2 side pockets are a good size to hold all kinds of things, it covers the hips, and the hood is generous but doesn't overdo it.Attached Cotton Lined Hood with Adjustable Drawstrings give it a real styled look."
+        },
+        {
           "product_id": 18,
-          "product_name": "Lidocaine Hydrochloride",
-          "description": "Cercopithecus aethiops",
-          "price": 888.75,
-          "seller_name": "Kristel Hearfield",
-          "shipping_cost": 150,
-          "image_media": "http://dummyimage.com/221x100.png/dddddd/000000"
-        }, {
+          "product_name": " MBJ Women's Solid Short Sleeve Boat Neck V ",
+          "price": 9.85,
+          "shipping_cost": 0.99,
+          "image_media": "https://fakestoreapi.com/img/71z3kpMAYsL._AC_UY879_.jpg",
+          "rating": 0,
+          "seller_id": 9,
+          "category": "grocery",
+          "description": "95% RAYON 5% SPANDEX, Made in USA or Imported, Do Not Bleach, Lightweight fabric with great stretch for comfort, Ribbed on sleeves and neckline / Double stitching on bottom hem"
+        },
+        {
           "product_id": 19,
-          "product_name": "Intensive Vital Ampoule",
-          "description": "Porphyrio porphyrio",
-          "price": 704.49,
-          "seller_name": "Stillman Ick",
-          "shipping_cost": 50,
-          "image_media": "http://dummyimage.com/100x100.png/dddddd/000000"
-        }, {
+          "product_name": " Opna Women's Short Sleeve Moisture",
+          "price": 7.95,
+          "shipping_cost": 0.8,
+          "image_media": "https://fakestoreapi.com/img/51eg55uWmdL._AC_UX679_.jpg",
+          "rating": 3,
+          "seller_id": 8,
+          "category": "food",
+          "description": "100% Polyester, Machine wash, 100% cationic polyester interlock, Machine Wash & Pre Shrunk for a Great Fit, Lightweight, roomy and highly breathable with moisture wicking fabric which helps to keep moisture away, Soft Lightweight Fabric with comfortable V-neck collar and a slimmer fit, delivers a sleek, more feminine silhouette and Added Comfort"
+        },
+        {
           "product_id": 20,
-          "product_name": "No7 Protect and Perfect Intense Day Cream SPF 15",
-          "description": "Junonia genoveua",
-          "price": 955.57,
-          "seller_name": "Marshal Ringrose",
-          "shipping_cost": 197,
-          "image_media": "http://dummyimage.com/199x100.png/ff4444/ffffff"
-        }, {
-          "product_id": 21,
-          "product_name": "LBEL EFET PARFAIT Spots Reducing Effect Foundation SPF 18 - CLAIRE 4",
-          "description": "Myrmecophaga tridactyla",
-          "price": 515.59,
-          "seller_name": "Katinka Molder",
-          "shipping_cost": 103,
-          "image_media": "http://dummyimage.com/186x100.png/dddddd/000000"
-        }, {
-          "product_id": 22,
-          "product_name": "DAMOAE THERAPY",
-          "description": "Phasianus colchicus",
-          "price": 562.99,
-          "seller_name": "Cassy Yeomans",
-          "shipping_cost": 173,
-          "image_media": "http://dummyimage.com/246x100.png/dddddd/000000"
-        }, {
-          "product_id": 23,
-          "product_name": "Bodycology",
-          "description": "Connochaetus taurinus",
-          "price": 685.1,
-          "seller_name": "Dickie Glandfield",
-          "shipping_cost": 272,
-          "image_media": "http://dummyimage.com/181x100.png/5fa2dd/ffffff"
-        }, {
-          "product_id": 24,
-          "product_name": "SAFEWAY CARE",
-          "description": "Laniarius ferrugineus",
-          "price": 199.84,
-          "seller_name": "Darsey Langthorn",
-          "shipping_cost": 85,
-          "image_media": "http://dummyimage.com/153x100.png/dddddd/000000"
-        }, {
-          "product_id": 25,
-          "product_name": "LIDOCAINE",
-          "description": "Lutra canadensis",
-          "price": 488.7,
-          "seller_name": "Locke Sutherland",
-          "shipping_cost": 295,
-          "image_media": "http://dummyimage.com/188x100.png/cc0000/ffffff"
-        }, {
-          "product_id": 26,
-          "product_name": "Nifedipine",
-          "description": "Eurocephalus anguitimens",
-          "price": 338.75,
-          "seller_name": "Livvyy Cristoforo",
-          "shipping_cost": 233,
-          "image_media": "http://dummyimage.com/199x100.png/dddddd/000000"
-        }, {
-          "product_id": 27,
-          "product_name": "topcare flu and severe cold and cough",
-          "description": "Equus hemionus",
-          "price": 470.92,
-          "seller_name": "Linnet Melato",
-          "shipping_cost": 230,
-          "image_media": "http://dummyimage.com/211x100.png/5fa2dd/ffffff"
-        }, {
-          "product_id": 28,
-          "product_name": "Naproxen Sodium",
-          "description": "Panthera pardus",
-          "price": 516.15,
-          "seller_name": "Caroljean Stigger",
-          "shipping_cost": 253,
-          "image_media": "http://dummyimage.com/240x100.png/cc0000/ffffff"
-        }, {
-          "product_id": 29,
-          "product_name": "LBEL COULEUR LUXE AMPLIFIER XP",
-          "description": "Limnocorax flavirostra",
-          "price": 686.29,
-          "seller_name": "Paulina Minghi",
-          "shipping_cost": 118,
-          "image_media": "http://dummyimage.com/228x100.png/ff4444/ffffff"
-        }, {
-          "product_id": 30,
-          "product_name": "Goodys Back and Body Pain",
-          "description": "Tamiasciurus hudsonicus",
-          "price": 299.49,
-          "seller_name": "Shandee Ketton",
-          "shipping_cost": 127,
-          "image_media": "http://dummyimage.com/109x100.png/cc0000/ffffff"
-        }, {
-          "product_id": 31,
-          "product_name": "Cold Multi-Symptom",
-          "description": "Merops nubicus",
-          "price": 689.03,
-          "seller_name": "Brianna Yurkin",
-          "shipping_cost": 107,
-          "image_media": "http://dummyimage.com/119x100.png/dddddd/000000"
-        }, {
-          "product_id": 32,
-          "product_name": "care one calcium antacid",
-          "description": "Varanus sp.",
-          "price": 767.2,
-          "seller_name": "Ardith Ricold",
-          "shipping_cost": 195,
-          "image_media": "http://dummyimage.com/128x100.png/5fa2dd/ffffff"
-        }, {
-          "product_id": 33,
-          "product_name": "HYDROCODONE BITARTRATE AND IBUPROFEN",
-          "description": "Trachyphonus vaillantii",
-          "price": 583.05,
-          "seller_name": "Drew Duns",
-          "shipping_cost": 227,
-          "image_media": "http://dummyimage.com/147x100.png/ff4444/ffffff"
-        }, {
-          "product_id": 34,
-          "product_name": "Theophylline",
-          "description": "Phalaropus fulicarius",
-          "price": 491.11,
-          "seller_name": "Pet Mitchener",
-          "shipping_cost": 146,
-          "image_media": "http://dummyimage.com/207x100.png/ff4444/ffffff"
-        }, {
-          "product_id": 35,
-          "product_name": "Childrens Mucus Relief Cough Cherry",
-          "description": "Alopex lagopus",
-          "price": 208.91,
-          "seller_name": "Rockey Meadowcraft",
-          "shipping_cost": 101,
-          "image_media": "http://dummyimage.com/218x100.png/ff4444/ffffff"
-        }, {
-          "product_id": 36,
-          "product_name": "severe cold",
-          "description": "Felis concolor",
-          "price": 140.14,
-          "seller_name": "Ker Grote",
-          "shipping_cost": 162,
-          "image_media": "http://dummyimage.com/159x100.png/dddddd/000000"
-        }, {
-          "product_id": 37,
-          "product_name": "Standardized Grass Pollen, Fescue, Meadow",
-          "description": "Felis concolor",
-          "price": 243.07,
-          "seller_name": "Axel Bannester",
-          "shipping_cost": 119,
-          "image_media": "http://dummyimage.com/167x100.png/5fa2dd/ffffff"
-        }, {
-          "product_id": 38,
-          "product_name": "Dextroamphetamine Sulfate",
-          "description": "Papio ursinus",
-          "price": 806.26,
-          "seller_name": "Ardene Sphinxe",
-          "shipping_cost": 95,
-          "image_media": "http://dummyimage.com/211x100.png/dddddd/000000"
-        }, {
-          "product_id": 39,
-          "product_name": "FLUMAZENIL",
-          "description": "unavailable",
-          "price": 882.88,
-          "seller_name": "Feliza Krauze",
-          "shipping_cost": 78,
-          "image_media": "http://dummyimage.com/101x100.png/dddddd/000000"
-        }, {
-          "product_id": 40,
-          "product_name": "RISPERIDONE",
-          "description": "Pseudoleistes virescens",
-          "price": 322.93,
-          "seller_name": "Lanie Jaycox",
-          "shipping_cost": 249,
-          "image_media": "http://dummyimage.com/192x100.png/ff4444/ffffff"
-        }, {
-          "product_id": 41,
-          "product_name": "DigiClean Slim-Line",
-          "description": "Zonotrichia capensis",
-          "price": 662.8,
-          "seller_name": "Ritchie Lowater",
-          "shipping_cost": 56,
-          "image_media": "http://dummyimage.com/107x100.png/5fa2dd/ffffff"
-        }, {
-          "product_id": 42,
-          "product_name": "Castor Oil",
-          "description": "Dasyurus maculatus",
-          "price": 630.17,
-          "seller_name": "Roxine Mingo",
-          "shipping_cost": 55,
-          "image_media": "http://dummyimage.com/203x100.png/5fa2dd/ffffff"
-        }, {
-          "product_id": 43,
-          "product_name": "Hydrocortisone Maximum Strength",
-          "description": "Potamochoerus porcus",
-          "price": 740.56,
-          "seller_name": "Haleigh Domingues",
-          "shipping_cost": 199,
-          "image_media": "http://dummyimage.com/104x100.png/dddddd/000000"
-        }, {
-          "product_id": 44,
-          "product_name": "MDSolarSciences SPF30 Plus Mineral Screen",
-          "description": "Capreolus capreolus",
-          "price": 732.1,
-          "seller_name": "Mabel Borsi",
-          "shipping_cost": 97,
-          "image_media": "http://dummyimage.com/209x100.png/ff4444/ffffff"
-        }, {
-          "product_id": 45,
-          "product_name": "Cal Stat Plus Antiseptic Handrub",
-          "description": "Crotaphytus collaris",
-          "price": 181.09,
-          "seller_name": "Kienan Kenner",
-          "shipping_cost": 152,
-          "image_media": "http://dummyimage.com/200x100.png/dddddd/000000"
-        }, {
-          "product_id": 46,
-          "product_name": "SESSION SAVERS SUNSCREEN BROAD SPECTRUM SPF 30 WATER RESISTANT",
-          "description": "Acridotheres tristis",
-          "price": 957.65,
-          "seller_name": "Rosaleen Lantuffe",
-          "shipping_cost": 135,
-          "image_media": "http://dummyimage.com/115x100.png/5fa2dd/ffffff"
-        }, {
-          "product_id": 47,
-          "product_name": "Prometh with Codeine",
-          "description": "Upupa epops",
-          "price": 998.84,
-          "seller_name": "Tobe Jearum",
-          "shipping_cost": 67,
-          "image_media": "http://dummyimage.com/130x100.png/dddddd/000000"
-        }, {
-          "product_id": 48,
-          "product_name": "ASPIRIN",
-          "description": "Bradypus tridactylus",
-          "price": 317.26,
-          "seller_name": "Sybila Sawkins",
-          "shipping_cost": 237,
-          "image_media": "http://dummyimage.com/127x100.png/dddddd/000000"
-        }, {
-          "product_id": 49,
-          "product_name": "Quetiapine fumarate",
-          "description": "Ictalurus furcatus",
-          "price": 246.63,
-          "seller_name": "Abbe Poyser",
-          "shipping_cost": 226,
-          "image_media": "http://dummyimage.com/191x100.png/5fa2dd/ffffff"
-        }, {
-          "product_id": 50,
-          "product_name": "Minitran",
-          "description": "Pseudocheirus peregrinus",
-          "price": 668.73,
-          "seller_name": "Arabele Robertet",
-          "shipping_cost": 284,
-          "image_media": "http://dummyimage.com/211x100.png/ff4444/ffffff"
-        }, {
-          "product_id": 51,
-          "product_name": "Extra Strength Pain Reliever",
-          "description": "Limnocorax flavirostra",
-          "price": 630.4,
-          "seller_name": "Pauline Babar",
-          "shipping_cost": 173,
-          "image_media": "http://dummyimage.com/159x100.png/dddddd/000000"
-        }, {
-          "product_id": 52,
-          "product_name": "Cefoxitin",
-          "description": "Ardea cinerea",
-          "price": 216.7,
-          "seller_name": "Corby Elmes",
-          "shipping_cost": 299,
-          "image_media": "http://dummyimage.com/250x100.png/5fa2dd/ffffff"
-        }, {
-          "product_id": 53,
-          "product_name": "Lotrel",
-          "description": "unavailable",
-          "price": 335.01,
-          "seller_name": "Garwood Guterson",
-          "shipping_cost": 63,
-          "image_media": "http://dummyimage.com/177x100.png/5fa2dd/ffffff"
-        }, {
-          "product_id": 54,
-          "product_name": "Cactus Grandiflorus Kit Refill",
-          "description": "Anser caerulescens",
-          "price": 640.35,
-          "seller_name": "Gino Ezzle",
-          "shipping_cost": 199,
-          "image_media": "http://dummyimage.com/163x100.png/cc0000/ffffff"
-        }, {
-          "product_id": 55,
-          "product_name": "Sertraline Hydrochloride",
-          "description": "Numida meleagris",
-          "price": 600.34,
-          "seller_name": "Kiersten Stansbie",
-          "shipping_cost": 227,
-          "image_media": "http://dummyimage.com/221x100.png/ff4444/ffffff"
-        }, {
-          "product_id": 56,
-          "product_name": "CLARINS BROAD SPECTRUM SPF 30 Sunscreen Care",
-          "description": "Varanus salvator",
-          "price": 645.2,
-          "seller_name": "Kassandra Labbez",
-          "shipping_cost": 166,
-          "image_media": "http://dummyimage.com/164x100.png/dddddd/000000"
-        }, {
-          "product_id": 57,
-          "product_name": "Fluoxetine",
-          "description": "Phalaropus lobatus",
-          "price": 622.99,
-          "seller_name": "Barbi O'Lunney",
-          "shipping_cost": 253,
-          "image_media": "http://dummyimage.com/236x100.png/ff4444/ffffff"
-        }, {
-          "product_id": 58,
-          "product_name": "Nortriptyline Hydrochloride",
-          "description": "Cordylus giganteus",
-          "price": 369.11,
-          "seller_name": "Renell Sorsbie",
-          "shipping_cost": 117,
-          "image_media": "http://dummyimage.com/112x100.png/cc0000/ffffff"
-        }, {
-          "product_id": 59,
-          "product_name": "LBEL EFFET PARFAIT MINERAL NATURAL SKIN EFFECT MOUSSE FOUNDATION SPF 16",
-          "description": "Eudyptula minor",
-          "price": 744.06,
-          "seller_name": "Arabella Berth",
-          "shipping_cost": 265,
-          "image_media": "http://dummyimage.com/126x100.png/dddddd/000000"
-        }, {
-          "product_id": 60,
-          "product_name": "equate allergy relief",
-          "description": "Macaca mulatta",
-          "price": 355.11,
-          "seller_name": "Taddeo Kneesha",
-          "shipping_cost": 254,
-          "image_media": "http://dummyimage.com/157x100.png/dddddd/000000"
-        }, {
-          "product_id": 61,
-          "product_name": "Hydrocodone Bitartrate and Acetaminophen",
-          "description": "Ara ararauna",
-          "price": 432.89,
-          "seller_name": "Gwenore McGlone",
-          "shipping_cost": 90,
-          "image_media": "http://dummyimage.com/234x100.png/cc0000/ffffff"
-        }, {
-          "product_id": 62,
-          "product_name": "Baby Magic Diaper Rx",
-          "description": "Ammospermophilus nelsoni",
-          "price": 142.3,
-          "seller_name": "Rurik Guiden",
-          "shipping_cost": 290,
-          "image_media": "http://dummyimage.com/125x100.png/dddddd/000000"
-        }, {
-          "product_id": 63,
-          "product_name": "Niaspan",
-          "description": "Eudyptula minor",
-          "price": 250.72,
-          "seller_name": "Alisun Maddrell",
-          "shipping_cost": 187,
-          "image_media": "http://dummyimage.com/179x100.png/5fa2dd/ffffff"
-        }, {
-          "product_id": 64,
-          "product_name": "GONIOSOFT",
-          "description": "Zenaida asiatica",
-          "price": 970.15,
-          "seller_name": "Trever Redmain",
-          "shipping_cost": 279,
-          "image_media": "http://dummyimage.com/129x100.png/dddddd/000000"
-        }, {
-          "product_id": 65,
-          "product_name": "Treatment Set TS334972",
-          "description": "Ictonyx striatus",
-          "price": 616.06,
-          "seller_name": "Paolo Blumire",
-          "shipping_cost": 92,
-          "image_media": "http://dummyimage.com/235x100.png/5fa2dd/ffffff"
-        }, {
-          "product_id": 66,
-          "product_name": "Denti-Care Denti-Freeze",
-          "description": "Phascogale tapoatafa",
-          "price": 527.9,
-          "seller_name": "Ernesto McKissack",
-          "shipping_cost": 107,
-          "image_media": "http://dummyimage.com/189x100.png/5fa2dd/ffffff"
-        }, {
-          "product_id": 67,
-          "product_name": "good neighbor pharmacy complete",
-          "description": "Cracticus nigroagularis",
-          "price": 877.55,
-          "seller_name": "Darnall Seebert",
-          "shipping_cost": 158,
-          "image_media": "http://dummyimage.com/117x100.png/ff4444/ffffff"
-        }, {
-          "product_id": 68,
-          "product_name": "ADSOL Red Cell Preservation Solution System in Plastic Container (PL 146 Plastic)",
-          "description": "Anas punctata",
-          "price": 461.32,
-          "seller_name": "Bing Duffitt",
-          "shipping_cost": 174,
-          "image_media": "http://dummyimage.com/223x100.png/cc0000/ffffff"
-        }, {
-          "product_id": 69,
-          "product_name": "Menstrual Relief",
-          "description": "Phalaropus fulicarius",
-          "price": 988.53,
-          "seller_name": "Fanny Shea",
-          "shipping_cost": 258,
-          "image_media": "http://dummyimage.com/132x100.png/ff4444/ffffff"
-        }, {
-          "product_id": 70,
-          "product_name": "Tobramycin",
-          "description": "Limosa haemastica",
-          "price": 801.06,
-          "seller_name": "Joy Lindback",
-          "shipping_cost": 294,
-          "image_media": "http://dummyimage.com/179x100.png/ff4444/ffffff"
-        }, {
-          "product_id": 71,
-          "product_name": "Black Rice Platinum Absolute Youth SPF 15",
-          "description": "Paraxerus cepapi",
-          "price": 967.31,
-          "seller_name": "Chere Poston",
-          "shipping_cost": 103,
-          "image_media": "http://dummyimage.com/212x100.png/ff4444/ffffff"
-        }, {
-          "product_id": 72,
-          "product_name": "Pain Reliever PM",
-          "description": "Cacatua tenuirostris",
-          "price": 124.71,
-          "seller_name": "Geralda Shadrack",
-          "shipping_cost": 290,
-          "image_media": "http://dummyimage.com/170x100.png/cc0000/ffffff"
-        }, {
-          "product_id": 73,
-          "product_name": "Peter Island Sunscreen",
-          "description": "Aepyceros mylampus",
-          "price": 102.45,
-          "seller_name": "Edmon Quakley",
-          "shipping_cost": 169,
-          "image_media": "http://dummyimage.com/206x100.png/dddddd/000000"
-        }, {
-          "product_id": 74,
-          "product_name": "HZ HP",
-          "description": "Phalaropus lobatus",
-          "price": 289.74,
-          "seller_name": "Talya Janks",
-          "shipping_cost": 139,
-          "image_media": "http://dummyimage.com/168x100.png/ff4444/ffffff"
-        }, {
-          "product_id": 75,
-          "product_name": "Antibiotic Plus Pain Relief",
-          "description": "Anhinga rufa",
-          "price": 501.32,
-          "seller_name": "Marley Thumim",
-          "shipping_cost": 99,
-          "image_media": "http://dummyimage.com/181x100.png/dddddd/000000"
-        }, {
-          "product_id": 76,
-          "product_name": "Atenolol",
-          "description": "Castor canadensis",
-          "price": 366.98,
-          "seller_name": "Chaim Greydon",
-          "shipping_cost": 237,
-          "image_media": "http://dummyimage.com/105x100.png/5fa2dd/ffffff"
-        }, {
-          "product_id": 77,
-          "product_name": "Jimin Zhuifeng Gao",
-          "description": "Paraxerus cepapi",
-          "price": 502.77,
-          "seller_name": "Ennis Male",
-          "shipping_cost": 276,
-          "image_media": "http://dummyimage.com/177x100.png/5fa2dd/ffffff"
-        }, {
-          "product_id": 78,
-          "product_name": "Chinese Elm",
-          "description": "Irania gutteralis",
-          "price": 197.3,
-          "seller_name": "Audry Farbrother",
-          "shipping_cost": 97,
-          "image_media": "http://dummyimage.com/249x100.png/5fa2dd/ffffff"
-        }, {
-          "product_id": 79,
-          "product_name": "Dibasic Sodium Phosphate, Monobasic Potassium Phosphate and Monobasic Sodium Phosphate",
-          "description": "Marmota flaviventris",
-          "price": 631.95,
-          "seller_name": "Gilly Katz",
-          "shipping_cost": 98,
-          "image_media": "http://dummyimage.com/236x100.png/dddddd/000000"
-        }, {
-          "product_id": 80,
-          "product_name": "PRED MILD",
-          "description": "Alligator mississippiensis",
-          "price": 884.76,
-          "seller_name": "Daniela Crame",
-          "shipping_cost": 121,
-          "image_media": "http://dummyimage.com/126x100.png/5fa2dd/ffffff"
-        }, {
-          "product_id": 81,
-          "product_name": "adenosine",
-          "description": "Procyon lotor",
-          "price": 619.19,
-          "seller_name": "Esteban Schrir",
-          "shipping_cost": 199,
-          "image_media": "http://dummyimage.com/111x100.png/cc0000/ffffff"
-        }, {
-          "product_id": 82,
-          "product_name": "RYTHMOL",
-          "description": "Leptoptilos crumeniferus",
-          "price": 966.72,
-          "seller_name": "Jerald Pettiford",
-          "shipping_cost": 68,
-          "image_media": "http://dummyimage.com/185x100.png/5fa2dd/ffffff"
-        }, {
-          "product_id": 83,
-          "product_name": "Miracle Plus Diabetic Homeopathic",
-          "description": "Mephitis mephitis",
-          "price": 627.21,
-          "seller_name": "Gustav Cawte",
-          "shipping_cost": 179,
-          "image_media": "http://dummyimage.com/194x100.png/ff4444/ffffff"
-        }, {
-          "product_id": 84,
-          "product_name": "Eczema",
-          "description": "Bugeranus caruncalatus",
-          "price": 921.2,
-          "seller_name": "Edgardo Stroud",
-          "shipping_cost": 247,
-          "image_media": "http://dummyimage.com/164x100.png/dddddd/000000"
-        }, {
-          "product_id": 85,
-          "product_name": "Midodrine Hydrochloride",
-          "description": "unavailable",
-          "price": 694.93,
-          "seller_name": "Perren Wickrath",
-          "shipping_cost": 242,
-          "image_media": "http://dummyimage.com/122x100.png/dddddd/000000"
-        }, {
-          "product_id": 86,
-          "product_name": "valsartan and hydrochlorothiazide",
-          "description": "Axis axis",
-          "price": 615.94,
-          "seller_name": "Blinni Wallwork",
-          "shipping_cost": 165,
-          "image_media": "http://dummyimage.com/223x100.png/5fa2dd/ffffff"
-        }, {
-          "product_id": 87,
-          "product_name": "Lemon Hand Sanitizer",
-          "description": "unavailable",
-          "price": 122.91,
-          "seller_name": "Antonino Kettel",
-          "shipping_cost": 153,
-          "image_media": "http://dummyimage.com/151x100.png/ff4444/ffffff"
-        }, {
-          "product_id": 88,
-          "product_name": "Focalin",
-          "description": "Bubulcus ibis",
-          "price": 395.21,
-          "seller_name": "Kitty Storror",
-          "shipping_cost": 189,
-          "image_media": "http://dummyimage.com/176x100.png/cc0000/ffffff"
-        }, {
-          "product_id": 89,
-          "product_name": "Aristospan",
-          "description": "Sarkidornis melanotos",
-          "price": 609.29,
-          "seller_name": "Elana Blum",
-          "shipping_cost": 152,
-          "image_media": "http://dummyimage.com/226x100.png/5fa2dd/ffffff"
-        }, {
-          "product_id": 90,
-          "product_name": "Galantamine",
-          "description": "Chordeiles minor",
-          "price": 413.38,
-          "seller_name": "Seana McOmish",
-          "shipping_cost": 168,
-          "image_media": "http://dummyimage.com/100x100.png/5fa2dd/ffffff"
-        }, {
-          "product_id": 91,
-          "product_name": "Ring Relief",
-          "description": "Trichechus inunguis",
-          "price": 508.07,
-          "seller_name": "Patsy Sandle",
-          "shipping_cost": 260,
-          "image_media": "http://dummyimage.com/121x100.png/ff4444/ffffff"
-        }, {
-          "product_id": 92,
-          "product_name": "Modafinil",
-          "description": "Lasiodora parahybana",
-          "price": 465.03,
-          "seller_name": "Bliss Sherebrooke",
-          "shipping_cost": 285,
-          "image_media": "http://dummyimage.com/115x100.png/5fa2dd/ffffff"
-        }, {
-          "product_id": 93,
-          "product_name": "Amoxicillin",
-          "description": "Ovis orientalis",
-          "price": 912.76,
-          "seller_name": "Gael Ancketill",
-          "shipping_cost": 189,
-          "image_media": "http://dummyimage.com/238x100.png/dddddd/000000"
-        }, {
-          "product_id": 94,
-          "product_name": "Treatment Set TS336683",
-          "description": "Papio cynocephalus",
-          "price": 875.73,
-          "seller_name": "Orren Marshalleck",
-          "shipping_cost": 238,
-          "image_media": "http://dummyimage.com/132x100.png/5fa2dd/ffffff"
-        }, {
-          "product_id": 95,
-          "product_name": "Mark 3",
-          "description": "Otaria flavescens",
-          "price": 321.39,
-          "seller_name": "Jess Loomis",
-          "shipping_cost": 171,
-          "image_media": "http://dummyimage.com/126x100.png/ff4444/ffffff"
-        }, {
-          "product_id": 96,
-          "product_name": "Rhus Aconitum",
-          "description": "Megaderma spasma",
-          "price": 135.23,
-          "seller_name": "Marketa Dadge",
-          "shipping_cost": 101,
-          "image_media": "http://dummyimage.com/194x100.png/cc0000/ffffff"
-        }, {
-          "product_id": 97,
-          "product_name": "Lisinopril and Hydrochlorothiazide",
-          "description": "Junonia genoveua",
-          "price": 372.74,
-          "seller_name": "Edi Downage",
-          "shipping_cost": 125,
-          "image_media": "http://dummyimage.com/135x100.png/cc0000/ffffff"
-        }, {
-          "product_id": 98,
-          "product_name": "OXYCODONE AND ACETAMINOPHEN",
-          "description": "Fulica cristata",
-          "price": 961.15,
-          "seller_name": "Mariquilla Lawtey",
-          "shipping_cost": 232,
-          "image_media": "http://dummyimage.com/221x100.png/5fa2dd/ffffff"
-        }, {
-          "product_id": 99,
-          "product_name": "Bioelements",
-          "description": "Actophilornis africanus",
-          "price": 639.85,
-          "seller_name": "Sampson Tabourier",
-          "shipping_cost": 153,
-          "image_media": "http://dummyimage.com/153x100.png/ff4444/ffffff"
-        }, {
-          "product_id": 100,
-          "product_name": "Bio Holly",
-          "description": "Eudyptula minor",
-          "price": 639.18,
-          "seller_name": "Nonah Varney",
-          "shipping_cost": 98,
-          "image_media": "http://dummyimage.com/217x100.png/dddddd/000000"
+          "product_name": " DANVOUY Womens T Shirt Casual Cotton Short",
+          "price": 12.99,
+          "shipping_cost": 1.3,
+          "image_media": "https://fakestoreapi.com/img/61pHAEJ4NML._AC_UX679_.jpg",
+          "rating": 0,
+          "seller_id": 18,
+          "category": "grocery",
+          "description": "95%Cotton,5%Spandex, Features: Casual, Short Sleeve, Letter Print,V-Neck,Fashion Tees, The fabric is soft and has some stretch., Occasion: Casual/Office/Beach/School/Home/Street. Season: Spring,Summer,Autumn,Winter."
         }
-    ]
+      ]
 }

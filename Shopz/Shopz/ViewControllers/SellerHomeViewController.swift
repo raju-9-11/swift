@@ -16,8 +16,10 @@ class SellerHomeViewController: CustomViewController, UICollectionViewDataSource
     }
     
     // MARK: Data
-    lazy var popularItems: [ ItemThumbNailModel ]  = {
-        return [ItemThumbNailModel(name: "Vivo Y21", id: 0, media: "https://sathya.in/media/55438/catalog/vivo-mobile-y21-midnight-blue4gb-ram128gb-storage-3.jpg"), ItemThumbNailModel(name: "Smart watch", id: 1, media: "https://m.media-amazon.com/images/I/61OUIIXnPqL._AC_SX522_.jpg"), ItemThumbNailModel(name: "Iphone 13", id: 0, media: "https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/iphone-13-pro-max-gold-select?wid=940&hei=1112&fmt=png-alpha&.v=1631652956000")]
+    lazy var popularItems: [ Product ]  = {
+        var array: [Product] = []
+        StorageDB.getProducts()[0...10].forEach({ prod in array.append(prod) })
+        return array
     }()
     
     
@@ -35,8 +37,6 @@ class SellerHomeViewController: CustomViewController, UICollectionViewDataSource
         cv.translatesAutoresizingMaskIntoConstraints = false
         return cv
     }()
-    
-    let popCellID = "PopCellID"
     
     let popularItemsLabel: UILabel = {
         let label = UILabel()
@@ -65,8 +65,8 @@ class SellerHomeViewController: CustomViewController, UICollectionViewDataSource
         return cv
     }()
     
-    let categories: [ItemThumbNailModel] = {
-        return [ ItemThumbNailModel(name: "Mobile", id: 0, media: "https://sathya.in/media/55438/catalog/vivo-mobile-y21-midnight-blue4gb-ram128gb-storage-3.jpg"), ItemThumbNailModel(name: "Ear Phones", id: 1, media: "https://5.imimg.com/data5/CD/JV/NH/SELLER-3057075/phone-earphone-500x500.jpg"), ItemThumbNailModel(name: "Smart Watches", id: 2, media: "https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/iphone-13-pro-max-gold-select?wid=940&hei=1112&fmt=png-alpha&.v=1631652956000"), ItemThumbNailModel(name: "Speakers", id: 3, media: "https://d287ku8w5owj51.cloudfront.net/images/products/hero/creative-t15-wireless/hero-creative-t15-wireless.jpg?width=750"), ItemThumbNailModel(name: "Accessories", id: 4, media: "https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/satechi-accessories-1608141402.jpg?crop=1.00xw:0.502xh;0,0.455xh&resize=1200:*")]
+    let categories: [Category] = {
+        return StorageDB.getCategories()
     }()
     
     let categoryView: UIView = {
@@ -107,8 +107,17 @@ class SellerHomeViewController: CustomViewController, UICollectionViewDataSource
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: popCellID, for: indexPath) as! ItemThumbNailCollectionViewCell
-        cell.data = collectionView == popularItemsList ? popularItems[indexPath.row] : categories[indexPath.row]
+        if collectionView == popularItemsList {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ItemThumbNailCollectionViewCell.cellID, for: indexPath) as! ItemThumbNailCollectionViewCell
+            cell.data = popularItems[indexPath.row]
+            return cell
+        }
+        if collectionView == categoryList {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CategoryThumbnailCollectionViewCell.cellID, for: indexPath) as! CategoryThumbnailCollectionViewCell
+            cell.data = categories[indexPath.row]
+            return cell
+        }
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ItemThumbNailCollectionViewCell.cellID, for: indexPath)
         return cell
     }
     
@@ -120,11 +129,11 @@ class SellerHomeViewController: CustomViewController, UICollectionViewDataSource
         
         popularItemsList.delegate = self
         popularItemsList.dataSource = self
-        popularItemsList.register(ItemThumbNailCollectionViewCell.self, forCellWithReuseIdentifier: popCellID)
+        popularItemsList.register(ItemThumbNailCollectionViewCell.self, forCellWithReuseIdentifier: ItemThumbNailCollectionViewCell.cellID)
         
         categoryList.delegate = self
         categoryList.dataSource = self
-        categoryList.register(ItemThumbNailCollectionViewCell.self, forCellWithReuseIdentifier: popCellID)
+        categoryList.register(CategoryThumbnailCollectionViewCell.self, forCellWithReuseIdentifier: CategoryThumbnailCollectionViewCell.cellID)
         
         
         popularItemsView.addSubview(popularItemsList)

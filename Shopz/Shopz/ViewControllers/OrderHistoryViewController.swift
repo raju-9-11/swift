@@ -16,7 +16,7 @@ class OrderHistoryViewController: CustomViewController, UICollectionViewDataSour
         }
     }
     
-    var listItems: [ItemData] = [] {
+    var listItems: [Product] = [] {
         willSet {
             self.collectionView.isHidden = newValue.isEmpty
             self.placeholderView.isHidden = !newValue.isEmpty
@@ -90,26 +90,13 @@ class OrderHistoryViewController: CustomViewController, UICollectionViewDataSour
         }
     }
     
-    func getList() -> [ItemData] {
-        let cart = [
-            ItemData(name: "samsung y12", media: "https://sathya.in/media/55438/catalog/vivo-mobile-y21-midnight-blue4gb-ram128gb-storage-3.jpg", cost: 22),
-            ItemData(name: "samsung y12", media: "https://sathya.in/media/55438/catalog/vivo-mobile-y21-midnight-blue4gb-ram128gb-storage-3.jpg", cost: 22),
-            ItemData(name: "samsung y12", media: "https://sathya.in/media/55438/catalog/vivo-mobile-y21-midnight-blue4gb-ram128gb-storage-3.jpg", cost: 22),
-            ItemData(name: "samsung y12", media: "https://sathya.in/media/55438/catalog/vivo-mobile-y21-midnight-blue4gb-ram128gb-storage-3.jpg", cost: 22),
-            ItemData(name: "samsung y12", media: "https://sathya.in/media/55438/catalog/vivo-mobile-y21-midnight-blue4gb-ram128gb-storage-3.jpg", cost: 22),
-        ]
+    func getList() -> [Product] {
+        let cart = StorageDB.getProducts()
         return cart
     }
     
-    func getCart() -> [ItemData] {
-        let shoppingList = [
-            ItemData(name: "Iphone", media: "https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/iphone-13-pro-max-gold-select?wid=940&hei=1112&fmt=png-alpha&.v=1631652956000", cost: 33),
-            ItemData(name: "Iphone", media: "https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/iphone-13-pro-max-gold-select?wid=940&hei=1112&fmt=png-alpha&.v=1631652956000", cost: 33),
-            ItemData(name: "Iphone", media: "https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/iphone-13-pro-max-gold-select?wid=940&hei=1112&fmt=png-alpha&.v=1631652956000", cost: 33),
-            ItemData(name: "Iphone", media: "https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/iphone-13-pro-max-gold-select?wid=940&hei=1112&fmt=png-alpha&.v=1631652956000", cost: 33),
-            ItemData(name: "Iphone", media: "https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/iphone-13-pro-max-gold-select?wid=940&hei=1112&fmt=png-alpha&.v=1631652956000", cost: 33),
-            ItemData(name: "Iphone", media: "https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/iphone-13-pro-max-gold-select?wid=940&hei=1112&fmt=png-alpha&.v=1631652956000", cost: 33),
-        ]
+    func getCart() -> [Product] {
+        let shoppingList = StorageDB.getProducts()
         return shoppingList
     }
     
@@ -162,7 +149,7 @@ class OrderHistoryViewController: CustomViewController, UICollectionViewDataSour
         return CGSize(width: collectionView.frame.width - 2, height: 120)
     }
     
-    func addReview(item: ItemData) {
+    func addReview(item: Product) {
         prodVC.removeViews()
         prodVC.setupLayout()
         prodVC.productData = item
@@ -171,8 +158,8 @@ class OrderHistoryViewController: CustomViewController, UICollectionViewDataSour
         self.view.addSubview(prodVC.view)
     }
     
-    func returnProduct(item: ItemData) {
-        print("Returning \(item.name)...")
+    func returnProduct(item: Product) {
+        print("Returning \(item.product_name)...")
     }
     
     

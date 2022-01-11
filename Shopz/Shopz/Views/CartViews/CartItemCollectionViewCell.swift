@@ -13,11 +13,11 @@ class CartItemCollectionViewCell: UICollectionViewCell {
     
     var delegate: CartItemDelegate?
     
-    var itemData: ItemData? {
+    var itemData: Product? {
         willSet {
             if newValue != nil {
-                nameLabel.text = newValue?.name
-                costLabel.text = "$ \(newValue?.cost ?? 0) "
+                nameLabel.text = newValue?.product_name
+                costLabel.text = "$ \(newValue?.price ?? 0) "
                 self.setupLayout()
             }
         }
@@ -80,6 +80,7 @@ class CartItemCollectionViewCell: UICollectionViewCell {
             nameLabel.leftAnchor.constraint(equalTo: imageView.rightAnchor, constant: 20),
             costLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor),
             costLabel.leftAnchor.constraint(equalTo: nameLabel.leftAnchor),
+            nameLabel.rightAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.rightAnchor, constant: -10),
             closeButton.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             closeButton.rightAnchor.constraint(equalTo: contentView.rightAnchor, constant: -20),
             bottomLine.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
@@ -104,5 +105,5 @@ class CartItemCollectionViewCell: UICollectionViewCell {
 }
 
 protocol CartItemDelegate {
-    func removeItem(item: ItemData)
+    func removeItem(item: Product)
 }

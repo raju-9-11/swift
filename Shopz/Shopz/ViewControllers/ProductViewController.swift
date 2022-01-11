@@ -26,7 +26,7 @@ class ProductViewController: CustomViewController, UICollectionViewDelegate, UIC
     
     let sellerVC = SellerHomeViewController()
     
-    var productData = ItemData(name: "", media: "", cost: 0) {
+    var productData = Product(product_id: 0, product_name: "", seller_id: 0, image_media: "", shipping_cost: 0, description: "", price: 0, rating: 0, category: "") {
         willSet {
             cells = [getImageData(with: newValue), getDescriptionData(with: newValue), getReviews(with: newValue)]
             collectionView.reloadData()
@@ -84,12 +84,12 @@ class ProductViewController: CustomViewController, UICollectionViewDelegate, UIC
         
     }
     
-    func getImageData(with itemData: ItemData) -> ImagesViewElement {
+    func getImageData(with itemData: Product) -> ImagesViewElement {
         return ImagesViewElement(images: Array(repeating: UIImage(systemName: "photo.fill"), count: 5))
     }
     
-    func getDescriptionData(with itemData: ItemData) -> DescriptionElement {
-        return DescriptionElement(description: "The Grip-Rite #8 x 3 in. 16D Steel Bright Finish Duplex Nails (30 lb.-Pack) are perfect for framing, scaffolding and building temporary structures. These diamond point nails feature a smooth shank and double head design for easy nail removal.", title: itemData.name, cost: 58, rating: 4.4, seller: SellerData(name: "Pacman", imageMedia: ""))
+    func getDescriptionData(with itemData: Product) -> DescriptionElement {
+        return DescriptionElement(description: itemData.description, title: itemData.product_name, cost: itemData.price, rating: itemData.rating, seller: SellerData(name: "Pacman", imageMedia: ""))
     }
     
     func displaySeller(sellerData: SellerData) {
@@ -100,7 +100,7 @@ class ProductViewController: CustomViewController, UICollectionViewDelegate, UIC
     }
     
     
-    func getReviews(with itemData: ItemData) -> ReviewElement {
+    func getReviews(with itemData: Product) -> ReviewElement {
         return ReviewElement(reviews: [
             Review(review: "Bad", owner: "moues"),
             Review(review: "Really bad", owner: "tom"),
@@ -164,11 +164,11 @@ class ImagesViewElement: ProductDetailElement {
 class DescriptionElement: ProductDetailElement {
     var description: String
     var title: String
-    var cost: Int
-    var rating: Double
+    var cost: Decimal
+    var rating: Decimal
     var seller: SellerData
     
-    init(description: String, title: String, cost: Int, rating: Double, seller: SellerData) {
+    init(description: String, title: String, cost: Decimal, rating: Decimal, seller: SellerData) {
         self.description = description
         self.title = title
         self.cost = cost

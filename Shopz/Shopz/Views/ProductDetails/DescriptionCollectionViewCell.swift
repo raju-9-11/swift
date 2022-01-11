@@ -15,11 +15,17 @@ class DescriptionCollectionViewCell: UICollectionViewCell {
     
     var cellFrame = CGSize(width: 100, height: 100)
     
-    let titleLabel: UILabel = {
-        let label = UILabel()
+    let titleLabel: UITextView = {
+        let label = UITextView()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "Title"
-        label.sizeToFit()
+        label.isSelectable = false
+        label.isEditable = false
+        label.font = .systemFont(ofSize: 16, weight: .semibold)
+        label.contentMode = .center
+        label.textAlignment = .center
+        label.isScrollEnabled = false
+        label.isUserInteractionEnabled = false
         return label
     }()
     
@@ -160,9 +166,10 @@ class DescriptionCollectionViewCell: UICollectionViewCell {
         contentView.addSubview(sellerView)
         contentView.addSubview(buttonsView)
         contentView.addSubview(textView)
-        
+        titleLabel.sizeToFit()
         NSLayoutConstraint.activate([
             titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor),
+            titleLabel.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.9),
             titleLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             costRatings.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 10),
             costRatings.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.8),

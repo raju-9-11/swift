@@ -18,11 +18,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         self.window?.makeKeyAndVisible()
 
         let newAuthSate: Auth? = nil
-        if ApplicationDB.shared.initDB() {
-            ApplicationDB.shared.addUser(firstName: "John", lastName: "Doe", email: "test@xyz.com", ph: "+919789019982", country: "India", city: "Chennai", password: "Passwd", about: "TEST")
-            ApplicationDB.shared.readData(name: "users")
-//            ApplicationDB.shared.clearDB(tableName: "users")
-        }
         
         let vc = MainController(auth: newAuthSate)
 
@@ -36,6 +31,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func applicationWillResignActive(_ application: UIApplication) {
+        ApplicationDB.shared.closeDB()
         print("Before background")
         window?.isHidden = true
     }
@@ -49,11 +45,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func applicationDidBecomeActive(_ application: UIApplication) {
+        _ = ApplicationDB.shared.initDB()
         print("After Foreground")
         window?.isHidden = false 
     }
     
     func applicationWillTerminate(_ application: UIApplication) {
+        ApplicationDB.shared.closeDB()
         print("About to terminate")
     }
     

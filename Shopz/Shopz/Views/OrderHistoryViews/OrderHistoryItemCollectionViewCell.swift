@@ -13,11 +13,11 @@ class OrderHistoryItemCollectionViewCell: UICollectionViewCell {
     
     var delegate: OrderHistoryItemDelegate?
     
-    var itemData: ItemData? {
+    var itemData: Product? {
         willSet {
             if newValue != nil {
-                nameLabel.text = newValue?.name
-                costLabel.text = "$ \(newValue?.cost ?? 0) "
+                nameLabel.text = newValue?.product_name
+                costLabel.text = "$ \(newValue?.price ?? 0) "
                 self.setupLayout()
             }
         }
@@ -99,6 +99,7 @@ class OrderHistoryItemCollectionViewCell: UICollectionViewCell {
             imageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             nameLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 5),
             nameLabel.leftAnchor.constraint(equalTo: imageView.rightAnchor, constant: 20),
+            nameLabel.rightAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.rightAnchor, constant: -10),
             costLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor),
             costLabel.leftAnchor.constraint(equalTo: nameLabel.leftAnchor),
             buttonsView.bottomAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.bottomAnchor, constant: -5),
@@ -128,6 +129,6 @@ class OrderHistoryItemCollectionViewCell: UICollectionViewCell {
 }
 
 protocol OrderHistoryItemDelegate {
-    func addReview(item: ItemData)
-    func returnProduct(item: ItemData)
+    func addReview(item: Product)
+    func returnProduct(item: Product)
 }
