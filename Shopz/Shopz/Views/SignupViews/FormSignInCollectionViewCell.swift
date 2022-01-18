@@ -9,7 +9,7 @@ import UIKit
 
 class FormSignInCollectionViewCell: UICollectionViewCell {
     
-    static let buttonCellID = "PlainTestnCell"
+    static let plainCellID = "formPlainTestnCell"
     
     var delegate: SignInFormCellDelegate? {
         willSet {

@@ -7,14 +7,7 @@
 
 import UIKit
 
-class SearchViewController: CustomViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
-    
-    override var auth: Auth? {
-        willSet {
-            self.removeViews()
-            self.setupLayout()
-        }
-    }
+class SearchViewController: CustomViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, CategoryItemDelegate, CategoryAddItemDelegate {
    
     let searchList: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -35,46 +28,44 @@ class SearchViewController: CustomViewController, UICollectionViewDelegate, UICo
         layout.minimumInteritemSpacing = 5
         layout.scrollDirection = .horizontal
         layout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
-        layout.minimumInteritemSpacing = 10
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
         cv.contentInset = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 0)
         cv.register(CategoryItemCollectionViewCell.self, forCellWithReuseIdentifier: CategoryItemCollectionViewCell.cellID)
+        cv.register(CategoryAddCollectionViewCell.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: CategoryAddCollectionViewCell.cellID)
         cv.translatesAutoresizingMaskIntoConstraints = false
         cv.showsHorizontalScrollIndicator = false
         cv.backgroundColor = .clear
         return cv
     }()
     
-    var searchListData: [Product] = StorageDB.getProducts() {
+    var searchListData: [Product] = [] {
         willSet {
             
         }
     }
     
-    var categoryListData: [Category] = StorageDB.getCategories() {
+    var searchListFiltered: [Product] = [] {
         willSet {
             
         }
     }
     
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-    }
-    
-    init(nibName nibNameOrNil: String? = nil, bundle nibBundleOrNil: Bundle? = nil, auth: Auth?) {
-        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
-        self.auth = auth
+    var categoryListData: [Category] = [] {
+        willSet {
+            searchListFiltered = searchListData.filter({ item in return newValue.contains { elem in return elem.name == item.category } })
+            searchList.reloadData()
+        }
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        if (requiresAuth && auth != nil) || ( !requiresAuth ){
+        if (requiresAuth && Auth.auth != nil) || ( !requiresAuth ){
             self.setupLayout()
         }
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return collectionView == searchList ? searchListData.count : categoryListData.count
+        return collectionView == searchList ? searchListFiltered.count : categoryListData.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -82,12 +73,23 @@ class SearchViewController: CustomViewController, UICollectionViewDelegate, UICo
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CategoryItemCollectionViewCell.cellID, for: indexPath) as! CategoryItemCollectionViewCell
             cell.categoryData = categoryListData[indexPath.row]
             cell.cellSize = CGSize(width: collectionView.frame.width - 2, height: collectionView.frame.height - 2)
+            cell.delegate = self
             return cell
             
         }
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SearchItemCollectionViewCell.cellID, for: indexPath) as! SearchItemCollectionViewCell
-        cell.data = searchListData[indexPath.row]
+        cell.data = searchListFiltered[indexPath.row]
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        if collectionView == categoryList {
+            let cell = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: CategoryAddCollectionViewCell.cellID, for: indexPath) as! CategoryAddCollectionViewCell
+            cell.setupLayout()
+            cell.delegate = self
+            return cell
+        }
+        return collectionView == categoryList ? collectionView.dequeueReusableCell(withReuseIdentifier: CategoryAddCollectionViewCell.cellID, for: indexPath) : collectionView.dequeueReusableCell(withReuseIdentifier: SearchItemCollectionViewCell.cellID, for: indexPath)
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
@@ -103,6 +105,19 @@ class SearchViewController: CustomViewController, UICollectionViewDelegate, UICo
         return CGSize(width: collectionView.frame.width - 2, height: 100)
     }
     
+    func removeCategory(category: Category) {
+        for (index, val) in categoryListData.enumerated() {
+            if val.id == category.id {
+                self.categoryList.deleteItems(at: [IndexPath(row: index, section: 0)])
+                self.categoryListData.remove(at: index)
+            }
+        }
+    }
+    
+    func addCategory() {
+        print("Adding Category")
+    }
+    
     
     override func setupLayout() {
         view.backgroundColor = .white
@@ -111,6 +126,9 @@ class SearchViewController: CustomViewController, UICollectionViewDelegate, UICo
         
         categoryList.dataSource = self
         categoryList.delegate = self
+        if let layout = categoryList.collectionViewLayout as? UICollectionViewFlowLayout {
+            layout.footerReferenceSize = CGSize(width: 100, height: categoryList.frame.height * 0.9)
+        }
         
         view.addSubview(searchList)
         view.addSubview(categoryList)
@@ -124,6 +142,19 @@ class SearchViewController: CustomViewController, UICollectionViewDelegate, UICo
             searchList.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             searchList.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
         ])
+        self.loadData()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        self.children.forEach({ child in child.view.removeFromSuperview(); child.removeFromParent()})
+    }
+    
+    func loadData() {
+        self.categoryListData = StorageDB.getCategories()
+        self.searchListData = StorageDB.getProducts()
+        searchList.reloadData()
+        categoryList.reloadData()
     }
     
 }

@@ -7,10 +7,9 @@
 
 import UIKit
 
-class MainController: UITabBarController, UITabBarControllerDelegate, ModalViewDelegate, UITextFieldDelegate, UISearchBarDelegate {
+class MainController: UITabBarController, UITabBarControllerDelegate, UITextFieldDelegate, UISearchBarDelegate {
     
-    var auth: Auth? = nil
-    let lvc = LoginViewController()
+    var lvc: LoginViewController?
     
     override open var selectedIndex: Int {
         willSet {
@@ -35,22 +34,21 @@ class MainController: UITabBarController, UITabBarControllerDelegate, ModalViewD
         super.init(coder: coder)
     }
     
-    init(nibName nibNameOrNil: String? = nil, bundle nibBundleOrNil: Bundle? = nil, auth: Auth?) {
+    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
-        self.auth = auth
         self.setTabs()
     }
     
     func setTabs() {
-        let homeVC = HomeViewController(auth: auth)
+        let homeVC = HomeViewController()
         homeVC.tabBarItem = UITabBarItem(title: "Home", image: UIImage(systemName: "house.fill"), tag: 0)
-        let profileVC = ProfileViewController(auth: auth)
+        let profileVC = ProfileViewController()
         profileVC.tabBarItem = UITabBarItem(title: "Profile", image: UIImage(systemName: "person.fill"), tag: 1)
-        let cartVC = CartViewController(auth: auth)
+        let cartVC = CartViewController()
         cartVC.tabBarItem = UITabBarItem(title: "Cart", image: UIImage(systemName: "cart.fill"), tag: 2)
-        let searchVC = SearchViewController(auth: auth)
+        let searchVC = SearchViewController()
         searchVC.tabBarItem = UITabBarItem(title: "Search", image: UIImage(systemName: "magnifyingglass"), tag: 3)
-        let orderhistVC = OrderHistoryViewController(auth: auth)
+        let orderhistVC = OrderHistoryViewController()
         orderhistVC.tabBarItem = UITabBarItem(title: "Order history", image: UIImage(systemName: "photo.fill"), tag: 4)
         self.viewControllers = [homeVC, profileVC, cartVC, searchVC, orderhistVC]
         self.selectedViewController = homeVC
@@ -64,34 +62,46 @@ class MainController: UITabBarController, UITabBarControllerDelegate, ModalViewD
         
         searchBar.delegate = self
         let homeButton = UIBarButtonItem(image: UIImage(systemName: "house"), style: .plain, target: self, action: #selector(loadHome))
+        NotificationCenter.default.addObserver(self, selector: #selector(onLogin), name: .userLogin, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(onLogout), name: .userLogout, object: nil)
         homeButton.tintColor = .black
         self.navigationItem.rightBarButtonItem = homeButton
         self.navigationItem.titleView = searchBar
         self.tabBar.backgroundColor = .white
     }
     
-    func sendState(vc: UIViewController, _ state: Auth?) {
-        self.auth = state
-        (selectedViewController as? CustomViewController)?.auth = state
-        if state != nil {
-            lvc.willMove(toParent: nil)
-            lvc.view.removeFromSuperview()
-            lvc.removeFromParent()
-            self.navigationController?.isNavigationBarHidden = false
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+        self.lvc = nil
+    }
+    
+    @objc
+    func onLogin() {
+        lvc?.willMove(toParent: nil)
+        lvc?.view.removeFromSuperview()
+        lvc?.removeFromParent()
+        self.navigationController?.isNavigationBarHidden = false
+        self.lvc = nil
+    }
+    
+    @objc
+    func onLogout() {
+        if let vc = selectedViewController as? CustomViewController, vc.requiresAuth {
+            print("TEST")
+            DispatchQueue.main.async {
+                self.displayOn(viewController: vc)
+            }
         }
     }
     
     func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
         if let vc = viewController as? CustomViewController, vc.requiresAuth {
-            if auth == nil {
+            if Auth.auth == nil {
                 displayOn(viewController: viewController)
                 return true
             }
         } else {
             self.navigationController?.isNavigationBarHidden = false
-        }
-        if let viewController = viewController as? CustomViewController {
-            viewController.auth = auth
         }
         
         if viewController.tabBarItem.tag == 3 {
@@ -134,12 +144,14 @@ class MainController: UITabBarController, UITabBarControllerDelegate, ModalViewD
 
     
     func displayOn(viewController: UIViewController) {
-        lvc.modalPresentationStyle = .fullScreen
-        lvc.modalTransitionStyle = .coverVertical
-        lvc.delegate = self
-        viewController.addChild(lvc)
+        if  lvc == nil {
+            lvc = LoginViewController()
+        }
+        lvc!.modalPresentationStyle = .fullScreen
+        lvc!.modalTransitionStyle = .coverVertical
+        viewController.addChild(lvc!)
         self.navigationController?.isNavigationBarHidden = true
-        viewController.view.addSubview(lvc.view)
+        viewController.view.addSubview(lvc!.view)
     }
     
 }

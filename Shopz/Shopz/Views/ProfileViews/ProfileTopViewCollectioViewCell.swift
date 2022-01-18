@@ -83,6 +83,7 @@ class ProfileTopViewCollectioViewCell: UICollectionViewCell {
         profileTopView.addSubview(profilePic)
         profileTopView.addSubview(editProfileButton)
         profileTopView.addSubview(nameLabel)
+        editProfileButton.addTarget(self, action: #selector(onEdit), for: .touchUpInside)
         contentView.addSubview(profileTopView)
         
         NSLayoutConstraint.activate([
@@ -103,6 +104,11 @@ class ProfileTopViewCollectioViewCell: UICollectionViewCell {
             nameLabel.topAnchor.constraint(equalTo: profilePic.bottomAnchor, constant: 5),
             nameLabel.centerXAnchor.constraint(equalTo: profilePic.centerXAnchor)
         ])
+    }
+    
+    @objc
+    func onEdit() {
+        Auth.auth?.logout()
     }
     
     override func prepareForReuse() {

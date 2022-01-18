@@ -42,21 +42,34 @@ class ApplicationDB {
     }
     
     func initDB() -> Bool {
-        return openDB() && createTable(tableName: "users", with: [
-            "id": "integer primary key autoincrement",
-            "firstname": "text",
-            "lastname": "text",
-            "password": "text",
-            "password_salt": "text",
-            "about": "text",
-            "email": "text",
-            "ph": "text",
-            "city": "text",
-            "country": "text"
-        ]) && createTable(tableName: "cart_items", with: [
-            "id":"integer primary key",
-            "product_id": "integer",
-        ])
+        if openDB() {
+            return createTable(tableName: "users", with: [
+                "id": "integer primary key autoincrement",
+                "firstname": "text",
+                "lastname": "text",
+                "password": "text",
+                "password_salt": "text",
+                "about": "text",
+                "email": "text",
+                "ph": "text",
+                "city": "text",
+                "country": "text"
+            ]) && createTable(tableName: "cart_items", with: [
+                "id":"integer primary key",
+                "product_id": "integer",
+            ]) && createTable(tableName: "session", with: [
+                "id": "text primary_key",
+                "user_id": "integer",
+                "firstname": "text",
+                "lastname": "text",
+                "about": "text",
+                "email": "text",
+                "ph": "text",
+                "city": "text",
+                "country": "text"
+            ])
+        }
+        return false
     }
     
     func createTable(tableName: String, with queryComponents : [String: String]) -> Bool {
@@ -74,22 +87,25 @@ class ApplicationDB {
         var statement: OpaquePointer?
         let salt = Auth.saltGen()
         var userExists = false
+        let email = email.lowercased()
         switch self.verifyUser(email: email, password: password) {
         case .success(_):
             userExists = true
         case .failure(let err):
             switch err {
             case .userNotFound:
-                userExists = true
-            default:
                 userExists = false
+            default:
+                userExists = true
             }
         }
         
         if userExists {
+            Toast.shared.showToast(message: "User Exists")
             return false
         }
         print(Auth.hashPassword(password: password, salt: salt))
+        guard initDB() else { return false }
         
         sqlite3_prepare(db, "insert into users (firstname, lastname, email, ph, country, city, password, password_salt, about) values (?, ?, ?, ?, ?, ?, ?, ?, ?)", -1, &statement, nil)
         sqlite3_bind_text(statement, 1, "\(firstName)", -1, SQLITE_TRANSIENT)
@@ -101,40 +117,120 @@ class ApplicationDB {
         sqlite3_bind_text(statement, 7, "\(Auth.hashPassword(password: password, salt: salt))", -1, SQLITE_TRANSIENT)
         sqlite3_bind_text(statement, 8, "\(salt)", -1, SQLITE_TRANSIENT)
         sqlite3_bind_text(statement, 9, "\(about)", -1, SQLITE_TRANSIENT)
-        sqlite3_step(statement)
-        
+        if sqlite3_step(statement) != SQLITE_DONE {
+            Toast.shared.showToast(message: "Database Error!!")
+            sqlite3_finalize(statement)
+            closeDB()
+            return false
+        }
+        closeDB()
         return true
     }
     
     func verifyUser(email: String, password: String) -> Result<User, UserFetchError> {
         var statement: OpaquePointer?
+        let email = email.lowercased()
+        
+        guard initDB() else { return .failure(.dataNotFound) }
         
         if sqlite3_prepare(db, "select id ,firstname, lastname, email, ph, country, city, password, password_salt, about from users where email='\(email)'", -1, &statement, nil) != SQLITE_OK {
             print("Error \(String(cString: sqlite3_errmsg(db)))")
+            sqlite3_finalize(statement)
+            closeDB()
             return .failure(.dataNotFound)
         }
         
         if sqlite3_step(statement) == SQLITE_ROW {
             if Auth.verifyPassword(password: password, hashPassword: String(cString: sqlite3_column_text(statement, 7)), salt: String(cString: sqlite3_column_text(statement, 8))) {
-                return .success(
-                    User(
-                        id: Int(sqlite3_column_int64(statement, 0)),
-                        firstName: String(cString: sqlite3_column_text(statement, 1)),
-                        lastName: String(cString: sqlite3_column_text(statement, 2)),
-                        email: String(cString: sqlite3_column_text(statement, 3)),
-                        ph: String(cString: sqlite3_column_text(statement, 4)),
-                        country: String(cString: sqlite3_column_text(statement, 5)),
-                        about: String(cString: sqlite3_column_text(statement, 9))
-                ))
+                let user = User(
+                    id: Int(sqlite3_column_int64(statement, 0)),
+                    firstName: String(cString: sqlite3_column_text(statement, 1)),
+                    lastName: String(cString: sqlite3_column_text(statement, 2)),
+                    email: String(cString: sqlite3_column_text(statement, 3)),
+                    ph: String(cString: sqlite3_column_text(statement, 4)),
+                    country: String(cString: sqlite3_column_text(statement, 5)),
+                    city: String(cString: sqlite3_column_text(statement, 6)),
+                    about: String(cString: sqlite3_column_text(statement, 9))
+                )
+                sqlite3_finalize(statement)
+                closeDB()
+                return .success(user)
             } else {
+                sqlite3_finalize(statement)
+                closeDB()
                 return .failure(.invalidPassword)
             }
         }
-        
+        sqlite3_finalize(statement)
+        closeDB()
         return .failure(.userNotFound)
+    }
+    
+    func getCurrentUser() {
+        var statement: OpaquePointer?
         
+        guard initDB() else { return }
         
+        if sqlite3_prepare(db, "select user_id ,firstname, lastname, email, ph, country, city, about, id from session", -1, &statement, nil) != SQLITE_OK {
+            print("Error \(String(cString: sqlite3_errmsg(db)))")
+            sqlite3_finalize(statement)
+            closeDB()
+            return
+        }
         
+        if sqlite3_step(statement) == SQLITE_ROW {
+            let user = User(
+                id: Int(sqlite3_column_int64(statement, 0)),
+                firstName: String(cString: sqlite3_column_text(statement, 1)),
+                lastName: String(cString: sqlite3_column_text(statement, 2)),
+                email: String(cString: sqlite3_column_text(statement, 3)),
+                ph: String(cString: sqlite3_column_text(statement, 4)),
+                country: String(cString: sqlite3_column_text(statement, 5)),
+                city: String(cString: sqlite3_column_text(statement, 6)),
+                about: String(cString: sqlite3_column_text(statement, 7))
+            )
+            Auth.auth = Auth(authToken: String(cString: sqlite3_column_text(statement, 8)), user: user)
+        }
+        sqlite3_finalize(statement)
+        closeDB()
+    }
+    
+    func createSession(user: User) -> String? {
+        let authToken = UUID().uuidString
+        
+        var statement: OpaquePointer?
+        
+        guard initDB() else { return nil }
+        
+        sqlite3_prepare(db, "insert into session (firstname, lastname, email, ph, country, city, about, user_id, id) values (?, ?, ?, ?, ?, ?, ?, ?, ?)", -1, &statement, nil)
+        sqlite3_bind_text(statement, 1, "\(user.firstName)", -1, SQLITE_TRANSIENT)
+        sqlite3_bind_text(statement, 2, "\(user.lastName)", -1, SQLITE_TRANSIENT)
+        sqlite3_bind_text(statement, 3, "\(user.email)", -1, SQLITE_TRANSIENT)
+        sqlite3_bind_text(statement, 4, "\(user.ph)", -1, SQLITE_TRANSIENT)
+        sqlite3_bind_text(statement, 5, "\(user.country)", -1, SQLITE_TRANSIENT)
+        sqlite3_bind_text(statement, 6, "\(user.city)", -1, SQLITE_TRANSIENT)
+        sqlite3_bind_text(statement, 7, "\(user.about)", -1, SQLITE_TRANSIENT)
+        sqlite3_bind_int64(statement, 8, sqlite3_int64(user.id))
+        sqlite3_bind_text(statement, 9, "\(authToken)", -1, SQLITE_TRANSIENT)
+        if sqlite3_step(statement) != SQLITE_DONE {
+            Toast.shared.showToast(message: "Unable to login!!")
+            print("Error: \(String(cString: sqlite3_errmsg(db)))")
+            sqlite3_finalize(statement)
+            closeDB()
+            return nil
+        }
+        sqlite3_finalize(statement)
+        closeDB()
+        return authToken
+    }
+    
+    func deleteSession(token: String) {
+        if self.clearDB(tableName: "session") {
+            Auth.auth = nil
+            Toast.shared.showToast(message: "Logout successful", type: .success)
+        } else {
+            print("Error Occured")
+        }
     }
     
     func readUsers() {
@@ -204,10 +300,15 @@ class ApplicationDB {
 
     }
     
-    func clearDB(tableName: String) {
+    func clearDB(tableName: String) -> Bool {
+        guard initDB() else { return false }
         if sqlite3_exec(db, "drop table \(tableName)", nil, nil, nil) != SQLITE_OK {
             print("Error \(String(cString: sqlite3_errmsg(db)))")
+            closeDB()
+            return false
         }
+        closeDB()
+        return true
     }
     
     
@@ -217,26 +318,3 @@ class ApplicationDB {
     
 }
 
-//        if ApplicationDB.shared.initDB() {
-//            if ApplicationDB.shared.addUser(firstName: "John", lastName: "Doe", email: "test@xyz.com", ph: "+919789019982", country: "India", city: "Chennai", password: "Passwd", about: "TEST") {
-//                print("user Created")
-//            } else {
-//                print("User Exists")
-//            }
-//            ApplicationDB.shared.readUsers()
-//            switch ApplicationDB.shared.verifyUser(email: "test@xyz.com", password: "Passwd") {
-//            case .success(let user):
-//                print("user found: \(user.firstName)")
-//            case .failure(let err):
-//                switch err {
-//                case .invalidPassword:
-//                    print("Password Invalid")
-//                case .userNotFound:
-//                    print("User Not Found")
-//                case .dataNotFound:
-//                    print("Unable to read data try again later")
-//                }
-//            }
-//        }
-
- 

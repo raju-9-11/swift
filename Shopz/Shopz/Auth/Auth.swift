@@ -8,19 +8,31 @@
 import Foundation
 import CryptoKit
 
-class Auth: NSObject {
-    var userName: String
-    var cart: [String]
-    var authToken: String
+class Auth {
     
-    override init() {
-        self.userName = "pacman"
-        self.cart = []
-        self.authToken = "Stringaasdasdawq121ewew1e"
+    var authToken: String
+    var user: User
+    
+    static var auth: Auth? {
+        willSet {
+            if newValue != nil {
+                NotificationCenter.default.post(name: .userLogin, object: nil)
+            } else {
+                NotificationCenter.default.post(name: .userLogout, object: nil)
+            }
+        }
+    }
+    
+    init(authToken: String, user: User) {
+        self.authToken = authToken
+        self.user = user
+    }
+    
+    func logout() {
+        ApplicationDB.shared.deleteSession(token: self.authToken)
     }
     
     static func hashPassword(password: String, salt: String) -> String {
-        
         let data = Data((password+salt).utf8)
 
         let hashed = SHA256.hash(data: data)

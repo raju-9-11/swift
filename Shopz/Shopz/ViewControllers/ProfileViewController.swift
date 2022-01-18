@@ -9,15 +9,6 @@ import UIKit
 
 class ProfileViewController: CustomViewController, UICollectionViewDataSource, UICollectionViewDelegate, ShoppingListCellDelegate {
     
-    override var auth: Auth? {
-        willSet {
-            if newValue != nil {
-                self.removeViews()
-                self.setupLayout()
-            }
-        }
-    }
-    
     let containerView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
@@ -55,15 +46,16 @@ class ProfileViewController: CustomViewController, UICollectionViewDataSource, U
         super.init(coder: coder)
     }
     
-    init(nibName nibNameOrNil: String? = nil, bundle nibBundleOrNil: Bundle? = nil, auth: Auth?) {
+    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
-        self.auth = auth
         self.requiresAuth = true
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        if (requiresAuth && auth != nil) || ( !requiresAuth ){
+        NotificationCenter.default.addObserver(self, selector: #selector(onLogin), name: .userLogin, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(onLogout), name: .userLogout, object: nil)
+        if (requiresAuth && Auth.auth != nil) || ( !requiresAuth ){
             self.setupLayout()
         }
     }
@@ -73,12 +65,16 @@ class ProfileViewController: CustomViewController, UICollectionViewDataSource, U
         self.containerView.reloadData()
     }
     
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return containerData.count
     }
     
     func listItemClicked(indexPath: IndexPath, shoppingListData: ShoppingList?) {
-        svc = CartViewController(auth: auth)
+        svc = CartViewController()
         if let listData = shoppingListData, svc != nil {
             svc!.listDetails = listData
             svc!.willMove(toParent: self)
@@ -121,7 +117,6 @@ class ProfileViewController: CustomViewController, UICollectionViewDataSource, U
         containerView.delegate = self
         containerView.dataSource = self
         
-        
         view.addSubview(containerView)
         NSLayoutConstraint.activate([
             containerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
@@ -129,6 +124,16 @@ class ProfileViewController: CustomViewController, UICollectionViewDataSource, U
             containerView.widthAnchor.constraint(equalTo: view.widthAnchor),
             containerView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
         ])
+    }
+    
+    @objc
+    func onLogin() {
+        self.setupLayout()
+    }
+    
+    @objc
+    func onLogout() {
+        self.removeViews()
     }
 
 }

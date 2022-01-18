@@ -52,11 +52,11 @@ class SearchItemCollectionViewCell: UICollectionViewCell {
         return label
     }()
     
-    var data: Product = Product(product_id: 0, product_name: "", seller_id: 0, image_media: "", shipping_cost: 0, description: "", price: 0, rating: 0, category: "") {
+    var data: Product = Product(product_id: 0, product_name: "", seller_id: 0, image_media: [], shipping_cost: 0, description: "", price: 0, rating: 0, category: "") {
         willSet {
             nameLabel.text = newValue.product_name
             costLabel.text = "$ \(newValue.price)"
-            imageView.image = UIImage(systemName: newValue.image_media)
+            imageView.image = UIImage(systemName: newValue.image_media[0])
             ratingLabel.text = "\(newValue.rating)/5.0"
             self.setupLayout()
         }

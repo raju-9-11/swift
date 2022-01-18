@@ -11,14 +11,6 @@ class CartViewController: CustomViewController, UICollectionViewDataSource, UICo
     
     var cartTitle: String = "Cart"
     var buttonsView: ButtonsViewState = .checkout
-    override var auth: Auth? {
-        willSet {
-            if newValue != nil {
-                self.removeViews()
-                self.setupLayout()
-            }
-        }
-    }
     
     var listDetails: ShoppingList? {
         didSet {
@@ -37,7 +29,6 @@ class CartViewController: CustomViewController, UICollectionViewDataSource, UICo
             self.collectionView.isHidden = newValue.isEmpty
             self.placeholderView.isHidden = !newValue.isEmpty
         }
-        
     }
     
     let label: UILabel = {
@@ -86,17 +77,16 @@ class CartViewController: CustomViewController, UICollectionViewDataSource, UICo
         return cv
     }()
     
-    let cvc = CheckoutViewController()
+    var cvc: CheckoutViewController?
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
     }
     
-    init(nibName nibNameOrNil: String? = nil, bundle nibBundleOrNil: Bundle? = nil, auth: Auth?) {
+    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
-        self.auth = auth
         DispatchQueue.main.async {
-            if auth != nil {
+            if Auth.auth != nil {
                 self.tabBarItem.badgeValue = "\(self.listItems.count)"
             }
         }
@@ -105,9 +95,16 @@ class CartViewController: CustomViewController, UICollectionViewDataSource, UICo
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        if (requiresAuth && auth != nil) || ( !requiresAuth ) 	{
+        NotificationCenter.default.addObserver(self, selector: #selector(onLogout), name: .userLogout, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(onLogin), name: .userLogin, object: nil)
+        if (requiresAuth && Auth.auth != nil) || ( !requiresAuth ) 	{
             self.setupLayout()
         }
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+        cvc = nil
     }
     
     
@@ -146,6 +143,18 @@ class CartViewController: CustomViewController, UICollectionViewDataSource, UICo
             placeholderView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor),
         ])
         
+    }
+    
+    @objc
+    func onLogout() {
+        self.tabBarItem.badgeValue = nil
+        self.removeViews()
+    }
+    
+    @objc
+    func onLogin() {
+        self.tabBarItem.badgeValue = "\(listItems.count)"
+        self.setupLayout()
     }
     
     func loadData() {
@@ -188,7 +197,6 @@ class CartViewController: CustomViewController, UICollectionViewDataSource, UICo
             if item.product_id == listItem.product_id {
                 listItems.remove(at: index)
                 collectionView.deleteItems(at: [IndexPath(row: index, section: 0)])
-                self.collectionView.reloadData()
                 break
             }
         }
@@ -201,9 +209,12 @@ class CartViewController: CustomViewController, UICollectionViewDataSource, UICo
     
     @objc
     func onCheckout() {
-        cvc.willMove(toParent: self)
-        self.addChild(cvc)
-        self.view.addSubview(cvc.view)
+        if cvc == nil {
+            cvc = CheckoutViewController()
+        }
+        cvc!.willMove(toParent: self)
+        self.addChild(cvc!)
+        self.view.addSubview(cvc!.view)
     }
     
     func onDelete() {

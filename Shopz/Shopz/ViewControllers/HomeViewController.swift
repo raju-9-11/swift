@@ -13,14 +13,6 @@ class HomeViewController: CustomViewController, UICollectionViewDataSource, UICo
     // MARK: Data
     var popularItems: [ Product ]  = []
     
-    
-    override var auth: Auth?  {
-        willSet {
-            self.removeViews()
-            self.setupLayout()
-        }
-    }
-    
     // MARK: - UI Elements
     let popularItemsList: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -124,15 +116,6 @@ class HomeViewController: CustomViewController, UICollectionViewDataSource, UICo
         return cell
     }
     
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-    }
-    
-    init(nibName nibNameOrNil: String? = nil, bundle nibBundleOrNil: Bundle? = nil, auth: Auth?) {
-        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
-        self.auth = auth
-    }
-    
     // MARK: - Layout and other functions
     override func setupLayout() {
         self.loadData()
@@ -198,8 +181,6 @@ class HomeViewController: CustomViewController, UICollectionViewDataSource, UICo
 }
 
 class CustomViewController: UIViewController {
-    
-    var auth: Auth? = nil
     
     var requiresAuth: Bool = false
     

@@ -9,7 +9,7 @@ import UIKit
 
 class FormButtonCollectionViewCell: UICollectionViewCell {
     
-    static let buttonCellID = "buttonCell"
+    static let buttonCellID = "formbuttonitemCell"
     
     var delegate: SubmitButtonDelegate?
     

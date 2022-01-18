@@ -30,9 +30,9 @@ class ItemThumbNailCollectionViewCell: UICollectionViewCell {
         return label
     }()
     
-    lazy var data: Product = Product(product_id: 0, product_name: "", seller_id: 0, image_media: "", shipping_cost: 0.0, description: "", price: 0.0, rating: 0.0, category: "") {
+    lazy var data: Product = Product(product_id: 0, product_name: "", seller_id: 0, image_media: [], shipping_cost: 0.0, description: "", price: 0.0, rating: 0.0, category: "") {
         willSet {
-            self.downloadImage(url: newValue.image_media)
+            self.downloadImage(url: newValue.image_media[0])
             self.label.text = newValue.product_name
         }
     }

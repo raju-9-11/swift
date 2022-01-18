@@ -128,8 +128,6 @@ class LoginViewController: CustomViewController {
         button.setTitleColor(.white, for: .normal)
         return button
     }()
-    
-    var delegate: ModalViewDelegate?
 
     // MARK: - Load view
     
@@ -144,10 +142,24 @@ class LoginViewController: CustomViewController {
     
     @objc
     func onLogin() {
-        let auth = Auth()
-        auth.userName = "Mario"
-        auth.authToken = "Stringasa231wasasd"
-        delegate?.sendState(vc: self, auth)
+        self.view.endEditing(true)
+        guard let email = emailField.text, let password = passwordField.text else { return }
+        switch ApplicationDB.shared.verifyUser(email: email, password: password) {
+        case .success(let user):
+            if let _ = ApplicationDB.shared.createSession(user: user) {
+                ApplicationDB.shared.getCurrentUser()
+                Toast.shared.showToast(message: "User Logged in", type: .success)
+            }
+        case .failure(let err):
+            switch err {
+            case .userNotFound:
+                Toast.shared.showToast(message: "User not found", type: .error)
+            case .dataNotFound:
+                Toast.shared.showToast(message: "Unable to contact database", type: .error)
+            case .invalidPassword:
+                Toast.shared.showToast(message: "Password Invalid", type: .error)
+            }
+        }
         self.dismiss(animated: true, completion: nil)
     }
     

@@ -12,7 +12,7 @@ struct Product: Codable {
     var product_id: Int
     var product_name: String
     var seller_id: Int
-    var image_media: String
+    var image_media: [String]
     var shipping_cost: Decimal
     var description: String
     var price: Decimal

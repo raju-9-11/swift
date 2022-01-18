@@ -9,13 +9,6 @@ import UIKit
 
 class OrderHistoryViewController: CustomViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, OrderHistoryItemDelegate {
     
-    override var auth: Auth? {
-        willSet {
-            self.removeViews()
-            self.setupLayout()
-        }
-    }
-    
     var listItems: [Product] = [] {
         willSet {
             self.collectionView.isHidden = newValue.isEmpty
@@ -77,17 +70,22 @@ class OrderHistoryViewController: CustomViewController, UICollectionViewDataSour
         super.init(coder: coder)
     }
     
-    init(nibName nibNameOrNil: String? = nil, bundle nibBundleOrNil: Bundle? = nil, auth: Auth?) {
+    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
-        self.auth = auth
         self.requiresAuth = true
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        if (requiresAuth && auth != nil) || ( !requiresAuth ){
+        NotificationCenter.default.addObserver(self, selector: #selector(onLogout), name: .userLogout, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(onLogin), name: .userLogin, object: nil)
+        if (requiresAuth && Auth.auth != nil) || ( !requiresAuth ){
             self.setupLayout()
         }
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
     
     func getList() -> [Product] {
@@ -121,6 +119,16 @@ class OrderHistoryViewController: CustomViewController, UICollectionViewDataSour
             placeholderView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
             placeholderView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor),
         ])
+    }
+    
+    @objc
+    func onLogout() {
+        self.removeViews()
+    }
+    
+    @objc
+    func onLogin() {
+        self.setupLayout()
     }
     
     func loadData() {

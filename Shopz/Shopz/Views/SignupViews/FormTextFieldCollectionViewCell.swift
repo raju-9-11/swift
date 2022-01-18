@@ -9,7 +9,7 @@ import UIKit
 
 class FormTextFieldCollectionViewCell: UICollectionViewCell, UITextFieldDelegate {
     
-    static let textfieldCellID = "textField"
+    static let textfieldCellID = "formtextFieldcellID"
     
     var delegate: TextFormElementDelegate?
     
@@ -32,6 +32,7 @@ class FormTextFieldCollectionViewCell: UICollectionViewCell, UITextFieldDelegate
         label.textColor = .red
         label.contentMode = .top
         label.sizeToFit()
+        label.isUserInteractionEnabled = false
         label.font = .systemFont(ofSize: 12, weight: .medium)
         label.text = "Error"
         label.isHidden = true
@@ -42,27 +43,19 @@ class FormTextFieldCollectionViewCell: UICollectionViewCell, UITextFieldDelegate
         willSet {
             errorLabel.isHidden = !newValue
             textField.layer.borderColor = newValue ? UIColor.red.cgColor : UIColor.systemGray.cgColor
-            textFieldProp.errorState = newValue
         }
     }
     
     
     var textFieldProp: TextFieldElement = TextFieldElement(text: "", placeholder: "", error: "", index: -1, type: .plain, tag: "") {
         willSet {
-            textField.text = newValue.text
-            if newValue.type == .password {
-                textField.isSecureTextEntry = true
-            }
-            if newValue.type == .number {
-                textField.keyboardType = .numberPad
-            }
-            if newValue.type == .email {
-                textField.keyboardType = .emailAddress
-            }
-            errorLabel.text = newValue.error
-            errorState = newValue.errorState
+            textField.text = newValue.getText()
+            textField.isSecureTextEntry = newValue.getType() == .password ? true : false
+            textField.keyboardType = newValue.getType() == .number ? .numberPad : newValue.getType() == .email ? .emailAddress : .default
+            errorLabel.text = newValue.getError()
+            errorState = newValue.getErrorState()
             textField.attributedPlaceholder = NSAttributedString(
-                string: newValue.placeholder,
+                string: newValue.getPlaceholder(),
                 attributes: [
                     NSAttributedString.Key.foregroundColor: UIColor.darkGray
                 ]
@@ -74,17 +67,14 @@ class FormTextFieldCollectionViewCell: UICollectionViewCell, UITextFieldDelegate
     override func prepareForReuse() {
         super.prepareForReuse()
         self.removeViews()
+        self.errorState = false
     }
     
     @objc
     func textFieldEditingChanged(sender: UITextField) {
-        let tp = TextFieldElement(text: textField.text ?? textFieldProp.text, placeholder: textFieldProp.placeholder, error: textFieldProp.error, index: textFieldProp.index, type: textFieldProp.type, tag: textFieldProp.tag)
-        tp.errorState = self.errorState
+        let tp = TextFieldElement(text: textField.text ?? textFieldProp.getText(), placeholder: textFieldProp.getPlaceholder(), error: textFieldProp.getError(), index: textFieldProp.getIndex(), type: textFieldProp.getType(), tag: textFieldProp.getTag()
+        )
         self.delegate?.notifyChange(textFieldProp: tp)
-    }
-    
-    func checkError() -> Bool {
-        return true
     }
     
     
@@ -96,7 +86,6 @@ class FormTextFieldCollectionViewCell: UICollectionViewCell, UITextFieldDelegate
     func setupLayout() {
         textField.delegate = self
         textField.addTarget(self, action: #selector(textFieldEditingChanged(sender:)), for: .allEditingEvents)
-        
         contentView.addSubview(textField)
         contentView.addSubview(errorLabel)
         NSLayoutConstraint.activate([
@@ -106,14 +95,13 @@ class FormTextFieldCollectionViewCell: UICollectionViewCell, UITextFieldDelegate
             textField.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             errorLabel.topAnchor.constraint(equalTo: textField.bottomAnchor),
             errorLabel.leftAnchor.constraint(equalTo: textField.leftAnchor, constant: 5),
+            errorLabel.rightAnchor.constraint(equalTo: textField.rightAnchor),
         ])
     }
-    
 }
 
 
 protocol TextFormElementDelegate {
-    
     func notifyChange(textFieldProp: TextFieldElement)
     func notifyError(textFieldProp: TextFieldElement)
     func notifyNext(textFieldProp: TextFieldElement)

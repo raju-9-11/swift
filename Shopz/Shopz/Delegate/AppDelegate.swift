@@ -14,13 +14,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
+        if ApplicationDB.shared.initDB() {
+            ApplicationDB.shared.getCurrentUser()
+        }
+        
         self.window = UIWindow(frame: UIScreen.main.bounds)
         self.window?.makeKeyAndVisible()
-
-        let newAuthSate: Auth? = nil
-        
-        let vc = MainController(auth: newAuthSate)
-
+        let vc = MainController()
         let cvc = UINavigationController(rootViewController: vc)
         self.window?.rootViewController = cvc
         return true
@@ -31,7 +31,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func applicationWillResignActive(_ application: UIApplication) {
-        ApplicationDB.shared.closeDB()
         print("Before background")
         window?.isHidden = true
     }
@@ -45,13 +44,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func applicationDidBecomeActive(_ application: UIApplication) {
-        _ = ApplicationDB.shared.initDB()
         print("After Foreground")
         window?.isHidden = false 
     }
     
     func applicationWillTerminate(_ application: UIApplication) {
-        ApplicationDB.shared.closeDB()
         print("About to terminate")
     }
     

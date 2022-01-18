@@ -43,21 +43,21 @@ class SignUpViewController: CustomViewController, UICollectionViewDelegate, UICo
         cv.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "Cell")
         cv.register(FormButtonCollectionViewCell.self, forCellWithReuseIdentifier: FormButtonCollectionViewCell.buttonCellID)
         cv.register(FormTextFieldCollectionViewCell.self, forCellWithReuseIdentifier: FormTextFieldCollectionViewCell.textfieldCellID)
-        cv.register(FormSignInCollectionViewCell.self, forCellWithReuseIdentifier: FormSignInCollectionViewCell.buttonCellID)
+        cv.register(FormSignInCollectionViewCell.self, forCellWithReuseIdentifier: FormSignInCollectionViewCell.plainCellID)
         return cv
     }()
     
     
-    var elements:[FormElement] = [
-        TextFieldElement(text: "", placeholder: "Enter first name", error: "Name Error", index: 0, type: .plain, tag: "name") ,
-        TextFieldElement(text: "", placeholder: "Enter last name", error: "Name Error", index: 1, type: .plain, tag: "name") ,
-        TextFieldElement(text: "", placeholder: "Enter Email", error: "Email error", index: 2, type: .email, tag: "email"),
-        TextFieldElement(text: "", placeholder: "Enter Password", error: "Password error", index: 3, type: .password, tag: "password"),
-        TextFieldElement(text: "", placeholder: "Confirm Password", error: "Password error", index: 4, type: .password, tag: "password"),
-        TextFieldElement(text: "", placeholder: "Enter Country", error: "Country error", index: 5, type: .plain, tag: "country"),
-        TextFieldElement(text: "", placeholder: "Enter City", error: "City error", index: 6, type: .plain, tag: "city"),
-        ButtonElement(title: "Sign up", index: 4),
-        PlainElement()
+    let elements:[Int: FormElement] = [
+        0: TextFieldElement(text: "", placeholder: "Enter first name", error: "First name cannot be empty", index: 0, type: .plain, tag: "fname") ,
+        1: TextFieldElement(text: "", placeholder: "Enter last name", error: "Last name cannot be empty", index: 1, type: .plain, tag: "lname") ,
+        2: TextFieldElement(text: "", placeholder: "Enter Email", error: "Email cannot be empty", index: 2, type: .email, tag: "email"),
+        3: TextFieldElement(text: "", placeholder: "Enter Password", error: "Password should contain atleast 8 characters", index: 3, type: .password, tag: "cpassword"),
+        4: TextFieldElement(text: "", placeholder: "Confirm Password", error: "Password should contain atleast 8 characters", index: 4, type: .password, tag: "password"),
+        5: TextFieldElement(text: "", placeholder: "Enter Country", error: "Country cannot be empty", index: 5, type: .plain, tag: "country"),
+        6: TextFieldElement(text: "", placeholder: "Enter City", error: "City cannot be empty", index: 6, type: .plain, tag: "city"),
+        7: ButtonElement(title: "Sign up", index: 7),
+        8: PlainElement(index: 8)
         
     ]
     
@@ -89,7 +89,7 @@ class SignUpViewController: CustomViewController, UICollectionViewDelegate, UICo
             cell.delegate = self
             return cell
         case _ as PlainElement:
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FormSignInCollectionViewCell.buttonCellID, for: indexPath) as! FormSignInCollectionViewCell
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FormSignInCollectionViewCell.plainCellID, for: indexPath) as! FormSignInCollectionViewCell
             cell.delegate = self
             return cell
         default:
@@ -103,7 +103,7 @@ class SignUpViewController: CustomViewController, UICollectionViewDelegate, UICo
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         switch(elements[indexPath.row]) {
         case let item as TextFieldElement:
-            return CGSize(width: item.index < 2 ? collectionView.frame.width*0.45 : collectionView.frame.width, height: 70)
+            return CGSize(width: item.getIndex() < 2 ? collectionView.frame.width*0.45 : collectionView.frame.width, height: 70)
         case _ as ButtonElement:
             return CGSize(width: collectionView.frame.width, height: 50)
         default:
@@ -112,7 +112,7 @@ class SignUpViewController: CustomViewController, UICollectionViewDelegate, UICo
     }
     
     func notifyChange(textFieldProp: TextFieldElement) {
-        elements[textFieldProp.index] = textFieldProp
+        (elements[textFieldProp.getIndex()] as? TextFieldElement)?.setText(text: textFieldProp.getText())
     }
     
     func notifyError(textFieldProp: TextFieldElement) {
@@ -120,36 +120,53 @@ class SignUpViewController: CustomViewController, UICollectionViewDelegate, UICo
     }
     
     func sendSubmit(buttonProp: ButtonElement) {
-//        (collectionView.cellForItem(at: IndexPath(row: 0, section: 0)) as? FormTextFieldCollectionViewCell )?.errorState = true
-        let dict: [String: String] = getFormData()
-        for (key, value) in dict {
-            print(key, value)
+        let formData = getFormData()
+        let dict: [String: String] = formData.values
+        if formData.error {
+            Toast.shared.showToast(message: "Errors Found", type: .error)
+            return
+        } else {
+            if let fname = dict["fname"],
+               let lname = dict["lname"],
+               let email = dict["email"],
+               let country = dict["country"],
+               let city = dict["city"],
+               let password = dict["password"],
+               ApplicationDB.shared.addUser(firstName: fname, lastName: lname, email: email, ph: "", country: country, city: city, password: password) {
+                Toast.shared.showToast(message: "User Created", type: .success)
+                self.onSignup()
+            }
         }
-        collectionView.reloadData()
-        collectionView.layoutIfNeeded()
-        self.onSignup()
     }
     
     func notifyNext(textFieldProp: TextFieldElement) {
-        collectionView.scrollToItem(at: IndexPath(row: textFieldProp.index, section: 0), at: .top, animated: true)
-        if textFieldProp.index != (elements[elements.count - 2] as? TextFieldElement)?.index {
-            (collectionView.cellForItem(at: IndexPath(row: textFieldProp.index, section: 0)) as? FormTextFieldCollectionViewCell)?.textField.resignFirstResponder()
-            (collectionView.cellForItem(at: IndexPath(row: textFieldProp.index + 1, section: 0)) as? FormTextFieldCollectionViewCell)?.textField.becomeFirstResponder()
+        if textFieldProp.getIndex() != (elements[elements.count - 2] as? TextFieldElement)?.getIndex() {
+            collectionView.scrollToItem(at: IndexPath(row: textFieldProp.getIndex() + 1, section: 0), at: .top, animated: true)
+            (collectionView.cellForItem(at: IndexPath(row: textFieldProp.getIndex(), section: 0)) as? FormTextFieldCollectionViewCell)?.textField.resignFirstResponder()
+            (collectionView.cellForItem(at: IndexPath(row: textFieldProp.getIndex() + 1, section: 0)) as? FormTextFieldCollectionViewCell)?.textField.becomeFirstResponder()
+        } else {
+            collectionView.scrollToItem(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
         }
     }
     
-    
-    func getFormData() -> [String: String] {
-        var val: [String: String] = [:]
-        _ = elements.map({ element in
+    func getFormData() -> (error: Bool, values: [String: String]) {
+        var val : [String: String] = [:]
+        var error: Bool = false
+        self.elements.forEach({ index,element in
             if let elem = element as? TextFieldElement {
-                val[elem.tag] = elem.text
-            } 
+                if elem.checkError() {
+                    error = true
+                }
+                val[elem.getTag()] = elem.getText()
+            }
         })
-        return val
+        (elements[3] as! TextFieldElement).isSamePassword(other: elements[4] as! TextFieldElement)
+        self.collectionView.reloadData()
+        return (error: error, values: val)
     }
     
     func onSignup() {
+        ApplicationDB.shared.readUsers()
         self.dismiss(animated: true)
     }
     
@@ -202,70 +219,4 @@ class SignUpViewController: CustomViewController, UICollectionViewDelegate, UICo
         ])
     }
 
-}
-
-class FormElement: Hashable {
-    var id = UUID()
-    
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
-    }
-    
-    static func == (lhs: FormElement, rhs: FormElement) -> Bool {
-        lhs.id == rhs.id
-    }
-}
-
-class FormElementSection: Hashable {
-    var id = UUID()
-    var items: [FormElement]
-    
-    init(items: [FormElement]) {
-        self.items = items
-    }
-    
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
-    }
-    
-    static func == (lhs: FormElementSection, rhs: FormElementSection) -> Bool {
-        lhs.id == rhs.id
-    }
-}
-
-class ButtonElement: FormElement {
-    var title: String
-    var index: Int
-    
-    init(title: String, index: Int) {
-        self.index = index
-        self.title = title
-    }
-}
-
-class TextFieldElement: FormElement {
-    var placeholder: String
-    var text: String
-    var error: String
-    var index: Int
-    var type: FieldType
-    var tag: String
-    var errorState: Bool = false
-    
-    init( text: String, placeholder: String, error: String, index: Int, type: FieldType, tag: String) {
-        self.index = index
-        self.text = text
-        self.placeholder = placeholder
-        self.error = error
-        self.type = type
-        self.tag = tag
-    }
-}
-
-class PlainElement: FormElement{
-    
-}
-
-enum FieldType {
-    case email, password, number, plain
 }

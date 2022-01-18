@@ -313,4 +313,11 @@ extension Notification.Name {
     static var paymentCompletion: Notification.Name {
           return .init(rawValue: "Payment.Complete")
     }
+    static var userLogin: Notification.Name {
+        return .init(rawValue: "User.Login.Success")
+    }
+    
+    static var userLogout: Notification.Name {
+        return .init(rawValue: "User.Logout.success")
+    }
 }

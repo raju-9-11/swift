@@ -26,34 +26,27 @@ class ProductViewController: CustomViewController, UICollectionViewDelegate, UIC
     
     let sellerVC = SellerHomeViewController()
     
-    var productData = Product(product_id: 0, product_name: "", seller_id: 0, image_media: "", shipping_cost: 0, description: "", price: 0, rating: 0, category: "") {
+    var productData = Product(product_id: 0, product_name: "", seller_id: 0, image_media: [], shipping_cost: 0, description: "", price: 0, rating: 0, category: "") {
         willSet {
             cells = [getImageData(with: newValue), getDescriptionData(with: newValue), getReviews(with: newValue)]
             collectionView.reloadData()
         }
     }
     
-    var cells: [ProductDetailElement] = [
-        ImagesViewElement(images: Array(repeating: UIImage(systemName: "photo.fill"), count: 5)),
-        DescriptionElement(description: "The Grip-Rite #8 x 3 in. 16D Steel Bright Finish Duplex Nails (30 lb.-Pack) are perfect for framing, scaffolding and building temporary structures. These diamond point nails feature a smooth shank and double head design for easy nail removal.", title: "Steel Duplex", cost: 58, rating: 4.4, seller: SellerData(name: "Pacman", imageMedia: "")),
-        ReviewElement(reviews: [
-            Review(review: "Bad", owner: "moues"),
-            Review(review: "Really bad", owner: "tom"),
-            Review(review: "Worse", owner: "Pacman"),
-            Review(review: "bad", owner: "Test"),
-            Review(review: "Good", owner: "TEsting"),
-            Review(review: "Bad", owner: "tesing"),
-        ])
-    ]
+    var cells: [ProductDetailElement] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         self.setupLayout()
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return cells.count
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.children.forEach({ child in child.view.removeFromSuperview();child.removeFromParent() })
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -68,7 +61,7 @@ class ProductViewController: CustomViewController, UICollectionViewDelegate, UIC
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: DescriptionCollectionViewCell.cellID, for: indexPath) as! DescriptionCollectionViewCell
             cell.data = item
             cell.delegate = self
-            cell.cellFrame = CGSize(width: collectionView.frame.width, height: collectionView.frame.height*0.45)
+            cell.cellFrame = CGSize(width: collectionView.frame.width, height: 100)
             return cell
         }
         

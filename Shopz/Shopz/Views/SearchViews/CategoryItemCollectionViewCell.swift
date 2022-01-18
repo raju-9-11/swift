@@ -11,6 +11,8 @@ class CategoryItemCollectionViewCell: UICollectionViewCell {
     
     static let cellID = "CategoryITemCell"
     
+    var delegate: CategoryItemDelegate?
+    
     let nameLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -31,8 +33,19 @@ class CategoryItemCollectionViewCell: UICollectionViewCell {
         return button
     }()
     
-    let containerView: ContainerView = {
+    let containerView: UIStackView = {
+        let view = UIStackView()
+        view.axis = .horizontal
+        view.distribution = .fillProportionally
+        view.spacing = 5
+        view.alignment = .center
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
+    let customBackgroundView: ContainerView = {
         let view = ContainerView()
+        view.backgroundColor = .blue.withAlphaComponent(0.5)
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -47,21 +60,27 @@ class CategoryItemCollectionViewCell: UICollectionViewCell {
     }
     
     func setupLayout() {
-        containerView.addSubview(nameLabel)
-        containerView.addSubview(closeButton)
+        containerView.addArrangedSubview(nameLabel)
+        containerView.addArrangedSubview(closeButton)
+        closeButton.addTarget(self, action: #selector(onDelete), for: .touchUpInside)
+        contentView.addSubview(customBackgroundView)
         contentView.addSubview(containerView)
-        containerView.backgroundColor = .blue.withAlphaComponent(0.5)
+        
         
         NSLayoutConstraint.activate([
-            containerView.widthAnchor.constraint(equalTo: contentView.widthAnchor),
-            containerView.heightAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 0.6),
+            customBackgroundView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            customBackgroundView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            customBackgroundView.heightAnchor.constraint(equalTo: containerView.heightAnchor, multiplier: 1, constant: 10),
+            customBackgroundView.widthAnchor.constraint(equalTo: containerView.widthAnchor, multiplier: 1, constant: 15),
             containerView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             containerView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            nameLabel.leftAnchor.constraint(equalTo: containerView.leftAnchor, constant: 10),
-            nameLabel.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
-            closeButton.rightAnchor.constraint(equalTo: containerView.rightAnchor, constant: -5),
-            closeButton.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
         ])
+        self.layoutIfNeeded()
+    }
+    
+    @objc
+    func onDelete() {
+        delegate?.removeCategory(category: self.categoryData)
     }
     
     
@@ -73,17 +92,15 @@ class CategoryItemCollectionViewCell: UICollectionViewCell {
     override func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
         let attr = layoutAttributes
         attr.size = cellSize
-        attr.size.width = max(CGFloat(categoryData.name.count)*10 + 10, 70)
+        attr.size.width = customBackgroundView.frame.width
         return attr
     }
 }
 
-class ContainerView: UIView {
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        layer.cornerRadius = frame.height / 2
-    }
+protocol CategoryItemDelegate {
+    func removeCategory(category: Category)
 }
+
 
 class RoundedButton: UIButton {
     override func layoutSubviews() {

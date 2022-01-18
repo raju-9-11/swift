@@ -25,6 +25,7 @@ class DescriptionCollectionViewCell: UICollectionViewCell {
         label.contentMode = .center
         label.textAlignment = .center
         label.isScrollEnabled = false
+//        label.sizeToFit()
         label.isUserInteractionEnabled = false
         return label
     }()
@@ -53,9 +54,9 @@ class DescriptionCollectionViewCell: UICollectionViewCell {
         textView.text = "PLACEHOLDER"
         textView.isEditable = false
         textView.isSelectable = false
-        textView.isSecureTextEntry = true
+        textView.isUserInteractionEnabled = false
         textView.font = .italicSystemFont(ofSize: 12)
-        textView.sizeToFit()
+//        textView.sizeToFit()
         textView.isScrollEnabled = false
         return textView
     }()
@@ -166,7 +167,6 @@ class DescriptionCollectionViewCell: UICollectionViewCell {
         contentView.addSubview(sellerView)
         contentView.addSubview(buttonsView)
         contentView.addSubview(textView)
-        titleLabel.sizeToFit()
         NSLayoutConstraint.activate([
             titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor),
             titleLabel.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.9),
@@ -174,18 +174,15 @@ class DescriptionCollectionViewCell: UICollectionViewCell {
             costRatings.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 10),
             costRatings.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.8),
             costRatings.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            costRatings.heightAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 0.1),
             buttonsView.topAnchor.constraint(equalTo: costRatings.bottomAnchor, constant: 10),
-            buttonsView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.8),
             buttonsView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            buttonsView.heightAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 0.12),
             sellerView.topAnchor.constraint(equalTo: buttonsView.bottomAnchor, constant: 10),
             sellerView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            sellerView.heightAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 0.1),
             textView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.9),
             textView.topAnchor.constraint(equalTo: sellerButton.bottomAnchor),
             textView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
         ])
+        self.layoutIfNeeded()
     }
     
     @objc
@@ -200,7 +197,8 @@ class DescriptionCollectionViewCell: UICollectionViewCell {
     
     override func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
         let attr = layoutAttributes
-        attr.size = cellFrame
+        let frameHeight = textView.frame.height + titleLabel.frame.height + buttonsView.frame.height + 100
+        attr.size = CGSize(width: cellFrame.width, height: frameHeight)
         return attr
     }
    

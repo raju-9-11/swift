@@ -36,7 +36,6 @@
 		9D894132278DBB04004DDDDF /* Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D894131278DBB04004DDDDF /* Category.swift */; };
 		9D894135278DBF32004DDDDF /* CategoryThumbnailCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D894134278DBF32004DDDDF /* CategoryThumbnailCollectionViewCell.swift */; };
 		9D9B16C827685F8A00BE8456 /* Auth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D9B16C727685F8A00BE8456 /* Auth.swift */; };
-		9D9B16CA2768769600BE8456 /* ModalViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D9B16C92768769600BE8456 /* ModalViewDelegate.swift */; };
 		9D9B16CC27689BE300BE8456 /* FormTextFieldCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D9B16CB27689BE300BE8456 /* FormTextFieldCollectionViewCell.swift */; };
 		9D9B16CE27689BF800BE8456 /* FormDatePickerCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D9B16CD27689BF800BE8456 /* FormDatePickerCollectionViewCell.swift */; };
 		9D9B16D027689C0600BE8456 /* FormButtonCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D9B16CF27689C0600BE8456 /* FormButtonCollectionViewCell.swift */; };
@@ -52,6 +51,9 @@
 		9DA99A1127719C6F00B8053B /* AddAddressCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DA99A1027719C6F00B8053B /* AddAddressCollectionViewCell.swift */; };
 		9DA99A132771A16500B8053B /* PaymentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DA99A122771A16500B8053B /* PaymentViewController.swift */; };
 		9DA99A162771A1FF00B8053B /* CardItemCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DA99A152771A1FF00B8053B /* CardItemCollectionViewCell.swift */; };
+		9DB151FF278FE65100F96369 /* CategoryAddCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DB151FE278FE65100F96369 /* CategoryAddCollectionViewCell.swift */; };
+		9DB1520127968A8800F96369 /* Toast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DB1520027968A8800F96369 /* Toast.swift */; };
+		9DB1520427969FE100F96369 /* FormElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DB1520327969FE100F96369 /* FormElement.swift */; };
 		9DBF3B712769FBDF009EFB26 /* ProfileTopViewCollectioViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DBF3B702769FBDF009EFB26 /* ProfileTopViewCollectioViewCell.swift */; };
 		9DBF3B73276A04FB009EFB26 /* AboutCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DBF3B72276A04FB009EFB26 /* AboutCollectionViewCell.swift */; };
 		9DBF3B75276A0E5A009EFB26 /* ShoppingListCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DBF3B74276A0E5A009EFB26 /* ShoppingListCollectionViewCell.swift */; };
@@ -93,7 +95,6 @@
 		9D894131278DBB04004DDDDF /* Category.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Category.swift; sourceTree = "<group>"; };
 		9D894134278DBF32004DDDDF /* CategoryThumbnailCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryThumbnailCollectionViewCell.swift; sourceTree = "<group>"; };
 		9D9B16C727685F8A00BE8456 /* Auth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Auth.swift; sourceTree = "<group>"; };
-		9D9B16C92768769600BE8456 /* ModalViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalViewDelegate.swift; sourceTree = "<group>"; };
 		9D9B16CB27689BE300BE8456 /* FormTextFieldCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormTextFieldCollectionViewCell.swift; sourceTree = "<group>"; };
 		9D9B16CD27689BF800BE8456 /* FormDatePickerCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormDatePickerCollectionViewCell.swift; sourceTree = "<group>"; };
 		9D9B16CF27689C0600BE8456 /* FormButtonCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormButtonCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -109,6 +110,9 @@
 		9DA99A1027719C6F00B8053B /* AddAddressCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddAddressCollectionViewCell.swift; sourceTree = "<group>"; };
 		9DA99A122771A16500B8053B /* PaymentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentViewController.swift; sourceTree = "<group>"; };
 		9DA99A152771A1FF00B8053B /* CardItemCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardItemCollectionViewCell.swift; sourceTree = "<group>"; };
+		9DB151FE278FE65100F96369 /* CategoryAddCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryAddCollectionViewCell.swift; sourceTree = "<group>"; };
+		9DB1520027968A8800F96369 /* Toast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Toast.swift; sourceTree = "<group>"; };
+		9DB1520327969FE100F96369 /* FormElement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormElement.swift; sourceTree = "<group>"; };
 		9DBF3B702769FBDF009EFB26 /* ProfileTopViewCollectioViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileTopViewCollectioViewCell.swift; sourceTree = "<group>"; };
 		9DBF3B72276A04FB009EFB26 /* AboutCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutCollectionViewCell.swift; sourceTree = "<group>"; };
 		9DBF3B74276A0E5A009EFB26 /* ShoppingListCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShoppingListCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -133,7 +137,6 @@
 			isa = PBXGroup;
 			children = (
 				9D5E29A1275F7B4A00ED86ED /* AppDelegate.swift */,
-				9D9B16C92768769600BE8456 /* ModalViewDelegate.swift */,
 			);
 			path = Delegate;
 			sourceTree = "<group>";
@@ -163,6 +166,7 @@
 			children = (
 				9D118E5B27707AD8004B2587 /* SearchItemCollectionViewCell.swift */,
 				9D118E5D27708101004B2587 /* CategoryItemCollectionViewCell.swift */,
+				9DB151FE278FE65100F96369 /* CategoryAddCollectionViewCell.swift */,
 			);
 			path = SearchViews;
 			sourceTree = "<group>";
@@ -193,6 +197,7 @@
 			children = (
 				9D3DD7E5277F10D200AED9C7 /* CheckBox.swift */,
 				9D7D23762782D13D00EE2B96 /* AddCardButton.swift */,
+				9DB1520027968A8800F96369 /* Toast.swift */,
 			);
 			path = CustomElements;
 			sourceTree = "<group>";
@@ -260,6 +265,7 @@
 		9D9D9D952767553700FD1D54 /* DataModel */ = {
 			isa = PBXGroup;
 			children = (
+				9DB1520227969FC200F96369 /* ElementModel */,
 				9D894131278DBB04004DDDDF /* Category.swift */,
 				9D280087278CB1F20079DC29 /* Product.swift */,
 				9D280089278CB1FE0079DC29 /* JsonModel.swift */,
@@ -301,6 +307,14 @@
 				9DA99A152771A1FF00B8053B /* CardItemCollectionViewCell.swift */,
 			);
 			path = PaymentViews;
+			sourceTree = "<group>";
+		};
+		9DB1520227969FC200F96369 /* ElementModel */ = {
+			isa = PBXGroup;
+			children = (
+				9DB1520327969FE100F96369 /* FormElement.swift */,
+			);
+			path = ElementModel;
 			sourceTree = "<group>";
 		};
 		9DBF3B6D2769FB51009EFB26 /* ProfileViews */ = {
@@ -404,7 +418,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9DB151FF278FE65100F96369 /* CategoryAddCollectionViewCell.swift in Sources */,
 				9D14297F2772027A00BC82E6 /* ReviewsCollectionViewCell.swift in Sources */,
+				9DB1520427969FE100F96369 /* FormElement.swift in Sources */,
 				9D7D23792782E0D300EE2B96 /* CartTitleCollectionViewCell.swift in Sources */,
 				9D280088278CB1F20079DC29 /* Product.swift in Sources */,
 				9D9B16CC27689BE300BE8456 /* FormTextFieldCollectionViewCell.swift in Sources */,
@@ -422,6 +438,7 @@
 				9D118E6027708D31004B2587 /* SellerHomeViewController.swift in Sources */,
 				9D9D9D8E2767523D00FD1D54 /* LoginViewController.swift in Sources */,
 				9D118E652770AACC004B2587 /* AddressItemCollectionViewCell.swift in Sources */,
+				9DB1520127968A8800F96369 /* Toast.swift in Sources */,
 				9D9D9D9A27675C4500FD1D54 /* ItemThumbNailCollectionViewCell.swift in Sources */,
 				9DA99A1127719C6F00B8053B /* AddAddressCollectionViewCell.swift in Sources */,
 				9D118E62277099BD004B2587 /* CheckoutViewController.swift in Sources */,
@@ -447,7 +464,6 @@
 				9D1F09382770560D000BF602 /* ProductDetailsTopCollectionViewCell.swift in Sources */,
 				9DA99A162771A1FF00B8053B /* CardItemCollectionViewCell.swift in Sources */,
 				9DBF3B712769FBDF009EFB26 /* ProfileTopViewCollectioViewCell.swift in Sources */,
-				9D9B16CA2768769600BE8456 /* ModalViewDelegate.swift in Sources */,
 				9D7D237B2782E14B00EE2B96 /* CartButtonsCollectionViewCell.swift in Sources */,
 				9DBF3B77276A17D9009EFB26 /* ShoppingListSubCollectionViewCell.swift in Sources */,
 				9D38D2C1277352AB003C08AE /* FormSignInCollectionViewCell.swift in Sources */,
