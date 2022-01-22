@@ -7,7 +7,7 @@
 
 import UIKit
 
-class LoginViewController: CustomViewController {
+class LoginViewController: CustomViewController, TextFieldWithErrorDelegate {
     
     // MARK: - UI Elements
     
@@ -75,39 +75,56 @@ class LoginViewController: CustomViewController {
         return label
     }()
     
-    let emailField: UITextField = {
-        let textField = UITextField()
-        textField.backgroundColor = .clear
-        textField.borderStyle = .roundedRect
-        textField.translatesAutoresizingMaskIntoConstraints = false
-        textField.placeholder = "Enter Email"
-        textField.layer.borderColor = UIColor.gray.cgColor
-        textField.layer.borderWidth = 1
-        textField.layer.cornerRadius = 5
-        textField.tintColor = .darkGray
-        textField.textColor = .black
-        textField.attributedPlaceholder = NSAttributedString(
-            string: "Enter Email",
-            attributes: [NSAttributedString.Key.foregroundColor: UIColor.darkGray]
-        )
-        return textField
+//    let emailField: UITextField = {
+//        let textField = UITextField()
+//        textField.backgroundColor = .clear
+//        textField.borderStyle = .roundedRect
+//        textField.translatesAutoresizingMaskIntoConstraints = false
+//        textField.placeholder = "Enter Email"
+//        textField.layer.borderColor = UIColor.gray.cgColor
+//        textField.layer.borderWidth = 1
+//        textField.layer.cornerRadius = 5
+//        textField.tintColor = .darkGray
+//        textField.textColor = .black
+//        textField.attributedPlaceholder = NSAttributedString(
+//            string: "Enter Email",
+//            attributes: [NSAttributedString.Key.foregroundColor: UIColor.darkGray]
+//        )
+//        return textField
+//    }()
+//
+//    let passwordField: UITextField = {
+//        let textField = UITextField()
+//        textField.borderStyle = .roundedRect
+//        textField.backgroundColor = .clear
+//        textField.translatesAutoresizingMaskIntoConstraints = false
+//        textField.isSecureTextEntry = true
+//        textField.layer.borderColor = UIColor.gray.cgColor
+//        textField.layer.borderWidth = 1
+//        textField.layer.cornerRadius = 5
+//        textField.attributedPlaceholder = NSAttributedString(
+//            string: "Enter Password",
+//            attributes: [NSAttributedString.Key.foregroundColor: UIColor.darkGray]
+//        )
+//        textField.textColor = .black
+//        return textField
+//    }()
+    
+    let emailField: TextFieldWithError = {
+        let emailField = TextFieldWithError()
+        emailField.translatesAutoresizingMaskIntoConstraints = false
+        emailField.placeholder = "Enter Email"
+        emailField.error = "Email cannot be empty"
+        return emailField
     }()
     
-    let passwordField: UITextField = {
-        let textField = UITextField()
-        textField.borderStyle = .roundedRect
-        textField.backgroundColor = .clear
-        textField.translatesAutoresizingMaskIntoConstraints = false
-        textField.isSecureTextEntry = true
-        textField.layer.borderColor = UIColor.gray.cgColor
-        textField.layer.borderWidth = 1
-        textField.layer.cornerRadius = 5
-        textField.attributedPlaceholder = NSAttributedString(
-            string: "Enter Password",
-            attributes: [NSAttributedString.Key.foregroundColor: UIColor.darkGray]
-        )
-        textField.textColor = .black
-        return textField
+    let passwordField: TextFieldWithError = {
+        let passwordField = TextFieldWithError()
+        passwordField.translatesAutoresizingMaskIntoConstraints = false
+        passwordField.placeholder = "Enter Password"
+        passwordField.error = "Password cannot be empty"
+        passwordField.isSecureTextEntry = true
+        return passwordField
     }()
     
     let loginButton: UIButton = {
@@ -143,7 +160,13 @@ class LoginViewController: CustomViewController {
     @objc
     func onLogin() {
         self.view.endEditing(true)
-        guard let email = emailField.text, let password = passwordField.text else { return }
+        let email = emailField.text
+        let password = passwordField.text
+        emailField.errorState = email.isEmpty
+        passwordField.errorState = password.isEmpty
+        if email.isEmpty || password.isEmpty {
+            return
+        }
         switch ApplicationDB.shared.verifyUser(email: email, password: password) {
         case .success(let user):
             if let _ = ApplicationDB.shared.createSession(user: user) {
@@ -163,6 +186,16 @@ class LoginViewController: CustomViewController {
         self.dismiss(animated: true, completion: nil)
     }
     
+    func shouldReturn(_ textField: TextFieldWithError) {
+        if textField == emailField {
+            textField.removeFirstResponder()
+            passwordField.makeFirstResponder()
+        } else {
+            passwordField.removeFirstResponder()
+            self.onLogin()
+        }
+    }
+    
     @objc
     func onSignup() {
         let vc = SignUpViewController()
@@ -177,7 +210,8 @@ class LoginViewController: CustomViewController {
     }
     
     override func setupLayout() {
-        
+        emailField.delegate = self
+        passwordField.delegate = self
         view.backgroundColor = .systemGray
         
         topView.addSubview(errorLabel)

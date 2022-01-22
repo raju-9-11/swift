@@ -13,6 +13,8 @@ class HomeViewController: CustomViewController, UICollectionViewDataSource, UICo
     // MARK: Data
     var popularItems: [ Product ]  = []
     
+    var pvc: ProductViewController?
+    
     // MARK: - UI Elements
     let popularItemsList: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -91,6 +93,22 @@ class HomeViewController: CustomViewController, UICollectionViewDataSource, UICo
         self.setupLayout()          
     }
     
+    deinit {
+        pvc = nil
+    }
+    
+//    override func viewWillDisappear(_ animated: Bool) {
+//        super.viewWillDisappear(animated)
+//        self.tabBarController?.navigationItem.rightBarButtonItem = nil
+//    }
+//
+//    override func viewWillAppear(_ animated: Bool) {
+//        super.viewWillAppear(animated)
+//        if pvc != nil {
+//            self.tabBarController?.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "back", style: .plain , target: self, action: #selector(onProductBack))
+//        }
+//    }
+    
     // MARK: - CollectionView delegate
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -99,6 +117,25 @@ class HomeViewController: CustomViewController, UICollectionViewDataSource, UICo
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return itemSize
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if collectionView == popularItemsList {
+            let product: Product = popularItems[indexPath.row]
+//            self.tabBarController?.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "back", style: .plain , target: self, action: #selector(onProductBack))
+            if pvc == nil {
+                pvc = ProductViewController()
+            }
+            pvc!.productData = product
+            pvc!.willMove(toParent: self)
+            self.addChild(pvc!)
+            self.view.addSubview(pvc!.view)
+        } else {
+            let category: Category = categories[indexPath.row]
+            if let vc = self.tabBarController as? MainController {
+                vc.displayProducts(with: category)
+            }
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -159,6 +196,15 @@ class HomeViewController: CustomViewController, UICollectionViewDataSource, UICo
             categoryList.centerXAnchor.constraint(equalTo: categoryView.centerXAnchor),
             categoryList.bottomAnchor.constraint(equalTo: categoryView.safeAreaLayoutGuide.bottomAnchor),
         ])
+    }
+    
+    @objc
+    func onProductBack() {
+        pvc!.view.removeFromSuperview()
+        pvc!.willMove(toParent: nil)
+        pvc!.removeFromParent()
+        pvc = nil
+        self.tabBarController?.navigationItem.rightBarButtonItem = nil
     }
     
     

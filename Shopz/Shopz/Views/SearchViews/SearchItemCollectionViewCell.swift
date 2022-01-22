@@ -9,12 +9,23 @@ import UIKit
 
 class SearchItemCollectionViewCell: UICollectionViewCell {
     
+    override var isSelected: Bool {
+        willSet {
+            UIView.animate(withDuration: 4 ) {
+                self.contentView.backgroundColor = newValue ? .gray : .clear
+                self.nameLabel.textColor = newValue ? .white : .black
+                self.costLabel.textColor = newValue ? .white : .darkGray
+            }
+        }
+    }
+    
     static let cellID = "SearchListItem"
     
     let nameLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.numberOfLines = 3
+        label.backgroundColor = .black
         label.font = .italicSystemFont(ofSize: 15)
         label.lineBreakMode = .byWordWrapping
         return label
@@ -33,6 +44,7 @@ class SearchItemCollectionViewCell: UICollectionViewCell {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "$ 0"
+        label.textColor = .darkGray
         label.font = .italicSystemFont(ofSize: 16)
         return label
     }()

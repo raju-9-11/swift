@@ -16,7 +16,6 @@ class ApplicationDB {
     
     var name: String
     var db: OpaquePointer?
-    var statement: OpaquePointer?
     
     static let shared: ApplicationDB = ApplicationDB(name: "Shopz")
     
@@ -54,11 +53,8 @@ class ApplicationDB {
                 "ph": "text",
                 "city": "text",
                 "country": "text"
-            ]) && createTable(tableName: "cart_items", with: [
-                "id":"integer primary key",
-                "product_id": "integer",
             ]) && createTable(tableName: "session", with: [
-                "id": "text primary_key",
+                "id": "text primary key",
                 "user_id": "integer",
                 "firstname": "text",
                 "lastname": "text",
@@ -67,6 +63,15 @@ class ApplicationDB {
                 "ph": "text",
                 "city": "text",
                 "country": "text"
+            ]) && createTable(tableName: "cart_items", with: [
+                "item_id":"integer primary key autoincrement",
+                "cart_id": "integer",
+                "product_id": "integer",
+            ]) && createTable(tableName: "order_history", with: [
+                "item_id": "integer primary key autoincrement",
+                "purchase_date": "date",
+                "user_id": "integer",
+                "product_id": "integer",
             ])
         }
         return false
@@ -233,71 +238,56 @@ class ApplicationDB {
         }
     }
     
-    func readUsers() {
+    func getCart() -> [Product] {
+        
+        guard let auth = Auth.auth else { return [] }
+        var cartItems: [Product] = []
+        var statement: OpaquePointer?
+        guard initDB() else { return [] }
+        
+        if sqlite3_prepare(db, "select item_id, product_id from cart_items where cart_id=\(auth.user.id) ", -1, &statement, nil) != SQLITE_OK {
+            print("Error \(String(cString: sqlite3_errmsg(db)))")
+            sqlite3_finalize(statement)
+            closeDB()
+            return []
+        }
+        
+        while(sqlite3_step(statement) == SQLITE_ROW) {
+            _ = sqlite3_column_int(statement, 0)
+            let productId = sqlite3_column_int(statement, 1)
+            if let prod = StorageDB.getProduct(with: Int(productId)) {
+                cartItems.append(prod)
+            }
+        }
+        
+        
+        sqlite3_finalize(statement)
+        closeDB()
+        return cartItems
+    }
+    
+    func getOrderHistory() -> [(product: Product, date: Date)] {
+        var orderHistory: [(product: Product, date: Date)] = []
+        guard let auth = Auth.auth else { return [] }
+        guard initDB() else { return [] }
         var statement: OpaquePointer?
         
-        if sqlite3_prepare(db, "select id, firstname, lastname, email, ph, country, city, password, password_salt, about from users", -1, &statement, nil) != SQLITE_OK {
+        if sqlite3_prepare(db, "select product_id, purchase_date from order_history where user_id=\(auth.user.id)", -1, &statement, nil) != SQLITE_OK {
             print("Error \(String(cString: sqlite3_errmsg(db)))")
-            return
+            sqlite3_finalize(statement)
+            closeDB()
+            return []
         }
         
-        var id: Int = -1
-        var password: String = ""
-        var about: String = ""
-        var firstName: String = ""
-        var lastName: String = ""
-        var country: String = ""
-        var city: String = ""
-        var ph: String = ""
-        var email: String = ""
-        var salt: String = ""
-        
-        print("\(String(cString: sqlite3_column_name(statement, 0))) \t \(String(cString: sqlite3_column_name(statement, 1))) \t \(String(cString: sqlite3_column_name(statement, 2))) \t \(String(cString: sqlite3_column_name(statement, 3))) \t \(String(cString: sqlite3_column_name(statement, 4))) \t \(String(cString: sqlite3_column_name(statement, 5))) \t \(String(cString: sqlite3_column_name(statement, 6))) \t \(String(cString: sqlite3_column_name(statement, 7))) \t \(String(cString: sqlite3_column_name(statement, 8))) \t \(String(cString: sqlite3_column_name(statement, 9)))")
-        
-        while sqlite3_step(statement) == SQLITE_ROW {
-            let userId = sqlite3_column_int64(statement, 0)
-            id = Int(userId)
-
-            if let cString = sqlite3_column_text(statement, 1) {
-                firstName = String(cString: cString)
+        while (sqlite3_step(statement) == SQLITE_ROW) {
+            let productId = sqlite3_column_int(statement, 0)
+            _ = sqlite3_column_text(statement, 1)
+            if let prod = StorageDB.getProduct(with: Int(productId)) {
+                orderHistory.append((product: prod, date: Date()))
             }
-
-            if let cString = sqlite3_column_text(statement, 2) {
-                lastName = String(cString: cString)
-            }
-
-            if let cString = sqlite3_column_text(statement, 3) {
-                email = String(cString: cString)
-            }
-            
-            if let cString = sqlite3_column_text(statement, 4) {
-                ph = String(cString: cString)
-            }
-            
-            if let cString = sqlite3_column_text(statement, 5) {
-                country = String(cString: cString)
-            }
-            
-            if let cString = sqlite3_column_text(statement, 6) {
-                city = String(cString: cString)
-            }
-            
-            if let cString = sqlite3_column_text(statement, 7) {
-                password = String(cString: cString)
-            }
-            
-            if let cString = sqlite3_column_text(statement, 8) {
-                salt = String(cString: cString)
-            }
-            
-            if let cStrign = sqlite3_column_text(statement, 9) {
-                about = String(cString: cStrign)
-            }
-
-            print("\(id) \t \(firstName) \t \(lastName) \t \(email) \t \(ph) \t \(country) \t \(city) \t \(password) \t \(salt) \t \(about)")
-
         }
-
+        
+        return orderHistory
     }
     
     func clearDB(tableName: String) -> Bool {
@@ -317,4 +307,3 @@ class ApplicationDB {
     }
     
 }
-

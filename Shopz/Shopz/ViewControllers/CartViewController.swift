@@ -109,13 +109,13 @@ class CartViewController: CustomViewController, UICollectionViewDataSource, UICo
     
     
     func getList() -> [Product] {
-        let cart = StorageDB.getProducts()
-        return cart
+        let shoppingList = ApplicationDB.shared.getCart()
+        return shoppingList
     }
     
     func getCart() -> [Product] {
-        let shoppingList = StorageDB.getProducts()
-        return shoppingList
+        let cart = ApplicationDB.shared.getCart()
+        return cart
     }
     
     override func setupLayout() {

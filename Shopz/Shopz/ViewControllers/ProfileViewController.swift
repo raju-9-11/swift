@@ -44,7 +44,7 @@ class ProfileViewController: CustomViewController, UICollectionViewDataSource, U
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
-    }
+    } 
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)

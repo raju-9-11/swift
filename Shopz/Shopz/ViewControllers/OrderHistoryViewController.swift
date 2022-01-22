@@ -9,14 +9,14 @@ import UIKit
 
 class OrderHistoryViewController: CustomViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, OrderHistoryItemDelegate {
     
-    var listItems: [Product] = [] {
+    var listItems: [(product: Product, date: Date)] = [] {
         willSet {
             self.collectionView.isHidden = newValue.isEmpty
             self.placeholderView.isHidden = !newValue.isEmpty
         }
     }
     
-    let prodVC = ProductViewController()
+    var prodVC: ProductViewController?
 
     
     let collectionView: UICollectionView = {
@@ -64,10 +64,9 @@ class OrderHistoryViewController: CustomViewController, UICollectionViewDataSour
         return view
     }()
     
-    let cvc = CheckoutViewController()
-    
     required init?(coder: NSCoder) {
         super.init(coder: coder)
+        prodVC = nil
     }
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
@@ -88,14 +87,9 @@ class OrderHistoryViewController: CustomViewController, UICollectionViewDataSour
         NotificationCenter.default.removeObserver(self)
     }
     
-    func getList() -> [Product] {
-        let cart = StorageDB.getProducts()
-        return cart
-    }
-    
-    func getCart() -> [Product] {
-        let shoppingList = StorageDB.getProducts()
-        return shoppingList
+    func getList() -> [(product: Product, date: Date)] {
+        let list = ApplicationDB.shared.getOrderHistory()
+        return list
     }
     
     override func setupLayout() {
@@ -142,7 +136,7 @@ class OrderHistoryViewController: CustomViewController, UICollectionViewDataSour
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: OrderHistoryItemCollectionViewCell.cellID, for: indexPath) as! OrderHistoryItemCollectionViewCell
-        cell.itemData = listItems[indexPath.row]
+        cell.itemData = listItems[indexPath.row].product
         cell.delegate = self
         return cell
     }
@@ -158,24 +152,20 @@ class OrderHistoryViewController: CustomViewController, UICollectionViewDataSour
     }
     
     func addReview(item: Product) {
-        prodVC.removeViews()
-        prodVC.setupLayout()
-        prodVC.productData = item
-        self.addChild(prodVC)
+        if prodVC == nil {
+            prodVC = ProductViewController()
+            prodVC?.productData = item
+        }
+        prodVC!.removeViews()
+        prodVC!.setupLayout()
+        prodVC!.productData = item
+        self.addChild(prodVC!)
         self.willMove(toParent: self)
-        self.view.addSubview(prodVC.view)
+        self.view.addSubview(prodVC!.view)
     }
     
     func returnProduct(item: Product) {
         print("Returning \(item.product_name)...")
-    }
-    
-    
-    @objc
-    func onCheckout() {
-        cvc.willMove(toParent: self)
-        self.addChild(cvc)
-        self.view.addSubview(cvc.view)
     }
     
 }

@@ -166,7 +166,6 @@ class SignUpViewController: CustomViewController, UICollectionViewDelegate, UICo
     }
     
     func onSignup() {
-        ApplicationDB.shared.readUsers()
         self.dismiss(animated: true)
     }
     

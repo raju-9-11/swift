@@ -61,11 +61,11 @@ class MainController: UITabBarController, UITabBarControllerDelegate, UITextFiel
         self.delegate = self
         
         searchBar.delegate = self
-        let homeButton = UIBarButtonItem(image: UIImage(systemName: "house"), style: .plain, target: self, action: #selector(loadHome))
+//        let homeButton = UIBarButtonItem(image: UIImage(systemName: "house"), style: .plain, target: self, action: #selector(loadHome))
         NotificationCenter.default.addObserver(self, selector: #selector(onLogin), name: .userLogin, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(onLogout), name: .userLogout, object: nil)
-        homeButton.tintColor = .black
-        self.navigationItem.rightBarButtonItem = homeButton
+//        homeButton.tintColor = .black
+//        self.navigationItem.rightBarButtonItem = homeButton
         self.navigationItem.titleView = searchBar
         self.tabBar.backgroundColor = .white
     }
@@ -87,7 +87,6 @@ class MainController: UITabBarController, UITabBarControllerDelegate, UITextFiel
     @objc
     func onLogout() {
         if let vc = selectedViewController as? CustomViewController, vc.requiresAuth {
-            print("TEST")
             DispatchQueue.main.async {
                 self.displayOn(viewController: vc)
             }
@@ -95,6 +94,9 @@ class MainController: UITabBarController, UITabBarControllerDelegate, UITextFiel
     }
     
     func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
+        if let vc = viewController as? CustomViewController {
+            vc.children.forEach({ $0.view.removeFromSuperview(); $0.removeFromParent() })
+        }
         if let vc = viewController as? CustomViewController, vc.requiresAuth {
             if Auth.auth == nil {
                 displayOn(viewController: viewController)
@@ -113,6 +115,10 @@ class MainController: UITabBarController, UITabBarControllerDelegate, UITextFiel
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         print("Searching: \(searchBar.text ?? "")")
         self.onDismiss()
+    }
+    
+    func displayProducts(with category: Category) {
+        print("Searching items with category \(category.name)")
     }
     
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
@@ -139,6 +145,7 @@ class MainController: UITabBarController, UITabBarControllerDelegate, UITextFiel
     }
     
     func onSearch(query: String?) {
+        StorageDB.getProducts(with: query ?? "").forEach({ prod in print(prod.product_name)})
         print("Searching for \(query ?? "")...")
     }
 
