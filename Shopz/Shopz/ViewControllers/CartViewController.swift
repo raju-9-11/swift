@@ -23,7 +23,9 @@ class CartViewController: CustomViewController, UICollectionViewDataSource, UICo
         }
     }
     
-    lazy var listItems: [Product] = [] {
+    weak var delegate: ShoppingListViewDelegate?
+    
+    lazy var listItems: [CartItem] = [] {
         willSet {
             self.tabBarItem.badgeValue = "\(newValue.count)"
             self.collectionView.isHidden = newValue.isEmpty
@@ -86,8 +88,8 @@ class CartViewController: CustomViewController, UICollectionViewDataSource, UICo
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
         DispatchQueue.main.async {
-            if Auth.auth != nil {
-                self.tabBarItem.badgeValue = "\(self.listItems.count)"
+            if Auth.auth != nil, let count = ApplicationDB.shared.getCartCount() {
+                self.tabBarItem.badgeValue = "\(count)"
             }
         }
         self.requiresAuth = true
@@ -97,9 +99,15 @@ class CartViewController: CustomViewController, UICollectionViewDataSource, UICo
         super.viewDidLoad()
         NotificationCenter.default.addObserver(self, selector: #selector(onLogout), name: .userLogout, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(onLogin), name: .userLogin, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(updateBadge), name: .cartUpdate, object: nil)
         if (requiresAuth && Auth.auth != nil) || ( !requiresAuth ) 	{
             self.setupLayout()
         }
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.loadData()
     }
     
     deinit {
@@ -108,12 +116,13 @@ class CartViewController: CustomViewController, UICollectionViewDataSource, UICo
     }
     
     
-    func getList() -> [Product] {
-        let shoppingList = ApplicationDB.shared.getCart()
+    func getList() -> [CartItem] {
+        guard listDetails != nil else { return [] }
+        let shoppingList = ApplicationDB.shared.getShoppingList(with: listDetails!.id)
         return shoppingList
     }
     
-    func getCart() -> [Product] {
+    func getCart() -> [CartItem] {
         let cart = ApplicationDB.shared.getCart()
         return cart
     }
@@ -130,8 +139,6 @@ class CartViewController: CustomViewController, UICollectionViewDataSource, UICo
 
         view.addSubview(collectionView)
         view.addSubview(placeholderView)
-        
-        self.tabBarItem.badgeValue = "\(listItems.count)"
         NSLayoutConstraint.activate([
             collectionView.widthAnchor.constraint(equalTo: self.view.widthAnchor),
             collectionView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor),
@@ -160,9 +167,19 @@ class CartViewController: CustomViewController, UICollectionViewDataSource, UICo
     func loadData() {
         if listDetails != nil {
             self.listItems = getList()
+            collectionView.reloadData()
+            return
         }
+        self.updateBadge()
         self.listItems = getCart()
         collectionView.reloadData()
+    }
+    
+    @objc
+    func updateBadge() {
+        if let count = ApplicationDB.shared.getCartCount() {
+            self.tabBarItem.badgeValue = "\(count)"
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -192,9 +209,14 @@ class CartViewController: CustomViewController, UICollectionViewDataSource, UICo
         return headerView
     }
     
-    func removeItem(item: Product) {
+    func removeItem(item: CartItem) {
+        if listDetails == nil {
+            ApplicationDB.shared.removeFromCart(item: item)
+        } else {
+            ApplicationDB.shared.removeFromShoppingList(list: listDetails!, item: item)
+        }
         for (index, listItem ) in listItems.enumerated() {
-            if item.product_id == listItem.product_id {
+            if item.itemId == listItem.itemId {
                 listItems.remove(at: index)
                 collectionView.deleteItems(at: [IndexPath(row: index, section: 0)])
                 break
@@ -202,15 +224,15 @@ class CartViewController: CustomViewController, UICollectionViewDataSource, UICo
         }
     }
     
-    func updateCart() {
-        print("Updating Cart")
-        self.collectionView.reloadData()
-    }
-    
     @objc
     func onCheckout() {
         if cvc == nil {
             cvc = CheckoutViewController()
+        }
+        if listDetails == nil {
+            cvc?.bind(with: listItems)
+        } else {
+            cvc?.bind(with: listItems, shoppingList: listDetails!)
         }
         cvc!.willMove(toParent: self)
         self.addChild(cvc!)
@@ -219,9 +241,17 @@ class CartViewController: CustomViewController, UICollectionViewDataSource, UICo
     
     func onDelete() {
         self.listItems.removeAll()
+        guard let listDetails = listDetails else {
+            return
+        }
+        delegate?.deleteListClicked(list: listDetails)
         self.willMove(toParent: nil)
         self.view.removeFromSuperview()
         self.removeFromParent()
     }
     
+}
+
+protocol ShoppingListViewDelegate: AnyObject {
+    func deleteListClicked(list: ShoppingList)
 }

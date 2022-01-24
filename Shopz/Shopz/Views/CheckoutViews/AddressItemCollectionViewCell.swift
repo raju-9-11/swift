@@ -11,10 +11,12 @@ class AddressItemCollectionViewCell: UICollectionViewCell {
     
     static let cellID = "AddressItemCell"
     
-    var address: String = "" {
+    var address: Address? {
         willSet {
-            addressTextView.text = newValue
-            self.setupLayout()
+            if newValue != nil {
+                addressTextView.text = newValue!.address
+                self.setupLayout()
+            }
         }
     }
     

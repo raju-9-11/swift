@@ -50,6 +50,9 @@ class ReviewsCollectionViewCell: UICollectionViewCell, UITableViewDataSource, UI
         let textview = TextViewWithPlaceHolder()
         textview.translatesAutoresizingMaskIntoConstraints = false
         textview.placeholder = "Enter Review"
+        textview.layer.cornerRadius = 6
+        textview.layer.borderColor = UIColor.darkGray.cgColor
+        textview.layer.borderWidth = 1
         return textview
     }()
     
@@ -150,40 +153,3 @@ class ReviewsCollectionViewCell: UICollectionViewCell, UITableViewDataSource, UI
 
 }
 
-class TextViewWithPlaceHolder: UITextView, UITextViewDelegate {
-    
-    var placeholder: String = "" {
-        willSet {
-            if text.isEmpty {
-                text = newValue
-                textColor = UIColor.lightGray
-            }
-        }
-    }
-    
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-    }
-    
-    override init(frame: CGRect, textContainer: NSTextContainer?) {
-        super.init(frame: frame, textContainer: textContainer)
-        self.delegate = self
-        self.layer.cornerRadius = 6
-        self.layer.borderColor = UIColor.darkGray.cgColor
-        self.layer.borderWidth = 1
-    }
-    
-    func textViewDidBeginEditing(_ textView: UITextView) {
-        if textView.textColor == UIColor.lightGray {
-            textView.text = nil
-            textView.textColor = UIColor.black
-        }
-    }
-    
-    func textViewDidEndEditing(_ textView: UITextView) {
-        if textView.text.isEmpty {
-            textView.text = placeholder
-            textView.textColor = UIColor.lightGray
-        }
-    }
-}

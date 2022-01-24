@@ -9,15 +9,6 @@ import UIKit
 
 class SearchItemCollectionViewCell: UICollectionViewCell {
     
-    override var isSelected: Bool {
-        willSet {
-            UIView.animate(withDuration: 4 ) {
-                self.contentView.backgroundColor = newValue ? .gray : .clear
-                self.nameLabel.textColor = newValue ? .white : .black
-                self.costLabel.textColor = newValue ? .white : .darkGray
-            }
-        }
-    }
     
     static let cellID = "SearchListItem"
     
@@ -25,12 +16,11 @@ class SearchItemCollectionViewCell: UICollectionViewCell {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.numberOfLines = 3
-        label.backgroundColor = .black
+        label.textColor = .black
         label.font = .italicSystemFont(ofSize: 15)
         label.lineBreakMode = .byWordWrapping
         return label
     }()
-    
     
     let imageView: UIImageView = {
         let imageView = UIImageView()

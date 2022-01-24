@@ -6,8 +6,9 @@
 //
 
 import UIKit
+import CryptoKit
 
-class CheckoutViewController: CustomViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, CheckBoxDelegate, UITextFieldDelegate {
+class CheckoutViewController: CustomViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, CheckBoxDelegate, TextFieldWithErrorDelegate {
     
     lazy var cartDetails: UILabel = {
         return titleLabel(text: "Cart Details")
@@ -20,6 +21,9 @@ class CheckoutViewController: CustomViewController, UICollectionViewDelegate, UI
         view.layer.cornerRadius = 7
         return view
     }()
+    
+    var shoppingList: ShoppingList?
+    var cart: [CartItem] = []
     
     let topView: UIView = {
         let view = UIView()
@@ -53,14 +57,12 @@ class CheckoutViewController: CustomViewController, UICollectionViewDelegate, UI
         return view
     }()
     
-    let giftWrapText: UITextField = {
-        let textField = UITextField()
+    let giftWrapText: TextFieldWithError = {
+        let textField = TextFieldWithError()
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.placeholder = "Name on gift wrap"
         textField.isHidden = true
-        textField.layer.cornerRadius = 5
-        textField.borderStyle = .roundedRect
-        textField.layer.borderWidth = 1
+        textField.error = "Name Cannot be empty"
         return textField
     }()
     
@@ -121,11 +123,11 @@ class CheckoutViewController: CustomViewController, UICollectionViewDelegate, UI
         return button
     }()
     
-    let addressListData: [String] = {
-        return ["String string sgring asdf as ", "SDFSDF fsdfs , sdsdfs fsdfsd ", "dsfsdfsd", "String Sgring ,fsdfsd","String string sgring asdf as ", "SDFSDF fsdfs , sdsdfs fsdfsd ", "dsfsdfsd", "String Sgring ,fsdfsd"]
+    var addressListData: [Address] = {
+        return ApplicationDB.shared.getAddressList()
     }()
     
-    let pvc = PaymentViewController()
+    var pvc: PaymentViewController?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -154,6 +156,24 @@ class CheckoutViewController: CustomViewController, UICollectionViewDelegate, UI
         return cell
     }
     
+    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        if indexPath.row != selectedAddress && indexPath.row != addressListData.count {
+            return UIContextMenuConfiguration(identifier: nil, previewProvider: nil, actionProvider: {
+                _ in
+                let delete = UIAction(title: "Delete Address", image: UIImage(systemName: "trash"), attributes: .destructive, handler: {
+                    _ in
+                    ApplicationDB.shared.removeAddress(address: self.addressListData[indexPath.row])
+                    self.addressListData = ApplicationDB.shared.getAddressList()
+                    self.addressList.deleteItems(at: [indexPath])
+                    self.addressList.reloadData()
+                })
+                
+                return UIMenu(children: [delete])
+            })
+        }
+        return UIContextMenuConfiguration()
+    }
+    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: collectionView.frame.width*0.48, height: collectionView.frame.width*0.48)
     }
@@ -168,7 +188,23 @@ class CheckoutViewController: CustomViewController, UICollectionViewDelegate, UI
     }
     
     func onAddClick() {
-        print("Add Clicked")
+        let alert = UIAlertController(title: "Add Address", message: "Enter New Address", preferredStyle: .alert)
+        alert.addTextField(configurationHandler: {
+            textfield in
+            textfield.placeholder = "Enter Address"
+        })
+        let addAction = UIAlertAction(title: "Add", style: .default, handler: {
+            _ in
+            if let address = alert.textFields![0].text, !address.isEmpty {
+                ApplicationDB.shared.addAddress(address: address)
+                self.addressListData = ApplicationDB.shared.getAddressList()
+                self.addressList.reloadData()
+            }
+        })
+        let cancelAction = UIAlertAction(title: "Cancel", style: .default, handler: nil)
+        alert.addAction(addAction)
+        alert.addAction(cancelAction)
+        present(alert, animated: true, completion: nil)
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -232,6 +268,22 @@ class CheckoutViewController: CustomViewController, UICollectionViewDelegate, UI
     
     deinit {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name.paymentCompletion, object: nil)
+        pvc = nil
+    }
+    
+    func bind(with cart: [CartItem]) {
+        self.cart = cart
+        billingLabels[0].text = "\(cart.count)"
+        billingLabels[1].text = "$ \((cart.map({ item in return item.product.shipping_cost }).reduce(0, +)))"
+        billingLabels[2].text = "$ \(cart.map({ item in return item.product.price }).reduce(0, +))"
+    }
+    
+    func bind(with list: [CartItem], shoppingList: ShoppingList) {
+        self.shoppingList = shoppingList
+        self.cart = list
+        billingLabels[0].text = "\(list.count)"
+        billingLabels[1].text = "$ \((list.map({ item in return item.product.shipping_cost }).reduce(0, +)))"
+        billingLabels[2].text = "$ \(list.map({ item in return item.product.price }).reduce(0, +))"
     }
     
     func newStackView(views: [UIView]) -> UIStackView {
@@ -257,11 +309,10 @@ class CheckoutViewController: CustomViewController, UICollectionViewDelegate, UI
         return label
     }
     
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+    func shouldReturn(_ textField: TextFieldWithError) {
         if textField == giftWrapText {
             self.view.endEditing(true)
         }
-        return true
     }
     
     @objc
@@ -275,7 +326,7 @@ class CheckoutViewController: CustomViewController, UICollectionViewDelegate, UI
         self.dismiss(animated: true, completion: nil)
         self.willMove(toParent: nil)
         if let vc = self.parent as? CartViewController {
-            vc.updateCart()
+            vc.loadData()
         }
         self.view.removeFromSuperview()
         self.removeFromParent()
@@ -283,9 +334,22 @@ class CheckoutViewController: CustomViewController, UICollectionViewDelegate, UI
     
     @objc
     func onContinue() {
-        pvc.modalPresentationStyle = .fullScreen
-        pvc.modalTransitionStyle = .coverVertical
-        self.present(pvc, animated: true)
+        if (giftWrapSwitch.isOn && giftWrapText.text.isEmpty) {
+            giftWrapText.errorState = true
+            return
+        }
+        if addressListData.count < 1 {
+            Toast.shared.showToast(message: "You should provide atleast one address", type: .error)
+            return
+        }
+        giftWrapText.errorState = false
+        if pvc == nil {
+            pvc = PaymentViewController()
+            pvc?.cart = self.cart
+        }
+        pvc!.modalPresentationStyle = .fullScreen
+        pvc!.modalTransitionStyle = .coverVertical
+        self.present(pvc!, animated: true)
     }
     
     func onToggle(_ elem: CheckBox) {
@@ -319,5 +383,11 @@ extension Notification.Name {
     
     static var userLogout: Notification.Name {
         return .init(rawValue: "User.Logout.success")
+    }
+    static var cartUpdate: Notification.Name {
+        return .init(rawValue: "Cart.Update.success")
+    }
+    static var profileUpdate: Notification.Name {
+        return .init(rawValue: "Profile.update.success")
     }
 }

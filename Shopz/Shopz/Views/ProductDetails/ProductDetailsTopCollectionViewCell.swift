@@ -66,7 +66,7 @@ class ProductDetailsTopCollectionViewCell: UICollectionViewCell, UICollectionVie
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        delegate?.sendImage(imageData.images[indexPath.row])
+        delegate?.displayImage(imageData.images[indexPath.row])
     }
     
     
@@ -82,6 +82,6 @@ class ProductDetailsTopCollectionViewCell: UICollectionViewCell, UICollectionVie
     }
 }
 
-protocol ImagesViewDelegate {
-    func sendImage(_ image: UIImage?)
+protocol ImagesViewDelegate: AnyObject {
+    func displayImage(_ image: UIImage?)
 }

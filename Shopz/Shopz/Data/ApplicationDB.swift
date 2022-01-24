@@ -72,6 +72,24 @@ class ApplicationDB {
                 "purchase_date": "date",
                 "user_id": "integer",
                 "product_id": "integer",
+            ]) && createTable(tableName: "shopping_lists", with: [
+                "list_id": "integer primary key autoincrement",
+                "user_id": "integer",
+                "name": "text",
+            ]) && createTable(tableName: "shopping_list_items", with: [
+                "item_id":"integer primary key autoincrement",
+                "list_id": "integer",
+                "product_id": "integer",
+            ]) && createTable(tableName: "address_items", with: [
+                "address_id": "integer primary key autoincrement",
+                "user_id": "integer",
+                "address": "text",
+            ]) && createTable(tableName: "payment_cards", with: [
+                "card_id": "integer primary key autoincrement",
+                "card_number": "text",
+                "user_id": "integer",
+                "expiry_date": "date",
+                "name": "text"
             ])
         }
         return false
@@ -86,6 +104,8 @@ class ApplicationDB {
         }
         return true
     }
+    
+    // MARK: - User and session functions
     
     func addUser(firstName: String, lastName: String, email: String, ph: String, country: String, city: String, password: String, about: String = "") -> Bool {
         
@@ -238,10 +258,12 @@ class ApplicationDB {
         }
     }
     
-    func getCart() -> [Product] {
+    // MARK: - Cart functions
+    
+    func getCart() -> [CartItem] {
         
         guard let auth = Auth.auth else { return [] }
-        var cartItems: [Product] = []
+        var cartItems: [CartItem] = []
         var statement: OpaquePointer?
         guard initDB() else { return [] }
         
@@ -253,10 +275,10 @@ class ApplicationDB {
         }
         
         while(sqlite3_step(statement) == SQLITE_ROW) {
-            _ = sqlite3_column_int(statement, 0)
+            let itemId = Int(sqlite3_column_int(statement, 0))
             let productId = sqlite3_column_int(statement, 1)
             if let prod = StorageDB.getProduct(with: Int(productId)) {
-                cartItems.append(prod)
+                cartItems.append(CartItem(product: prod, itemId: itemId))
             }
         }
         
@@ -265,6 +287,129 @@ class ApplicationDB {
         closeDB()
         return cartItems
     }
+    
+    func getCartCount() -> Int? {
+        guard let auth = Auth.auth else { return nil }
+        var count: Int? = 0
+        var statement: OpaquePointer?
+        guard initDB() else { return nil }
+        
+        if sqlite3_prepare(db, "select count(*) from cart_items where cart_id=\(auth.user.id)", -1, &statement, nil) != SQLITE_OK {
+            print("Error \(String(cString: sqlite3_errmsg(db)))")
+            sqlite3_finalize(statement)
+            closeDB()
+            return nil
+        }
+        
+        if sqlite3_step(statement) == SQLITE_ROW {
+            count = Int(sqlite3_column_int(statement, 0))
+        }
+        
+        sqlite3_finalize(statement)
+        closeDB()
+        return count
+        
+    }
+    
+    func addToCart(item: Product) {
+        
+        guard let auth = Auth.auth else { return }
+        guard initDB() else { return }
+        
+        if sqlite3_exec(db, "insert into cart_items (cart_id, product_id) values (\(auth.user.id), \(item.product_id))", nil, nil, nil) != SQLITE_OK {
+            print("Error: \(String(cString: sqlite3_errmsg(db)))")
+            Toast.shared.showToast(message: "Unable to add to Cart", type: .error)
+            closeDB()
+            return
+        }
+        NotificationCenter.default.post(name: .cartUpdate, object: nil)
+        Toast.shared.showToast(message: "Added to Cart", type: .success)
+        closeDB()
+    }
+    
+    func addToShoppingList(item: Product, list: ShoppingList) {
+        
+        guard let _ = Auth.auth else { return }
+        guard initDB() else { return }
+        
+        if sqlite3_exec(db, "insert into shopping_list_items (list_id, product_id) values (\(list.id), \(item.product_id))", nil, nil, nil) != SQLITE_OK {
+            print("Error: \(String(cString: sqlite3_errmsg(db)))")
+            closeDB()
+            Toast.shared.showToast(message: "Unable to add to \(list.name)")
+            return
+        }
+        Toast.shared.showToast(message: "Add to \(list.name)")
+    }
+    
+    func removeFromCart(item: CartItem) {
+        
+        guard Auth.auth != nil else { return }
+        guard initDB() else { return }
+        if sqlite3_exec(db, "delete from cart_items where item_id=\(item.itemId) ", nil, nil, nil) != SQLITE_OK {
+            print("Error: \(String(cString: sqlite3_errmsg(db)))")
+            closeDB()
+            Toast.shared.showToast(message: "Unable to delete", type: .error)
+            return
+        }
+        Toast.shared.showToast(message: "Deleted item \(item.product.product_name)", type: .success)
+        closeDB()
+        
+    }
+    
+    func removeFromShoppingList(list: ShoppingList, item: CartItem) {
+        
+        guard Auth.auth != nil else { return }
+        guard initDB() else { return }
+        if sqlite3_exec(db, "delete from shopping_list_items where item_id=\(item.itemId) ", nil, nil, nil) != SQLITE_OK {
+            print("Error: \(String(cString: sqlite3_errmsg(db)))")
+            closeDB()
+            Toast.shared.showToast(message: "Unable to delete", type: .error)
+            return
+        }
+        Toast.shared.showToast(message: "Deleted item \(item.product.product_name)", type: .success)
+        closeDB()
+        
+    }
+    
+    func renameShoppingList(list: ShoppingList, name: String) {
+        
+        guard Auth.auth != nil else { return }
+        guard initDB() else { return }
+        
+        if sqlite3_exec(db, "update shopping_lists set name='\(name)' where list_id=\(list.id)", nil, nil, nil) != SQLITE_OK {
+            print("Error: \(String(cString: sqlite3_errmsg(db)))")
+            closeDB()
+            Toast.shared.showToast(message: "Unable to Update name", type: .error)
+            return
+        }
+        Toast.shared.showToast(message: "Shopping List name updated", type: .success)
+        closeDB()
+    }
+    
+    func removeShoppingList(list: ShoppingList) {
+        
+        guard Auth.auth != nil else { return }
+        guard initDB() else { return }
+        
+        if sqlite3_exec(db, "delete from shopping_lists where list_id=\(list.id)", nil, nil, nil) != SQLITE_OK {
+            print("Error: \(String(cString: sqlite3_errmsg(db)))")
+            closeDB()
+            return
+        }
+        
+        Toast.shared.showToast(message: "Shopping List deleted")
+        
+        if sqlite3_exec(db, "delete from shopping_list_items where list_id=\(list.id) ", nil, nil, nil) != SQLITE_OK {
+            print("Error: \(String(cString: sqlite3_errmsg(db)))")
+            closeDB()
+            return
+        }
+
+        closeDB()
+        
+    }
+    
+    // MARK: - Order history functions
     
     func getOrderHistory() -> [(product: Product, date: Date)] {
         var orderHistory: [(product: Product, date: Date)] = []
@@ -286,9 +431,219 @@ class ApplicationDB {
                 orderHistory.append((product: prod, date: Date()))
             }
         }
-        
+        closeDB()
         return orderHistory
     }
+    
+    // MARK: - Shopping List functions
+    func getShoppingLists() -> [ShoppingList] {
+        
+        guard let auth = Auth.auth else { return [] }
+        var shoppinglists = [ShoppingList]()
+        var statement: OpaquePointer?
+        
+        guard initDB() else { return [] }
+        
+        if sqlite3_prepare(db, "select list_id, name from shopping_lists where user_id='\(auth.user.id)'", -1, &statement, nil) != SQLITE_OK {
+            print("Error: \(String(cString: sqlite3_errmsg(db)))")
+            sqlite3_finalize(statement)
+            closeDB()
+            return []
+        }
+        
+        while(sqlite3_step(statement) == SQLITE_ROW) {
+            let id = Int(sqlite3_column_int(statement, 0))
+            let name = String(cString: sqlite3_column_text(statement, 1))
+            shoppinglists.append(ShoppingList(id: id, name: name, userID: auth.user.id))
+        }
+        
+        sqlite3_finalize(statement)
+        closeDB()
+        return shoppinglists
+    }
+    
+    func getShoppingList(with id: Int) -> [CartItem] {
+        
+        var shoppinglistProducts = [CartItem]()
+        var statement: OpaquePointer?
+        
+        guard initDB() else { return [] }
+        
+        if sqlite3_prepare(db, "select product_id, item_id from shopping_list_items where list_id='\(id)'", -1, &statement, nil) != SQLITE_OK {
+            print("Error: \(String(cString: sqlite3_errmsg(db)))")
+            sqlite3_finalize(statement)
+            closeDB()
+            return []
+        }
+        
+        while(sqlite3_step(statement) == SQLITE_ROW) {
+            let id = Int(sqlite3_column_int(statement, 0))
+            let itemId = Int(sqlite3_column_int(statement, 1))
+            if let prod = StorageDB.getProduct(with: id) {
+                shoppinglistProducts.append(CartItem(product: prod, itemId: itemId))
+            }
+        }
+        
+        sqlite3_finalize(statement)
+        closeDB()
+        return shoppinglistProducts
+    }
+    
+    func addShoppingList(name: String) {
+        
+        guard let auth = Auth.auth else { return }
+        var statement: OpaquePointer?
+        guard initDB() else { return }
+        if sqlite3_prepare(db, "insert into shopping_lists (user_id, name) values (?, ?) ", -1, &statement, nil) != SQLITE_OK{
+            print("Error: \(String(cString: sqlite3_errmsg(db)))")
+            sqlite3_finalize(statement)
+            closeDB()
+            return
+        }
+        sqlite3_bind_int(statement, 1, Int32(auth.user.id))
+        sqlite3_bind_text(statement, 2, name, -1, SQLITE_TRANSIENT)
+        if sqlite3_step(statement) != SQLITE_DONE {
+            print("Error: \(String(cString: sqlite3_errmsg(db)))")
+            Toast.shared.showToast(message: "Unable to create Shopping List", type: .error)
+        }
+        sqlite3_finalize(statement)
+        closeDB()
+        Toast.shared.showToast(message: "Created Shopping List", type: .success)
+    }
+    
+    // MARK: - Checkout functions
+    
+    func addAddress(address: String) {
+        
+        guard let auth = Auth.auth else { return }
+        
+        guard initDB() else { return }
+        
+        if sqlite3_exec(db, "insert into address_items (user_id, address) values (\(auth.user.id), '\(address)')", nil, nil, nil) != SQLITE_OK{
+            print("Error: \(String(cString: sqlite3_errmsg(db)))")
+            closeDB()
+            Toast.shared.showToast(message: "Unable to add Address", type: .error)
+            return
+        }
+        Toast.shared.showToast(message: "Added new address")
+        closeDB()
+    }
+    
+    func getCards() -> [CardData] {
+        
+        var cards = [CardData]()
+        guard let auth = Auth.auth else { return [] }
+        
+        guard initDB() else { return [] }
+        
+        var statement: OpaquePointer?
+        
+        if sqlite3_prepare(db, "select card_id, name, expiry_date, card_number from payment_cards where user_id=\(auth.user.id)", -1, &statement, nil) != SQLITE_OK {
+            print("Prepare Error: \(String(cString: sqlite3_errmsg(db)))")
+            sqlite3_finalize(statement)
+            closeDB()
+            return []
+        }
+        
+        while sqlite3_step(statement) == SQLITE_ROW {
+            let cardId = Int(sqlite3_column_int(statement, 0))
+            let name = String(cString: sqlite3_column_text(statement, 1))
+            let expdate = String(cString: sqlite3_column_text(statement, 2))
+            let cardNumber = String(cString: sqlite3_column_text(statement, 3))
+            print(cardId, name, expdate, cardNumber)
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "dd/MM/YYYY"
+            if let date = dateFormatter.date(from: expdate) {
+                cards.append(CardData(id: cardId, name: name, number: cardNumber, validityDate: date))
+            }
+        }
+        
+        sqlite3_finalize(statement)
+        closeDB()
+        return cards
+    }
+    
+    func addCard(name: String, date: Date, cardNumber: String) {
+        guard let auth = Auth.auth else { return }
+        guard initDB() else { return }
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "dd/MM/YYYY"
+        
+        if sqlite3_exec(db, "insert into payment_cards (user_id, card_number, name, expiry_date) values (\(auth.user.id), '\(cardNumber)', '\(name)', '\(dateFormatter.string(from: date))')", nil, nil, nil) != SQLITE_OK {
+            print("Error: \(String(cString: sqlite3_errmsg(db)))")
+            closeDB()
+            return
+        }
+        closeDB()
+        return
+        
+    }
+    
+    func removeAddress(address: Address) {
+        guard Auth.auth != nil else { return }
+        
+        guard initDB() else { return }
+        
+        if sqlite3_exec(db, "delete from address_items where address_id=\(address.addressId)", nil, nil, nil) != SQLITE_OK {
+            print("Error: \(String(cString: sqlite3_errmsg(db)))")
+            closeDB()
+            Toast.shared.showToast(message: "Unable to Delete Address", type: .error)
+            return
+        }
+        
+        Toast.shared.showToast(message: "Deleted Address")
+        closeDB()
+    }
+    
+    func getAddressList() -> [Address] {
+        
+        var addresses: [Address] = []
+        guard let auth = Auth.auth else { return [] }
+        
+        guard initDB() else { return [] }
+        var statement: OpaquePointer?
+        
+        if sqlite3_prepare(db, "select address_id, address from address_items where user_id=\(auth.user.id)", -1, &statement, nil) != SQLITE_OK {
+            print("Error Preparing stmt: \(String(cString: sqlite3_errmsg(db)))")
+            sqlite3_finalize(statement)
+            closeDB()
+            return []
+        }
+        
+        while sqlite3_step(statement) == SQLITE_ROW {
+            let addressId = Int(sqlite3_column_int(statement, 0))
+            let address = String(cString: sqlite3_column_text(statement, 1))
+            addresses.append(Address(address: address, addressId: addressId, userId: auth.user.id))
+        }
+        
+        sqlite3_finalize(statement)
+        closeDB()
+        return addresses
+        
+        
+    }
+    
+    // MARK: - Profile functions
+    
+    
+//    func setProfileImage(image: Data) {
+//
+//        var statement: OpaquePointer?
+//        guard image.withUnsafeBytes({ bufferPointer -> Int32 in
+//                sqlite3_bind_blob(statement, 5, bufferPointer.baseAddress, Int32(image.count), SQLITE_TRANSIENT)
+//            }) == SQLITE_OK else {
+//                print("Error\(sqlite3_errmsg(db))")
+//                return
+//            }
+//    }
+    
+//    func getProfileImage() -> Data? {
+//
+//        return nil
+//    }
+    
+    
+    // MARK: - Clear table
     
     func clearDB(tableName: String) -> Bool {
         guard initDB() else { return false }

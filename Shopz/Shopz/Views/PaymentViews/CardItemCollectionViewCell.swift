@@ -11,8 +11,9 @@ class CardItemCollectionViewCell: UICollectionViewCell {
     
     static let cellID = "CardItemCELL"
     
-    var cardData: CardData = CardData(name: "", number: "", validityDate: Date()) {
+    var cardData: CardData? {
         willSet {
+            guard let newValue = newValue else { self.setupLayout() ; return }
             dateLabel.text = newValue.getDateInFormat()
             nameLabel.text = newValue.name
             numberLabel.text = newValue.number.toCardFormat()
@@ -91,26 +92,10 @@ class CardItemCollectionViewCell: UICollectionViewCell {
     
 }
 
-class CardData {
-    var name: String
-    var number: String
-    var validityDate: Date
-    
-    init(name: String, number: String, validityDate: Date) {
-        self.name = name
-        self.number = number
-        self.validityDate = validityDate
-    }
-    
-    func getDateInFormat() -> String {
-        let dateformatter = DateFormatter()
-        dateformatter.dateFormat = "MM/YYY"
-        return dateformatter.string(from: self.validityDate)
-    }
-}
-
 extension String {
     func toCardFormat() -> String {
-        return String(repeating: "XXXX-", count: 3) + self[self.index(self.endIndex, offsetBy: -4)..<self.endIndex].uppercased()
+        guard self.count > 4 else { return "0000000000000000" }
+        let startIndex = self.index(self.endIndex, offsetBy: -4) 
+        return String(repeating: "XXXX-", count: 3) + self[startIndex..<self.endIndex].uppercased()
     }
 }

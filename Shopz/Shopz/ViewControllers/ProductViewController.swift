@@ -92,6 +92,18 @@ class ProductViewController: CustomViewController, UICollectionViewDelegate, UIC
         self.view.addSubview(sellerVC.view)
     }
     
+    func buyClicked() {
+        print("Buy Clicked...")
+    }
+    
+    func addToCartClicked() {
+        ApplicationDB.shared.addToCart(item: productData)
+    }
+    
+    func addToShoppingList(list: ShoppingList) {
+        ApplicationDB.shared.addToShoppingList(item: productData, list: list)
+    }
+    
     
     func getReviews(with itemData: Product) -> ReviewElement {
         return ReviewElement(reviews: [
@@ -104,7 +116,7 @@ class ProductViewController: CustomViewController, UICollectionViewDelegate, UIC
         ])
     }
     
-    func sendImage(_ image: UIImage?) {
+    func displayImage(_ image: UIImage?) {
         let newImageView = UIImageView(image: image)
         newImageView.frame = UIScreen.main.bounds
         newImageView.backgroundColor = .black

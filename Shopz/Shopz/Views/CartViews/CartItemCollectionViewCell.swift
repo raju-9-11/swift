@@ -13,11 +13,11 @@ class CartItemCollectionViewCell: UICollectionViewCell {
     
     var delegate: CartItemDelegate?
     
-    var itemData: Product? {
+    var itemData: CartItem? {
         willSet {
             if newValue != nil {
-                nameLabel.text = newValue?.product_name
-                costLabel.text = "$ \(newValue?.price ?? 0) "
+                nameLabel.text = newValue?.product.product_name
+                costLabel.text = "$ \(newValue?.product.price ?? 0) "
                 self.setupLayout()
             }
         }
@@ -27,6 +27,7 @@ class CartItemCollectionViewCell: UICollectionViewCell {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "Item name"
+        label.numberOfLines = 3
         return label
     }()
     
@@ -105,5 +106,5 @@ class CartItemCollectionViewCell: UICollectionViewCell {
 }
 
 protocol CartItemDelegate {
-    func removeItem(item: Product)
+    func removeItem(item: CartItem)
 }

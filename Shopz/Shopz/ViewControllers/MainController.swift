@@ -118,7 +118,11 @@ class MainController: UITabBarController, UITabBarControllerDelegate, UITextFiel
     }
     
     func displayProducts(with category: Category) {
-        print("Searching items with category \(category.name)")
+        self.selectedIndex = 3
+        if let vc = self.selectedViewController as? SearchViewController {
+            print("Searching items with category \(category.name)")
+            vc.loadData(with: [category])
+        }
     }
     
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {

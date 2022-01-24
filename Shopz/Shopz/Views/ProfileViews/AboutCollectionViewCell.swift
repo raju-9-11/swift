@@ -16,17 +16,18 @@ class AboutCollectionViewCell: UICollectionViewCell {
     let containerView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .white
+//        view.backgroundColor = .white
         return view
     }()
     
-    lazy var aboutView: UITextView = {
-        let textView = UITextView()
+    let aboutView: TextViewWithPlaceHolder = {
+        let textView = TextViewWithPlaceHolder()
         textView.translatesAutoresizingMaskIntoConstraints = false
         textView.layer.cornerRadius = 6
         textView.font = .systemFont(ofSize: 13, weight: .regular)
         textView.textColor = .darkGray
-        textView.text = aboutData.about
+        textView.text = ""
+        textView.placeholder = "Write about placeholder"
         textView.textAlignment = .center
         textView.isEditable = false
         textView.backgroundColor = .clear
@@ -42,35 +43,31 @@ class AboutCollectionViewCell: UICollectionViewCell {
         return label
     }()
     
-    var aboutData: AboutData = AboutData(about: "Write about...") {
+    var aboutData: AboutData = AboutData() {
         willSet {
-            if newValue.about != "" {
-                aboutView.text = newValue.about
-            } else {
-                aboutView.text = "Write about...."
-            }
+            aboutView.text = Auth.auth?.user.about ?? ""
             self.setupLayout()
         }
     }
     
     func setupLayout() {
-        containerView.addSubview(aboutLabel)
-        containerView.addSubview(aboutView)
+        contentView.addSubview(aboutLabel)
+        contentView.addSubview(aboutView)
         aboutView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(onClick)))
-        
+        contentView.backgroundColor = .white
         contentView.addSubview(containerView)
         
         NSLayoutConstraint.activate([
-            containerView.heightAnchor.constraint(equalTo: contentView.heightAnchor),
-            containerView.widthAnchor.constraint(equalTo: contentView.widthAnchor),
-            containerView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            containerView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            aboutView.heightAnchor.constraint(equalTo: containerView.heightAnchor, multiplier: 0.7),
-            aboutView.widthAnchor.constraint(equalTo: containerView.widthAnchor, multiplier: 0.9),
-            aboutView.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
+//            containerView.heightAnchor.constraint(equalTo: contentView.heightAnchor),
+//            containerView.widthAnchor.constraint(equalTo: contentView.widthAnchor),
+//            containerView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+//            containerView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            aboutView.heightAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 0.7),
+            aboutView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.9),
+            aboutView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             aboutView.topAnchor.constraint(equalTo: aboutLabel.bottomAnchor, constant: 5),
-            aboutLabel.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 10),
-            aboutLabel.leftAnchor.constraint(equalTo: containerView.leftAnchor, constant: 10),
+            aboutLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
+            aboutLabel.leftAnchor.constraint(equalTo: contentView.leftAnchor, constant: 10),
         ])
     }
     
@@ -86,7 +83,7 @@ class AboutCollectionViewCell: UICollectionViewCell {
     
     override func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
         let attr = layoutAttributes
-        attr.size = CGSize(width: cellFrame.width - 2, height: 130)
+        attr.size = CGSize(width: cellFrame.width, height: 130)
         return attr
     }
     

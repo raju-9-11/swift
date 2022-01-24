@@ -7,7 +7,7 @@
 
 import UIKit
 
-class DescriptionCollectionViewCell: UICollectionViewCell {
+class DescriptionCollectionViewCell: UICollectionViewCell, UIContextMenuInteractionDelegate {
     
     static let cellID = "DescriptionCell"
     
@@ -154,14 +154,23 @@ class DescriptionCollectionViewCell: UICollectionViewCell {
         }
     }
     
+    
     func setupLayout() {
         sellerButton.addTarget(self, action: #selector(onSellerClick), for: .touchUpInside)
         costRatings.addArrangedSubview(costlabel)
         costRatings.addArrangedSubview(ratingsLabel)
         buttonsView.addArrangedSubview(addToCart)
+        
+        
+        let contextMenuInteraction = UIContextMenuInteraction(delegate: self)
+        addToCart.addInteraction(contextMenuInteraction)
+        addToCart.addTarget(self, action: #selector(onAddToCart), for: .touchUpInside)
+        buyNow.addTarget(self, action: #selector(onBuy), for: .touchUpInside)
+        
         buttonsView.addArrangedSubview(buyNow)
         sellerView.addArrangedSubview(soldByLabel)
         sellerView.addArrangedSubview(sellerButton)
+        
         contentView.addSubview(titleLabel)
         contentView.addSubview(costRatings)
         contentView.addSubview(sellerView)
@@ -185,6 +194,33 @@ class DescriptionCollectionViewCell: UICollectionViewCell {
         self.layoutIfNeeded()
     }
     
+    func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
+        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil, actionProvider: {
+            suggActions in
+            let shoppingLists = ApplicationDB.shared.getShoppingLists()
+            let menu = shoppingLists.map({ list in return UIAction(
+                title: list.name,
+                image: UIImage(systemName: "heart.fill"),
+                handler: { _ in
+                    self.delegate?.addToShoppingList(list: list)
+                    
+                })
+            })
+            return UIMenu(title: "Add to Shopping List" , children: menu)
+            
+        })
+    }
+    
+    @objc
+    func onAddToCart() {
+        delegate?.addToCartClicked()
+    }
+    
+    @objc
+    func onBuy() {
+        delegate?.buyClicked()
+    }
+    
     @objc
     func onSellerClick() {
         delegate?.displaySeller(sellerData: data.seller)
@@ -206,4 +242,7 @@ class DescriptionCollectionViewCell: UICollectionViewCell {
 
 protocol DescriptionCellDelegate {
     func displaySeller(sellerData: SellerData)
+    func buyClicked()
+    func addToCartClicked()
+    func addToShoppingList(list: ShoppingList)
 }

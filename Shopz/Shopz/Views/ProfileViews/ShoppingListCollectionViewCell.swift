@@ -21,6 +21,13 @@ class ShoppingListCollectionViewCell: UICollectionViewCell, UICollectionViewData
         return label
     }()
     
+    let addShoppingListButton: UIButton = {
+        let button = UIButton(type: .contactAdd)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.tintColor = .black
+        return button
+    }()
+    
     let collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.minimumLineSpacing = 1
@@ -50,14 +57,17 @@ class ShoppingListCollectionViewCell: UICollectionViewCell, UICollectionViewData
     func setupLayout() {
         collectionView.dataSource = self
         collectionView.delegate = self
-        
+        addShoppingListButton.addTarget(self, action: #selector(onAddClick), for: .touchUpInside)
         contentView.addSubview(collectionView)
         contentView.addSubview(shoppingListLabel)
+        contentView.addSubview(addShoppingListButton)
         contentView.backgroundColor = .white
         
         NSLayoutConstraint.activate([
             shoppingListLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
             shoppingListLabel.leftAnchor.constraint(equalTo: contentView.leftAnchor, constant: 10),
+            addShoppingListButton.rightAnchor.constraint(equalTo: contentView.rightAnchor, constant: -10),
+            addShoppingListButton.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
             collectionView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.9),
             collectionView.heightAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 0.8),
             collectionView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
@@ -80,14 +90,18 @@ class ShoppingListCollectionViewCell: UICollectionViewCell, UICollectionViewData
         return UIContextMenuConfiguration(identifier: nil, previewProvider: nil, actionProvider: { suggestedActions in
             let editAction = UIAction(title: NSLocalizedString("Rename List", comment: ""), image: UIImage(systemName: "pencil")) {
                 action in
-                print("Edit clicked")
+                self.delegate?.rename(list: self.shoppingListData?.shoppingLists[indexPath.row])
             }
-            let deleteAction = UIAction(title: NSLocalizedString("DeleteTitle", comment: ""), image: UIImage(systemName: "trash"), attributes: .destructive) {
+            let deleteAction = UIAction(title: NSLocalizedString("Delete List", comment: ""), image: UIImage(systemName: "trash"), attributes: .destructive) {
                 action in
-                print("Delete clicked")
+                self.delegate?.delete(list: self.shoppingListData?.shoppingLists[indexPath.row])
             }
             return UIMenu(title: "Edit shopping list" , children: [editAction, deleteAction]) 
         })
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: collectionView.frame.width, height: 100)
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
@@ -101,12 +115,20 @@ class ShoppingListCollectionViewCell: UICollectionViewCell, UICollectionViewData
     
     override func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
         let attr = layoutAttributes
-        attr.size = CGSize(width: Int(cellFrame.width - 2), height: (shoppingListData?.shoppingLists.count ?? 1)*100 + 150)
+        attr.size = CGSize(width: Int(cellFrame.width), height: (shoppingListData?.shoppingLists.count ?? 1)*100 + 150)
         return attr
+    }
+    
+    @objc
+    func onAddClick() {
+        delegate?.addClicked()
     }
     
 }
 
 protocol ShoppingListCellDelegate {
+    func addClicked()
+    func rename(list: ShoppingList?)
+    func delete(list: ShoppingList?)
     func listItemClicked(indexPath: IndexPath, shoppingListData: ShoppingList?)
 }

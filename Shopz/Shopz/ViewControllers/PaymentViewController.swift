@@ -9,6 +9,12 @@ import UIKit
 
 class PaymentViewController: CustomViewController, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
     
+    var cart: [CartItem] = [] {
+        willSet {
+            totalLabelCost.text = "$ \(newValue.map({ item in return item.product.price+item.product.shipping_cost }).reduce(0, +))"
+        }
+    }
+    
     lazy var cartDetails: UILabel = {
         return titleLabel(text: "Cart Details")
     }()
@@ -82,19 +88,12 @@ class PaymentViewController: CustomViewController, UICollectionViewDelegate, UIC
         return defaultButton(title: "Cancel Payment", color: UIColor.red)
     }()
     
-    let cards : [CardData] = {
-        return [
-            CardData(name: "Pacman", number: UUID().uuidString, validityDate: Date()),
-            CardData(name: "JOGNAS", number: UUID().uuidString, validityDate: Date()),
-            CardData(name: "Jone", number: UUID().uuidString, validityDate: Date()),
-            CardData(name: "Dow", number: UUID().uuidString, validityDate: Date()),
-            CardData(name: "Picaa", number: UUID().uuidString, validityDate: Date()),
-        ]
+    var cards : [CardData] = {
+        return ApplicationDB.shared.getCards()
     }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         self.setupLayout()
     }
     
@@ -210,7 +209,14 @@ class PaymentViewController: CustomViewController, UICollectionViewDelegate, UIC
     
     @objc
     func onAddNewCard() {
-        print("Adding New card....")
+        let dateString = "12/2029"
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "MM/YYYY"
+        dateFormatter.locale = .current
+        guard let date = dateFormatter.date(from: dateString) else { return }
+        ApplicationDB.shared.addCard(name: "Test", date: date, cardNumber: "1234567823451234")
+        self.cards = ApplicationDB.shared.getCards()
+        self.paymentCardsCollectionView.reloadData()
     }
     
     @objc

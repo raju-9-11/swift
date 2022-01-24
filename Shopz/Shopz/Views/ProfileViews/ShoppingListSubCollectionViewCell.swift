@@ -49,12 +49,6 @@ class ShoppingListSubCollectionViewCell: UICollectionViewCell {
         self.removeViews()
     }
     
-    override func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
-        let attr = layoutAttributes
-        attr.frame.size = CGSize(width: cellFrame.width - 2, height: 100)
-        return attr
-    }
-    
     func setupLayout() {
         containerView.addSubview(nameLabel)
         containerView.addSubview(imageView)

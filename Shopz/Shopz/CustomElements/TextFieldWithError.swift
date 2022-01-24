@@ -11,6 +11,15 @@ class TextFieldWithError: UIView, UITextFieldDelegate {
     
     weak var delegate: TextFieldWithErrorDelegate?
     
+    var borderStyle: UITextField.BorderStyle {
+        get {
+            return textField.borderStyle
+        }
+        set {
+            textField.borderStyle = newValue
+        }
+    }
+    
     var text: String {
         get {
             return textField.text ?? ""

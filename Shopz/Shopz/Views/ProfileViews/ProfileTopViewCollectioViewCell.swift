@@ -11,6 +11,8 @@ class ProfileTopViewCollectioViewCell: UICollectionViewCell {
     
     static let cellID: String = "ProfileTopViewCell"
     
+    weak var delegate: ImagesViewDelegate?
+    
     let profileTopView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -25,8 +27,7 @@ class ProfileTopViewCollectioViewCell: UICollectionViewCell {
         imageView.backgroundColor = .white.withAlphaComponent(0.8)
         imageView.contentMode = .scaleAspectFill
         imageView.image = UIImage(systemName: "person.circle.fill")
-        imageView.layer.borderColor = UIColor.darkGray.cgColor
-        imageView.layer.borderWidth = 1
+        imageView.isUserInteractionEnabled = true
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
     }()
@@ -35,6 +36,7 @@ class ProfileTopViewCollectioViewCell: UICollectionViewCell {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.image = UIImage(systemName: "photo.fill")
+        imageView.isUserInteractionEnabled = true
         imageView.layer.backgroundColor = UIColor.black.withAlphaComponent(0.5).cgColor
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
@@ -70,8 +72,12 @@ class ProfileTopViewCollectioViewCell: UICollectionViewCell {
     var profileData: ProfileData? {
         willSet {
             if newValue != nil {
+                nameLabel.text = (Auth.auth != nil) ? "\(Auth.auth!.user.firstName) \(Auth.auth!.user.lastName) ": "Unknown"
                 self.setupLayout()
-                self.nameLabel.text = newValue?.name
+                if newValue?.profileImageMedia != nil && newValue?.bgImageMedia != nil {
+                    bgImage.image = UIImage(data: (newValue?.bgImageMedia)!)
+                    profilePic.image = UIImage(data: (newValue?.profileImageMedia)!)
+                }
             }
         }
     }
@@ -79,31 +85,40 @@ class ProfileTopViewCollectioViewCell: UICollectionViewCell {
     var cellFrame = CGRect(x: 0, y: 0, width: 100, height: 100)
     
     func setupLayout() {
-        profileTopView.addSubview(bgImage)
-        profileTopView.addSubview(profilePic)
-        profileTopView.addSubview(editProfileButton)
-        profileTopView.addSubview(nameLabel)
+        contentView.addSubview(bgImage)
+        contentView.addSubview(profilePic)
+        contentView.addSubview(editProfileButton)
+        contentView.addSubview(nameLabel)
+        contentView.backgroundColor = .white
+        bgImage.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(onBgClick)))
+        profilePic.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(onProfileClick)))
         editProfileButton.addTarget(self, action: #selector(onEdit), for: .touchUpInside)
-        contentView.addSubview(profileTopView)
+        
         
         NSLayoutConstraint.activate([
-            profileTopView.heightAnchor.constraint(equalTo: contentView.heightAnchor),
-            profileTopView.widthAnchor.constraint(equalTo: contentView.widthAnchor),
-            profileTopView.topAnchor.constraint(equalTo: contentView.topAnchor),
-            profileTopView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            bgImage.topAnchor.constraint(equalTo: profileTopView.topAnchor, constant: -2),
-            bgImage.widthAnchor.constraint(equalTo: profileTopView.widthAnchor),
-            bgImage.heightAnchor.constraint(equalTo: profileTopView.heightAnchor, multiplier: 0.6),
-            bgImage.centerXAnchor.constraint(equalTo: profileTopView.centerXAnchor),
+            bgImage.topAnchor.constraint(equalTo: contentView.topAnchor, constant: -2),
+            bgImage.widthAnchor.constraint(equalTo: contentView.widthAnchor),
+            bgImage.heightAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 0.6),
+            bgImage.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             profilePic.centerYAnchor.constraint(equalTo: bgImage.bottomAnchor),
-            profilePic.leftAnchor.constraint(equalTo: profileTopView.safeAreaLayoutGuide.leftAnchor, constant: 20),
+            profilePic.leftAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.leftAnchor, constant: 20),
             profilePic.heightAnchor.constraint(equalToConstant: 50),
             profilePic.widthAnchor.constraint(equalToConstant: 50),
             editProfileButton.topAnchor.constraint(equalTo: bgImage.bottomAnchor, constant: 5),
-            editProfileButton.rightAnchor.constraint(equalTo: profileTopView.rightAnchor, constant: -10),
+            editProfileButton.rightAnchor.constraint(equalTo: contentView.rightAnchor, constant: -10),
             nameLabel.topAnchor.constraint(equalTo: profilePic.bottomAnchor, constant: 5),
             nameLabel.centerXAnchor.constraint(equalTo: profilePic.centerXAnchor)
         ])
+    }
+    
+    @objc
+    func onBgClick() {
+        delegate?.displayImage(bgImage.image)
+    }
+    
+    @objc
+    func onProfileClick() {
+        delegate?.displayImage(profilePic.image)
     }
     
     @objc
@@ -114,11 +129,13 @@ class ProfileTopViewCollectioViewCell: UICollectionViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         self.removeViews()
+        profilePic.image = UIImage(systemName: "person.circle.fill")
+        bgImage.image = UIImage(systemName: "image.fill")
     }
     
     override func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
         let attr = layoutAttributes
-        attr.size = CGSize(width: cellFrame.width - 2, height: 200)
+        attr.size = CGSize(width: cellFrame.width, height: 200)
         return attr
     }
     

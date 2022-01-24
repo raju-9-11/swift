@@ -16,6 +16,7 @@ class AddAddressCollectionViewCell: UICollectionViewCell {
         button.setImage(UIImage(systemName: "plus")?.withRenderingMode(.alwaysTemplate), for: .normal)
         button.tintColor = .black
         button.backgroundColor = .white
+        button.isUserInteractionEnabled = false
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()

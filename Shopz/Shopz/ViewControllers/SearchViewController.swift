@@ -52,7 +52,11 @@ class SearchViewController: CustomViewController, UICollectionViewDelegate, UICo
     
     var categoryListData: [Category] = [] {
         willSet {
-            searchListFiltered = searchListData.filter({ item in return newValue.contains { elem in return elem.name == item.category } })
+            if !newValue.isEmpty {
+                searchListFiltered = searchListData.filter({ item in return newValue.contains { elem in return elem.name == item.category } })
+            } else {
+                searchListFiltered = searchListData.map({ item in return item })
+            }
             searchList.reloadData()
         }
     }
@@ -150,9 +154,9 @@ class SearchViewController: CustomViewController, UICollectionViewDelegate, UICo
         self.children.forEach({ child in child.view.removeFromSuperview(); child.removeFromParent()})
     }
     
-    func loadData() {
-        self.categoryListData = StorageDB.getCategories()
+    func loadData(with categories: [Category] = []) {
         self.searchListData = StorageDB.getProducts()
+        self.categoryListData = categories
         searchList.reloadData()
         categoryList.reloadData()
     }

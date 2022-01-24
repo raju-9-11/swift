@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ProfileViewController: CustomViewController, UICollectionViewDataSource, UICollectionViewDelegate, ShoppingListCellDelegate {
+class ProfileViewController: CustomViewController, UICollectionViewDataSource, UICollectionViewDelegate, ShoppingListCellDelegate, ImagesViewDelegate, ShoppingListViewDelegate {
     
     let containerView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -18,7 +18,6 @@ class ProfileViewController: CustomViewController, UICollectionViewDataSource, U
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
         cv.translatesAutoresizingMaskIntoConstraints = false
         cv.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-        cv.contentInset = UIEdgeInsets(top: 10, left: 0, bottom: 0, right: 10)
         cv.register(ProfileTopViewCollectioViewCell.self, forCellWithReuseIdentifier: ProfileTopViewCollectioViewCell.cellID)
         cv.register(AboutCollectionViewCell.self, forCellWithReuseIdentifier: AboutCollectionViewCell.cellID)
         cv.register(ShoppingListCollectionViewCell.self, forCellWithReuseIdentifier: ShoppingListCollectionViewCell.cellID)
@@ -29,18 +28,7 @@ class ProfileViewController: CustomViewController, UICollectionViewDataSource, U
     
     var svc: CartViewController? = nil
     
-    var containerData: [ProfileViewElement] = [
-        ProfileData(name: "Pacman", bgImageMedia: "https://docs.swift.org/swift-book/_images/memory_shopping_2x.png", profileImageMedia: "https://www.gravatar.com/avatar/acee100932e6b180a64cf7a58ccab6d6.jpg?d=https%3A%2F%2Fwolverine.raywenderlich.com%2Fv3-resources%2Fimages%2Fdefault-account-avatar_2x.png&s=480", email: "test@email.com"),
-        AboutData(about: "My about"),
-        ShoppingListData(shoppingLists: [
-            ShoppingList(name: "Tech"),
-            ShoppingList(name: "Clothes"),
-            ShoppingList(name: "Accessories"),
-            ShoppingList(name: "Tech"),
-            ShoppingList(name: "Clothes"),
-            ShoppingList(name: "Accessories"),
-        ])
-    ]
+    var elements: [ProfileViewElement] = []
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
@@ -60,54 +48,132 @@ class ProfileViewController: CustomViewController, UICollectionViewDataSource, U
         }
     }
     
-    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        super.viewWillTransition(to: size, with: coordinator)
-        self.containerView.reloadData()
-    }
-    
     deinit {
         NotificationCenter.default.removeObserver(self)
+        svc = nil
+    }
+    
+    func displayImage(_ image: UIImage?) {
+        let newImageView = UIImageView(image: image)
+        newImageView.frame = UIScreen.main.bounds
+        newImageView.backgroundColor = .black
+        newImageView.contentMode = .scaleAspectFit
+        newImageView.isUserInteractionEnabled = true
+        let tap = UITapGestureRecognizer(target: self, action: #selector(dismissFullscreenImage))
+        newImageView.addGestureRecognizer(tap)
+        self.view.addSubview(newImageView)
+        newImageView.backgroundColor = .white
+        self.navigationController?.isNavigationBarHidden = true
+        self.tabBarController?.tabBar.isHidden = true
+    }
+    
+    @objc
+    func dismissFullscreenImage(_ sender: UITapGestureRecognizer) {
+        self.navigationController?.isNavigationBarHidden = false
+        self.tabBarController?.tabBar.isHidden = false
+        sender.view?.removeFromSuperview()
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return containerData.count
+        return elements.count
     }
     
     func listItemClicked(indexPath: IndexPath, shoppingListData: ShoppingList?) {
-        svc = CartViewController()
-        if let listData = shoppingListData, svc != nil {
+        if svc == nil {
+            svc = CartViewController()
+            svc?.delegate = self
+        }
+        if let listData = shoppingListData {
             svc!.listDetails = listData
             svc!.willMove(toParent: self)
             self.addChild(svc!)
             self.view.addSubview(svc!.view)
-            
         }
     }
     
+    func addClicked() {
+        let alert = UIAlertController(title: "Create Shopping List", message: "Enter name for Shopping List: ", preferredStyle: .alert)
+        alert.addTextField(configurationHandler: { textfield in
+            textfield.placeholder = "Enter name"
+        })
+        let action = UIAlertAction(title: "Create", style: .default, handler: {
+            _ in
+            let textField = alert.textFields![0]
+            if let text = textField.text, text.isEmpty {
+                Toast.shared.showToast(message: "Name cannot be empty!!")
+                return
+            }
+            ApplicationDB.shared.addShoppingList(name: textField.text ?? "Untitled")
+            self.loadData()
+        })
+        let cancelAction = UIAlertAction(title: "Cancel", style: .destructive, handler: nil)
+        alert.addAction(action)
+        alert.addAction(cancelAction)
+        present(alert, animated: true, completion: nil)
+    }
+    
+    func rename(list: ShoppingList?) {
+        guard let list = list else {
+            return
+        }
+        let alert = UIAlertController(title: "Rename Shopping List", message: "Enter new name", preferredStyle: .alert)
+        alert.addTextField(configurationHandler: { textField in
+            textField.placeholder = "Enter Shopping List name"
+        })
+        let renameAction = UIAlertAction(title: "Rename", style: .default, handler: {
+            _ in
+            let textField = alert.textFields![0]
+            if let text = textField.text, text.isEmpty {
+                Toast.shared.showToast(message: "Name cannot be empty!!")
+                return
+            }
+            ApplicationDB.shared.renameShoppingList(list: list, name: textField.text ?? "")
+            self.loadData()
+        })
+        let cancelAction = UIAlertAction(title: "Cancel", style: .destructive, handler: nil)
+        alert.addAction(renameAction)
+        alert.addAction(cancelAction)
+        present(alert, animated: true, completion: nil)
+    }
+    
+    func delete(list: ShoppingList?) {
+        guard let list = list else {
+            return
+        }
+        ApplicationDB.shared.removeShoppingList(list: list)
+        self.loadData()
+    }
+    
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let item = containerData[indexPath.row]
+        let item = elements[indexPath.row]
         if let profileItem = item as? ProfileData {
             let cell = containerView.dequeueReusableCell(withReuseIdentifier: ProfileTopViewCollectioViewCell.cellID, for: indexPath) as! ProfileTopViewCollectioViewCell
-            cell.cellFrame = self.view.frame
+            cell.cellFrame = collectionView.frame
+            cell.delegate = self
             cell.profileData = profileItem
             return cell
         }
         if let aboutData = item as? AboutData {
             let cell = containerView.dequeueReusableCell(withReuseIdentifier: AboutCollectionViewCell.cellID, for: indexPath) as! AboutCollectionViewCell
             cell.aboutData = aboutData
-            cell.cellFrame = self.view.frame
+            cell.cellFrame = collectionView.frame
             return cell
         }
         if let shoppingListData = item as? ShoppingListData {
             let cell = containerView.dequeueReusableCell(withReuseIdentifier: ShoppingListCollectionViewCell.cellID, for: indexPath) as! ShoppingListCollectionViewCell
             cell.shoppingListData = shoppingListData
-            cell.cellFrame = self.view.frame
+            cell.cellFrame = collectionView.frame
             cell.delegate = self
             return cell
         }
         let cell = containerView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath)
         return cell
         
+    }
+    
+    func deleteListClicked(list: ShoppingList) {
+        ApplicationDB.shared.removeShoppingList(list: list)
+        self.loadData()
     }
     
     override func setupLayout() {
@@ -124,6 +190,21 @@ class ProfileViewController: CustomViewController, UICollectionViewDataSource, U
             containerView.widthAnchor.constraint(equalTo: view.widthAnchor),
             containerView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
         ])
+        self.loadData()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.loadData()
+    }
+    
+    func loadData() {
+        elements = [
+            ProfileData(bgImageMedia: UIImage(systemName: "photo.fill")?.pngData(), profileImageMedia: UIImage(systemName: "person.circle.fill")?.pngData()),
+            AboutData(),
+            ShoppingListData(shoppingLists: ApplicationDB.shared.getShoppingLists())
+        ]
+        containerView.reloadData()
     }
     
     @objc
@@ -156,25 +237,18 @@ class ProfileViewElement {
 
 
 final class ProfileData: ProfileViewElement {
-    var name: String
-    var bgImageMedia: String
-    var profileImageMedia: String
-    var email: String
     
-    init(name: String, bgImageMedia: String, profileImageMedia: String, email: String) {
-        self.name = name
+    var bgImageMedia: Data?
+    var profileImageMedia: Data?
+    
+    init(bgImageMedia: Data?, profileImageMedia: Data?) {
         self.bgImageMedia = bgImageMedia
         self.profileImageMedia = profileImageMedia
-        self.email = email
     }
 }
 
 final class AboutData: ProfileViewElement {
-    var about: String
     
-    init(about: String) {
-        self.about = about
-    }
 }
 
 final class ShoppingListData: ProfileViewElement {
@@ -187,10 +261,13 @@ final class ShoppingListData: ProfileViewElement {
 
 class ShoppingList {
     var name: String
-    var id = UUID()
+    var id: Int
+    var userId: Int
     
-    init(name: String) {
+    init(id: Int, name: String, userID: Int) {
         self.name = name
+        self.id = id
+        self.userId = userID
     }
 }
 
