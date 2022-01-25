@@ -34,6 +34,7 @@ class ReviewsCollectionViewCell: UICollectionViewCell, UITableViewDataSource, UI
     
     let titleLabel: UILabel = {
         let label = UILabel()
+        label.textColor = UIColor(named: "text_color")
         label.font = .systemFont(ofSize: 15, weight: .heavy)
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "Reviews"
@@ -42,6 +43,7 @@ class ReviewsCollectionViewCell: UICollectionViewCell, UITableViewDataSource, UI
     
     let addReviewView: UIView = {
         let view = UIView()
+        view.backgroundColor = .clear
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -51,6 +53,7 @@ class ReviewsCollectionViewCell: UICollectionViewCell, UITableViewDataSource, UI
         textview.translatesAutoresizingMaskIntoConstraints = false
         textview.placeholder = "Enter Review"
         textview.layer.cornerRadius = 6
+        textview.textColor = UIColor(named: "subtitle_text")
         textview.layer.borderColor = UIColor.darkGray.cgColor
         textview.layer.borderWidth = 1
         return textview
@@ -102,10 +105,11 @@ class ReviewsCollectionViewCell: UICollectionViewCell, UITableViewDataSource, UI
         addReviewView.addSubview(addReviewButton)
         addReviewTextView.refreshControl?.addTarget(self, action: #selector(onText), for: .allEvents)
         contentView.addSubview(addReviewView)
+        contentView.backgroundColor = UIColor(named: "thumbnail_color")
         reviewList.isUserInteractionEnabled = false
         
         NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor),
+            titleLabel.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor, constant: 15),
             titleLabel.leftAnchor.constraint(equalTo: contentView.leftAnchor, constant: 15),
             reviewList.topAnchor.constraint(equalTo: addReviewView.bottomAnchor, constant: 20),
             reviewList.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),

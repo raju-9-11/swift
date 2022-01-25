@@ -56,13 +56,12 @@ class ProfileViewController: CustomViewController, UICollectionViewDataSource, U
     func displayImage(_ image: UIImage?) {
         let newImageView = UIImageView(image: image)
         newImageView.frame = UIScreen.main.bounds
-        newImageView.backgroundColor = .black
+        newImageView.backgroundColor = UIColor(named: "background_color")?.withAlphaComponent(0.5)
         newImageView.contentMode = .scaleAspectFit
         newImageView.isUserInteractionEnabled = true
         let tap = UITapGestureRecognizer(target: self, action: #selector(dismissFullscreenImage))
         newImageView.addGestureRecognizer(tap)
         self.view.addSubview(newImageView)
-        newImageView.backgroundColor = .white
         self.navigationController?.isNavigationBarHidden = true
         self.tabBarController?.tabBar.isHidden = true
     }
@@ -178,12 +177,13 @@ class ProfileViewController: CustomViewController, UICollectionViewDataSource, U
     
     override func setupLayout() {
 
-        view.backgroundColor = .systemGray
+        view.backgroundColor = UIColor(named: "profile_background")
 
         containerView.delegate = self
         containerView.dataSource = self
         
         view.addSubview(containerView)
+        
         NSLayoutConstraint.activate([
             containerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             containerView.heightAnchor.constraint(equalTo: view.heightAnchor),
@@ -210,6 +210,7 @@ class ProfileViewController: CustomViewController, UICollectionViewDataSource, U
     @objc
     func onLogin() {
         self.setupLayout()
+        self.loadData()
     }
     
     @objc
@@ -256,18 +257,6 @@ final class ShoppingListData: ProfileViewElement {
     
     init(shoppingLists: [ShoppingList]) {
         self.shoppingLists = shoppingLists
-    }
-}
-
-class ShoppingList {
-    var name: String
-    var id: Int
-    var userId: Int
-    
-    init(id: Int, name: String, userID: Int) {
-        self.name = name
-        self.id = id
-        self.userId = userID
     }
 }
 

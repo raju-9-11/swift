@@ -10,7 +10,7 @@ import UIKit
 class TextViewWithPlaceHolder: UITextView, UITextViewDelegate {
     
     
-    var placeholderColor: UIColor = .lightGray
+    var placeholderColor: UIColor? = .lightGray
     var textViewTextColor: UIColor = .black
     
     var placeholder: String = "" {

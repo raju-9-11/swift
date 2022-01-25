@@ -11,12 +11,39 @@ class TextFieldWithError: UIView, UITextFieldDelegate {
     
     weak var delegate: TextFieldWithErrorDelegate?
     
+    var maxLength: Int?
+    
     var borderStyle: UITextField.BorderStyle {
         get {
             return textField.borderStyle
         }
         set {
             textField.borderStyle = newValue
+        }
+    }
+    
+    var font: UIFont {
+        get {
+            return textField.font ?? .systemFont(ofSize: 12)
+        } set {
+            textField.font = newValue
+        }
+    }
+    
+    var textMask: String? {
+        willSet {
+            if newValue != nil {
+                self.maxLength = newValue!.count
+            }
+        }
+    }
+    
+    var keyBoardType: UIKeyboardType {
+        get {
+            return textField.keyboardType
+        }
+        set {
+            textField.keyboardType = newValue
         }
     }
     
@@ -54,7 +81,7 @@ class TextFieldWithError: UIView, UITextFieldDelegate {
         }
     }
 
-    let textField: UITextField = {
+    private let textField: UITextField = {
         let textField = UITextField()
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.borderStyle = .roundedRect
@@ -67,7 +94,7 @@ class TextFieldWithError: UIView, UITextFieldDelegate {
         return textField
     }()
     
-    let errorLabel: UILabel = {
+    private let errorLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textColor = .red
@@ -100,6 +127,7 @@ class TextFieldWithError: UIView, UITextFieldDelegate {
     func setupLayout() {
         self.addSubview(textField)
         textField.delegate = self
+        textField.addTarget(self, action: #selector(onChange), for: .editingChanged)
         self.addSubview(errorLabel)
         NSLayoutConstraint.activate([
             textField.leftAnchor.constraint(equalTo: self.leftAnchor),
@@ -111,11 +139,41 @@ class TextFieldWithError: UIView, UITextFieldDelegate {
         ])
     }
     
+    @objc
+    func onChange(_ textField: UITextField) {
+        guard let textMask = textMask else { return }
+        text = text.applyPatternOnNumbers(pattern: textMask)
+    }
+    
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        let currentString: NSString = (textField.text ?? "") as NSString
+        let newString = currentString.replacingCharacters(in: range, with: string)
+        guard let maxLength = maxLength else {
+            return true
+        }
+        return newString.count <= maxLength
+    }
+    
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         delegate?.shouldReturn(self)
         return true
     }
 
+}
+
+extension String {
+    func applyPatternOnNumbers(pattern: String) -> String {
+            let replacmentCharacter: Character = "#"
+            var pure = self.replacingOccurrences( of: "[^۰-۹0-9]", with: "", options: .regularExpression)
+            for index in 0 ..< pattern.count {
+                guard index < pure.count else { return pure }
+                let stringIndex = String.Index(utf16Offset: index, in: pattern)
+                let patternCharacter = pattern[stringIndex]
+                guard patternCharacter != replacmentCharacter else { continue }
+                pure.insert(patternCharacter, at: stringIndex)
+            }
+           return pure
+        }
 }
 
 protocol TextFieldWithErrorDelegate: AnyObject {

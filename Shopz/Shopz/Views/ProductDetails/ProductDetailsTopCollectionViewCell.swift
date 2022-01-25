@@ -32,6 +32,7 @@ class ProductDetailsTopCollectionViewCell: UICollectionViewCell, UICollectionVie
         cv.translatesAutoresizingMaskIntoConstraints = false
         cv.backgroundColor = .clear
         cv.register(ProductViewCellCollectionViewCell.self, forCellWithReuseIdentifier: ProductViewCellCollectionViewCell.cellID)
+        cv.backgroundColor = .gray
         return cv
     }()
     
@@ -51,7 +52,7 @@ class ProductDetailsTopCollectionViewCell: UICollectionViewCell, UICollectionVie
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        imageData.images.count
+        return imageData.images.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {

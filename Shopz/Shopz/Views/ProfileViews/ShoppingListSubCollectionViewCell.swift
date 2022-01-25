@@ -17,6 +17,7 @@ class ShoppingListSubCollectionViewCell: UICollectionViewCell {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.clipsToBounds = true
+        view.backgroundColor = .clear
         return view
     }()
     
@@ -30,6 +31,7 @@ class ShoppingListSubCollectionViewCell: UICollectionViewCell {
     
     let nameLabel: UILabel = {
         let label = UILabel()
+        label.textColor = UIColor(named: "text_color")
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "Shopping List"
         return label

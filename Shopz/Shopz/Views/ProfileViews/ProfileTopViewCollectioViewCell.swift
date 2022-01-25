@@ -16,7 +16,7 @@ class ProfileTopViewCollectioViewCell: UICollectionViewCell {
     let profileTopView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .white
+        view.backgroundColor = .clear
         return view
     }()
     
@@ -37,7 +37,7 @@ class ProfileTopViewCollectioViewCell: UICollectionViewCell {
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.image = UIImage(systemName: "photo.fill")
         imageView.isUserInteractionEnabled = true
-        imageView.layer.backgroundColor = UIColor.black.withAlphaComponent(0.5).cgColor
+        imageView.layer.backgroundColor = UIColor(named: "background_color")?.withAlphaComponent(0.5).cgColor
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
         return imageView
@@ -45,6 +45,7 @@ class ProfileTopViewCollectioViewCell: UICollectionViewCell {
     
     let nameLabel: UILabel = {
         let label = UILabel()
+        label.textColor = UIColor(named: "text_color")
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .systemFont(ofSize: 12, weight: .bold)
         return label
@@ -54,7 +55,7 @@ class ProfileTopViewCollectioViewCell: UICollectionViewCell {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Edit profile", for: .normal)
-        button.setTitleColor(.black , for: .normal)
+        button.setTitleColor(UIColor(named: "text_color") , for: .normal)
         if #available(iOS 15, *) {
             var config = UIButton.Configuration.filled()
             config.contentInsets = NSDirectionalEdgeInsets(top: 5, leading: 10, bottom: 5, trailing: 10)
@@ -89,7 +90,7 @@ class ProfileTopViewCollectioViewCell: UICollectionViewCell {
         contentView.addSubview(profilePic)
         contentView.addSubview(editProfileButton)
         contentView.addSubview(nameLabel)
-        contentView.backgroundColor = .white
+        contentView.backgroundColor = UIColor(named: "thumbnail_color")
         bgImage.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(onBgClick)))
         profilePic.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(onProfileClick)))
         editProfileButton.addTarget(self, action: #selector(onEdit), for: .touchUpInside)

@@ -327,6 +327,37 @@ class ApplicationDB {
         closeDB()
     }
     
+    func removeFromCart(item: CartItem) {
+        
+        guard Auth.auth != nil else { return }
+        guard initDB() else { return }
+        if sqlite3_exec(db, "delete from cart_items where item_id=\(item.itemId) ", nil, nil, nil) != SQLITE_OK {
+            print("Error: \(String(cString: sqlite3_errmsg(db)))")
+            closeDB()
+            Toast.shared.showToast(message: "Unable to delete", type: .error)
+            return
+        }
+        Toast.shared.showToast(message: "Deleted item \(item.product.product_name)", type: .success)
+        closeDB()
+        
+    }
+    
+    func clearCart() {
+        guard let auth = Auth.auth else { return }
+        guard initDB() else { return }
+        
+        if sqlite3_exec(db, "delete from cart_items where cart_id=\(auth.user.id)", nil, nil, nil) != SQLITE_OK {
+            print("Error: \(String(cString: sqlite3_errmsg(db)))")
+            Toast.shared.showToast(message: "Unable to clear cart")
+            closeDB()
+            return
+        }
+        closeDB()
+    }
+    
+    
+    // MARK: - Shopping List Functions
+    
     func addToShoppingList(item: Product, list: ShoppingList) {
         
         guard let _ = Auth.auth else { return }
@@ -341,19 +372,15 @@ class ApplicationDB {
         Toast.shared.showToast(message: "Add to \(list.name)")
     }
     
-    func removeFromCart(item: CartItem) {
-        
+    func clearShoppingList(list: ShoppingList) {
         guard Auth.auth != nil else { return }
         guard initDB() else { return }
-        if sqlite3_exec(db, "delete from cart_items where item_id=\(item.itemId) ", nil, nil, nil) != SQLITE_OK {
-            print("Error: \(String(cString: sqlite3_errmsg(db)))")
-            closeDB()
-            Toast.shared.showToast(message: "Unable to delete", type: .error)
-            return
-        }
-        Toast.shared.showToast(message: "Deleted item \(item.product.product_name)", type: .success)
-        closeDB()
+        print(list.name)
         
+        if sqlite3_exec(db, "delete from shopping_list_items where list_id=\(list.id) ", nil, nil, nil) != SQLITE_OK {
+            print("Error: \(String(cString: sqlite3_errmsg(db)))")
+        }
+        closeDB()
     }
     
     func removeFromShoppingList(list: ShoppingList, item: CartItem) {
@@ -411,28 +438,53 @@ class ApplicationDB {
     
     // MARK: - Order history functions
     
-    func getOrderHistory() -> [(product: Product, date: Date)] {
-        var orderHistory: [(product: Product, date: Date)] = []
+    func getOrderHistory() -> [OrderHistItem] {
+        var orderHistory: [OrderHistItem] = []
         guard let auth = Auth.auth else { return [] }
         guard initDB() else { return [] }
         var statement: OpaquePointer?
         
-        if sqlite3_prepare(db, "select product_id, purchase_date from order_history where user_id=\(auth.user.id)", -1, &statement, nil) != SQLITE_OK {
+        if sqlite3_prepare(db, "select product_id, purchase_date, item_id from order_history where user_id=\(auth.user.id)", -1, &statement, nil) != SQLITE_OK {
             print("Error \(String(cString: sqlite3_errmsg(db)))")
             sqlite3_finalize(statement)
             closeDB()
             return []
         }
         
+        let dateFormatter = DateFormatter()
+        dateFormatter.locale = Locale(identifier: "en_US_POSIX")
+        dateFormatter.dateFormat = "dd/MM/yy"
+        
         while (sqlite3_step(statement) == SQLITE_ROW) {
             let productId = sqlite3_column_int(statement, 0)
-            _ = sqlite3_column_text(statement, 1)
-            if let prod = StorageDB.getProduct(with: Int(productId)) {
-                orderHistory.append((product: prod, date: Date()))
+            let dateString = String(cString: sqlite3_column_text(statement, 1))
+            let itemId = Int(sqlite3_column_int(statement, 2))
+            if let prod = StorageDB.getProduct(with: Int(productId)), let date = dateFormatter.date(from: dateString) {
+                orderHistory.append(OrderHistItem(itemId: itemId, product: prod, date: date))
             }
         }
         closeDB()
         return orderHistory
+    }
+    
+    func addToOrderHistory(list: [CartItem]) {
+        
+        guard let auth = Auth.auth else { return }
+        guard initDB() else { return }
+        
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "dd/MM/yyyy"
+        dateFormatter.locale = .current
+        let dateString = dateFormatter.string(from: Date())
+        
+        list.forEach({ item in
+            if sqlite3_exec(db, "insert into order_history (product_id, purchase_date, user_id) values (\(item.product.product_id), '\(dateString)', '\(auth.user.id)')", nil, nil, nil) != SQLITE_OK{
+                print("Error: \(String(cString: sqlite3_errmsg(db)))")
+                Toast.shared.showToast(message: "Unable to Checkout")
+                return
+            }
+        })
+        closeDB()
     }
     
     // MARK: - Shopping List functions
@@ -550,9 +602,8 @@ class ApplicationDB {
             let name = String(cString: sqlite3_column_text(statement, 1))
             let expdate = String(cString: sqlite3_column_text(statement, 2))
             let cardNumber = String(cString: sqlite3_column_text(statement, 3))
-            print(cardId, name, expdate, cardNumber)
             let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "dd/MM/YYYY"
+            dateFormatter.dateFormat = "dd/MM/yyyy"
             if let date = dateFormatter.date(from: expdate) {
                 cards.append(CardData(id: cardId, name: name, number: cardNumber, validityDate: date))
             }
@@ -563,11 +614,49 @@ class ApplicationDB {
         return cards
     }
     
+    func getCard(with cardNum: String) -> CardData? {
+        guard let auth = Auth.auth else { return nil }
+        
+        guard initDB() else { return nil }
+        
+        var statement: OpaquePointer?
+        
+        if sqlite3_prepare(db, "select card_id, name, expiry_date, card_number from payment_cards where user_id=\(auth.user.id)", -1, &statement, nil) != SQLITE_OK {
+            print("Prepare Error: \(String(cString: sqlite3_errmsg(db)))")
+            sqlite3_finalize(statement)
+            closeDB()
+            return nil
+        }
+        
+        while sqlite3_step(statement) == SQLITE_ROW {
+            let cardId = Int(sqlite3_column_int(statement, 0))
+            let name = String(cString: sqlite3_column_text(statement, 1))
+            let expdate = String(cString: sqlite3_column_text(statement, 2))
+            let cardNumber = String(cString: sqlite3_column_text(statement, 3))
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "dd/MM/yyyy"
+            if let date = dateFormatter.date(from: expdate), cardNum == cardNumber {
+                let card = CardData(id: cardId, name: name, number: cardNumber, validityDate: date)
+                sqlite3_finalize(statement)
+                closeDB()
+                return card
+            }
+        }
+        
+        sqlite3_finalize(statement)
+        closeDB()
+        return nil
+    }
+    
     func addCard(name: String, date: Date, cardNumber: String) {
         guard let auth = Auth.auth else { return }
+        guard getCard(with: cardNumber) == nil else {
+            Toast.shared.showToast(message: "Card With number exists", type: .error)
+            return
+        }
         guard initDB() else { return }
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "dd/MM/YYYY"
+        dateFormatter.dateFormat = "dd/MM/yyyy"
         
         if sqlite3_exec(db, "insert into payment_cards (user_id, card_number, name, expiry_date) values (\(auth.user.id), '\(cardNumber)', '\(name)', '\(dateFormatter.string(from: date))')", nil, nil, nil) != SQLITE_OK {
             print("Error: \(String(cString: sqlite3_errmsg(db)))")
@@ -577,6 +666,21 @@ class ApplicationDB {
         closeDB()
         return
         
+    }
+    
+    func deleteCard(card: CardData) {
+        guard Auth.auth != nil else { return }
+        guard initDB() else { return }
+        
+        if sqlite3_exec(db, "delete from payment_cards where card_id='\(card.id)'", nil, nil, nil) != SQLITE_OK {
+            print("Error: \(String(cString: sqlite3_errmsg(db)))")
+            closeDB()
+            return
+        }
+        
+        
+        closeDB()
+        return
     }
     
     func removeAddress(address: Address) {
@@ -619,9 +723,24 @@ class ApplicationDB {
         sqlite3_finalize(statement)
         closeDB()
         return addresses
-        
-        
     }
+    
+    func checkoutCart() {
+        guard Auth.auth != nil else { return }
+        
+        let cart = ApplicationDB.shared.getCart()
+        ApplicationDB.shared.addToOrderHistory(list: cart)
+        ApplicationDB.shared.clearCart()
+    }
+    
+    func checkoutShoppingList(list: ShoppingList) {
+        guard Auth.auth != nil else { return }
+        
+        let cart = ApplicationDB.shared.getShoppingList(with: list.id)
+        ApplicationDB.shared.addToOrderHistory(list: cart)
+        ApplicationDB.shared.clearShoppingList(list: list)
+    }
+    
     
     // MARK: - Profile functions
     

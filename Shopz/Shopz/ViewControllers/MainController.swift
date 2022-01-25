@@ -25,7 +25,7 @@ class MainController: UITabBarController, UITabBarControllerDelegate, UITextFiel
     
     let containerView: UIView = {
         let view = UIView()
-        view.backgroundColor = .white.withAlphaComponent(0.5)
+        view.backgroundColor = UIColor(named: "background_color")!.withAlphaComponent(0.5)
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -57,17 +57,16 @@ class MainController: UITabBarController, UITabBarControllerDelegate, UITextFiel
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = .systemGray
+        view.backgroundColor = UIColor(named: "background_color")
         self.delegate = self
+        self.tabBar.backgroundColor = UIColor(named: "tabbar_color")
+        self.tabBar.tintColor = UIColor(named: "tabbar_text_color")
+        self.tabBar.unselectedItemTintColor = UIColor(named: "tabbar_unselected_color")
         
         searchBar.delegate = self
-//        let homeButton = UIBarButtonItem(image: UIImage(systemName: "house"), style: .plain, target: self, action: #selector(loadHome))
         NotificationCenter.default.addObserver(self, selector: #selector(onLogin), name: .userLogin, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(onLogout), name: .userLogout, object: nil)
-//        homeButton.tintColor = .black
-//        self.navigationItem.rightBarButtonItem = homeButton
         self.navigationItem.titleView = searchBar
-        self.tabBar.backgroundColor = .white
     }
     
     deinit {

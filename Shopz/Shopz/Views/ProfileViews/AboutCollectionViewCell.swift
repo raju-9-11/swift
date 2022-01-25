@@ -16,7 +16,7 @@ class AboutCollectionViewCell: UICollectionViewCell {
     let containerView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-//        view.backgroundColor = .white
+        view.backgroundColor = .clear
         return view
     }()
     
@@ -25,9 +25,9 @@ class AboutCollectionViewCell: UICollectionViewCell {
         textView.translatesAutoresizingMaskIntoConstraints = false
         textView.layer.cornerRadius = 6
         textView.font = .systemFont(ofSize: 13, weight: .regular)
-        textView.textColor = .darkGray
-        textView.text = ""
+        textView.textColor = UIColor(named: "thumbnail_text_color")
         textView.placeholder = "Write about placeholder"
+        textView.placeholderColor = UIColor(named: "thumbnail_text_color")
         textView.textAlignment = .center
         textView.isEditable = false
         textView.backgroundColor = .clear
@@ -38,6 +38,7 @@ class AboutCollectionViewCell: UICollectionViewCell {
     var aboutLabel: UILabel = {
         let label = UILabel()
         label.text = "About"
+        label.textColor = UIColor(named: "thumbnail_text_color")
         label.font = .systemFont(ofSize: 15, weight: .bold)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -54,14 +55,10 @@ class AboutCollectionViewCell: UICollectionViewCell {
         contentView.addSubview(aboutLabel)
         contentView.addSubview(aboutView)
         aboutView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(onClick)))
-        contentView.backgroundColor = .white
+        contentView.backgroundColor = UIColor(named: "thumbnail_color")
         contentView.addSubview(containerView)
         
         NSLayoutConstraint.activate([
-//            containerView.heightAnchor.constraint(equalTo: contentView.heightAnchor),
-//            containerView.widthAnchor.constraint(equalTo: contentView.widthAnchor),
-//            containerView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-//            containerView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             aboutView.heightAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 0.7),
             aboutView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.9),
             aboutView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),

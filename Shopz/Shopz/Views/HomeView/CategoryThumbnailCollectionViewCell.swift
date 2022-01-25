@@ -24,7 +24,7 @@ class CategoryThumbnailCollectionViewCell: UICollectionViewCell {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.sizeToFit()
-        label.textColor = .black
+        label.textColor = UIColor(named: "thumbnail_text_color")
         label.font = .systemFont(ofSize: 10, weight: .medium)
         label.text = "Text"
         return label
@@ -46,7 +46,7 @@ class CategoryThumbnailCollectionViewCell: UICollectionViewCell {
         
         contentView.addSubview(imageView)
         contentView.addSubview(label)
-        contentView.backgroundColor = .white
+        contentView.backgroundColor = UIColor(named: "thumbnail_color")
         contentView.layer.cornerRadius = 6
         contentView.layer.shadowOpacity = 1
         contentView.layer.shadowColor = UIColor.darkGray.cgColor

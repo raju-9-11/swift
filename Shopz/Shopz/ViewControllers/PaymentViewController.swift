@@ -15,6 +15,10 @@ class PaymentViewController: CustomViewController, UICollectionViewDelegate, UIC
         }
     }
     
+    var shoppingListData: ShoppingList?
+    
+    var selectedCard: Int? = 0
+    
     lazy var cartDetails: UILabel = {
         return titleLabel(text: "Cart Details")
     }()
@@ -66,11 +70,22 @@ class PaymentViewController: CustomViewController, UICollectionViewDelegate, UIC
         return cv
     }()
     
-    let addNewCard: AddCardButton = {
-        let button = AddCardButton()
+    let addNewCard: UIButton = {
+        let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Add Card", for: .normal)
         button.setTitleColor(.white, for: .normal)
+        if #available(iOS 15, *) {
+            var config = UIButton.Configuration.filled()
+            config.baseBackgroundColor = .blue.withAlphaComponent(0.5)
+            config.cornerStyle = .medium
+            config.contentInsets = NSDirectionalEdgeInsets(top: 5, leading: 10, bottom: 5, trailing: 10)
+            button.configuration = config
+        } else {
+            button.backgroundColor = .blue.withAlphaComponent(0.5)
+            button.layer.cornerRadius = 6
+            button.contentEdgeInsets = UIEdgeInsets(top: 5, left: 10, bottom: 5, right: 10)
+        }
         button.tintColor = .white
         return button
     }()
@@ -90,7 +105,15 @@ class PaymentViewController: CustomViewController, UICollectionViewDelegate, UIC
     
     var cards : [CardData] = {
         return ApplicationDB.shared.getCards()
-    }()
+    }() {
+        willSet {
+            if newValue.isEmpty {
+                paymentCardsCollectionView.isHidden = true
+            } else {
+                
+            }
+        }
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -103,8 +126,32 @@ class PaymentViewController: CustomViewController, UICollectionViewDelegate, UIC
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CardItemCollectionViewCell.cellID, for: indexPath) as! CardItemCollectionViewCell
+        cell.selectState = selectedCard == indexPath.row
         cell.cardData = cards[indexPath.row]
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        if indexPath.row == selectedCard {
+            return UIContextMenuConfiguration()
+        }
+        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil, actionProvider: {
+            _ in
+            let delete = UIAction(title: "Delete Card", image: UIImage(systemName: "trash"), attributes: .destructive, handler: {
+                _ in
+                self.cards.remove(at: indexPath.row)
+                collectionView.deleteItems(at: [indexPath])
+                ApplicationDB.shared.deleteCard(card: self.cards[indexPath.row])
+                self.cards = ApplicationDB.shared.getCards()
+                collectionView.reloadData()
+            })
+            return UIMenu(title: "Card Actions", children: [delete])
+        })
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        self.selectedCard = indexPath.row
+        collectionView.reloadData()
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
@@ -117,7 +164,7 @@ class PaymentViewController: CustomViewController, UICollectionViewDelegate, UIC
         paymentCardsCollectionView.dataSource = self
         paymentCardsCollectionView.delegate = self
         
-        addNewCard.addTarget(self, action: #selector(onAddNewCard), for: .touchUpInside)
+        addNewCard.addTarget(self, action: #selector(displayAddCardVC), for: .touchUpInside)
         completePayment.addTarget(self, action: #selector(onCompletePayment), for: .touchUpInside)
         useGiftCard.addTarget(self, action: #selector(onUseGiftCard), for: .touchUpInside)
         cancelPayment.addTarget(self, action: #selector(onCancelPayment), for: .touchUpInside)
@@ -148,12 +195,12 @@ class PaymentViewController: CustomViewController, UICollectionViewDelegate, UIC
             backGroundView.widthAnchor.constraint(equalTo: billingDetailsContainer.widthAnchor, multiplier: 1.1),
             savedCardsLabel.topAnchor.constraint(equalTo: backGroundView.bottomAnchor, constant: 10),
             savedCardsLabel.leftAnchor.constraint(equalTo: topView.leftAnchor),
-            paymentCardsCollectionView.topAnchor.constraint(equalTo: savedCardsLabel.bottomAnchor, constant: 5),
+            addNewCard.topAnchor.constraint(equalTo: savedCardsLabel.bottomAnchor, constant: 10),
+            addNewCard.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20),
+            paymentCardsCollectionView.topAnchor.constraint(equalTo: addNewCard.bottomAnchor, constant: 5),
             paymentCardsCollectionView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor),
             paymentCardsCollectionView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.15),
             paymentCardsCollectionView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor),
-            addNewCard.topAnchor.constraint(equalTo: paymentCardsCollectionView.bottomAnchor, constant: 10),
-            addNewCard.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20),
             useGiftCard.bottomAnchor.constraint(equalTo: cancelPayment.topAnchor, constant: -10),
             useGiftCard.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8),
             useGiftCard.centerXAnchor.constraint(equalTo: view.centerXAnchor),
@@ -208,19 +255,36 @@ class PaymentViewController: CustomViewController, UICollectionViewDelegate, UIC
     }
     
     @objc
-    func onAddNewCard() {
-        let dateString = "12/2029"
+    func displayAddCardVC() {
+        let anvc = AddNewCardViewController()
+        anvc.willMove(toParent: self)
+        self.addChild(anvc)
+        self.view.addSubview(anvc.view)
+    }
+    
+    func onAddCard(name: String, cardNumber: String, date: String) {
+        let dateString = date.replacingOccurrences(of: " ", with: "")
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "MM/YYYY"
+        dateFormatter.dateFormat = "MM/yy"
         dateFormatter.locale = .current
         guard let date = dateFormatter.date(from: dateString) else { return }
-        ApplicationDB.shared.addCard(name: "Test", date: date, cardNumber: "1234567823451234")
+        let cardNumber = cardNumber.replacingOccurrences(of: " - ", with: "")
+        ApplicationDB.shared.addCard(name: name, date: date, cardNumber: cardNumber)
         self.cards = ApplicationDB.shared.getCards()
         self.paymentCardsCollectionView.reloadData()
     }
     
     @objc
     func onCompletePayment() {
+        if cards.count < 1 {
+            Toast.shared.showToast(message: "Select a payment method", type: .error)
+            return
+        }
+        if shoppingListData == nil {
+            ApplicationDB.shared.checkoutCart()
+        } else {
+            ApplicationDB.shared.checkoutShoppingList(list: shoppingListData!)
+        }
         let vc = PaymentResultViewController()
         vc.modalPresentationStyle = .fullScreen
         self.present(vc, animated: true)

@@ -9,7 +9,7 @@ import UIKit
 
 class OrderHistoryViewController: CustomViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, OrderHistoryItemDelegate {
     
-    var listItems: [(product: Product, date: Date)] = [] {
+    var listItems: [OrderHistItem] = [] {
         willSet {
             self.collectionView.isHidden = newValue.isEmpty
             self.placeholderView.isHidden = !newValue.isEmpty
@@ -83,11 +83,16 @@ class OrderHistoryViewController: CustomViewController, UICollectionViewDataSour
         }
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.loadData()
+    }
+    
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
     
-    func getList() -> [(product: Product, date: Date)] {
+    func getList() -> [OrderHistItem] {
         let list = ApplicationDB.shared.getOrderHistory()
         return list
     }
@@ -136,7 +141,7 @@ class OrderHistoryViewController: CustomViewController, UICollectionViewDataSour
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: OrderHistoryItemCollectionViewCell.cellID, for: indexPath) as! OrderHistoryItemCollectionViewCell
-        cell.itemData = listItems[indexPath.row].product
+        cell.itemData = listItems[indexPath.row]
         cell.delegate = self
         return cell
     }
@@ -164,8 +169,8 @@ class OrderHistoryViewController: CustomViewController, UICollectionViewDataSour
         self.view.addSubview(prodVC!.view)
     }
     
-    func returnProduct(item: Product) {
-        print("Returning \(item.product_name)...")
+    func returnProduct(item: OrderHistItem) {
+        print("Returning \(item.product.product_name)...")
     }
     
 }

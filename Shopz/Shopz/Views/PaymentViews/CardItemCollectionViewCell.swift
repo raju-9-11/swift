@@ -11,6 +11,14 @@ class CardItemCollectionViewCell: UICollectionViewCell {
     
     static let cellID = "CardItemCELL"
     
+    var selectState: Bool = false {
+        willSet {
+            containerView.backgroundColor = newValue ? .black.withAlphaComponent(0.5) : .red.withAlphaComponent(0.5)
+            imageView.image = newValue ? UIImage(systemName: "creditcard.fill") : UIImage(systemName: "circle.fill")
+            imageView.tintColor = newValue ? .white : .red
+        }
+    }
+    
     var cardData: CardData? {
         willSet {
             guard let newValue = newValue else { self.setupLayout() ; return }
@@ -78,6 +86,7 @@ class CardItemCollectionViewCell: UICollectionViewCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
+        self.selectState = false
         self.removeViews()
     }
     

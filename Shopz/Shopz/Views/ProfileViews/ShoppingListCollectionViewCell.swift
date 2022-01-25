@@ -17,6 +17,7 @@ class ShoppingListCollectionViewCell: UICollectionViewCell, UICollectionViewData
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .systemFont(ofSize: 15, weight: .bold)
+        label.textColor = UIColor(named: "text_color")
         label.text = "Shopping Lists"
         return label
     }()
@@ -24,7 +25,7 @@ class ShoppingListCollectionViewCell: UICollectionViewCell, UICollectionViewData
     let addShoppingListButton: UIButton = {
         let button = UIButton(type: .contactAdd)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.tintColor = .black
+        button.tintColor = UIColor(named: "text_color")
         return button
     }()
     
@@ -33,7 +34,6 @@ class ShoppingListCollectionViewCell: UICollectionViewCell, UICollectionViewData
         layout.minimumLineSpacing = 1
         layout.minimumInteritemSpacing = 1
         layout.scrollDirection = .vertical
-        layout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
         cv.translatesAutoresizingMaskIntoConstraints = false
         cv.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
@@ -61,7 +61,7 @@ class ShoppingListCollectionViewCell: UICollectionViewCell, UICollectionViewData
         contentView.addSubview(collectionView)
         contentView.addSubview(shoppingListLabel)
         contentView.addSubview(addShoppingListButton)
-        contentView.backgroundColor = .white
+        contentView.backgroundColor = UIColor(named: "thumbnail_color")
         
         NSLayoutConstraint.activate([
             shoppingListLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),

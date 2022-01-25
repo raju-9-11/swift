@@ -131,9 +131,7 @@ class CheckoutViewController: CustomViewController, UICollectionViewDelegate, UI
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         self.setupLayout()
-        
     }
     
     override func willMove(toParent parent: UIViewController?) {
@@ -201,7 +199,7 @@ class CheckoutViewController: CustomViewController, UICollectionViewDelegate, UI
                 self.addressList.reloadData()
             }
         })
-        let cancelAction = UIAlertAction(title: "Cancel", style: .default, handler: nil)
+        let cancelAction = UIAlertAction(title: "Cancel", style: .destructive, handler: nil)
         alert.addAction(addAction)
         alert.addAction(cancelAction)
         present(alert, animated: true, completion: nil)
@@ -346,6 +344,7 @@ class CheckoutViewController: CustomViewController, UICollectionViewDelegate, UI
         if pvc == nil {
             pvc = PaymentViewController()
             pvc?.cart = self.cart
+            pvc?.shoppingListData = self.shoppingList
         }
         pvc!.modalPresentationStyle = .fullScreen
         pvc!.modalTransitionStyle = .coverVertical

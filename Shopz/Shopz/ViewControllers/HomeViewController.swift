@@ -32,7 +32,6 @@ class HomeViewController: CustomViewController, UICollectionViewDataSource, UICo
     
     lazy var itemSize: CGSize = {
         let frame = CGSize(width: view.frame.width * 0.8, height: view.frame.width*0.8)
-        
         var side: CGFloat = 100
         var excessWidth: CGFloat = frame.width.truncatingRemainder(dividingBy: side)
         while(excessWidth > 10) {
@@ -45,6 +44,7 @@ class HomeViewController: CustomViewController, UICollectionViewDataSource, UICo
     let popularItemsLabel: UILabel = {
         let label = UILabel()
         label.text = "Popular Items"
+        label.textColor = UIColor(named: "text_color")
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .systemFont(ofSize: 12, weight: .bold)
         return label
@@ -81,6 +81,7 @@ class HomeViewController: CustomViewController, UICollectionViewDataSource, UICo
     let categoryLabel: UILabel = {
         let label = UILabel()
         label.text = "Categories"
+        label.textColor = UIColor(named: "text_color")
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .systemFont(ofSize: 12, weight: .bold)
         return label
@@ -97,18 +98,6 @@ class HomeViewController: CustomViewController, UICollectionViewDataSource, UICo
         pvc = nil
     }
     
-//    override func viewWillDisappear(_ animated: Bool) {
-//        super.viewWillDisappear(animated)
-//        self.tabBarController?.navigationItem.rightBarButtonItem = nil
-//    }
-//
-//    override func viewWillAppear(_ animated: Bool) {
-//        super.viewWillAppear(animated)
-//        if pvc != nil {
-//            self.tabBarController?.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "back", style: .plain , target: self, action: #selector(onProductBack))
-//        }
-//    }
-    
     // MARK: - CollectionView delegate
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -122,7 +111,6 @@ class HomeViewController: CustomViewController, UICollectionViewDataSource, UICo
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if collectionView == popularItemsList {
             let product: Product = popularItems[indexPath.row]
-//            self.tabBarController?.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "back", style: .plain , target: self, action: #selector(onProductBack))
             if pvc == nil {
                 pvc = ProductViewController()
             }
@@ -157,7 +145,7 @@ class HomeViewController: CustomViewController, UICollectionViewDataSource, UICo
     override func setupLayout() {
         self.loadData()
         self.title = "Home"
-        view.backgroundColor = .white
+        view.backgroundColor = UIColor(named: "background_color")
         
         popularItemsList.delegate = self
         popularItemsList.dataSource = self
@@ -233,12 +221,7 @@ class CustomViewController: UIViewController {
     func setupLayout() {
         //PLACEHOLDER
     }
-    
-//    override func viewDidDisappear(_ animated: Bool) {
-//        super.viewWillAppear(animated)
-//        self.children.forEach({ vc in vc.view.removeFromSuperview();vc.willMove(toParent: nil);vc.removeFromParent() })
-//    }
-//    
+
     func removeViews() {
         self.view.subviews.forEach({ view in view.removeFromSuperview() })
         self.children.forEach({ vc in vc.willMove(toParent: nil);vc.removeFromParent() })

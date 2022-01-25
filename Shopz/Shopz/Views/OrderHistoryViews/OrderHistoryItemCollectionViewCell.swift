@@ -13,11 +13,15 @@ class OrderHistoryItemCollectionViewCell: UICollectionViewCell {
     
     var delegate: OrderHistoryItemDelegate?
     
-    var itemData: Product? {
+    var itemData: OrderHistItem? {
         willSet {
             if newValue != nil {
-                nameLabel.text = newValue?.product_name
-                costLabel.text = "$ \(newValue?.price ?? 0) "
+                nameLabel.text = newValue?.product.product_name
+                costLabel.text = "$ \(newValue?.product.price ?? 0) "
+                if newValue!.date.offset(from: Date(), by: 6) {
+                    buttonsView.addArrangedSubview(returnProduct)
+                }
+                self.dateLabel.text = "Purchase Date: \(newValue!.date.toString())"
                 self.setupLayout()
             }
         }
@@ -36,6 +40,15 @@ class OrderHistoryItemCollectionViewCell: UICollectionViewCell {
         label.text = "$ 20"
         label.font = .boldSystemFont(ofSize: 20)
         label.textColor = .systemGray2
+        return label
+    }()
+    
+    let dateLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = "24/01/2020"
+        label.font = .italicSystemFont(ofSize: 12)
+        label.textColor = .darkGray
         return label
     }()
     
@@ -73,7 +86,7 @@ class OrderHistoryItemCollectionViewCell: UICollectionViewCell {
     
     
     lazy var buttonsView: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [addReview, returnProduct])
+        let stackView = UIStackView(arrangedSubviews: [addReview])
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .horizontal
         stackView.spacing = 3
@@ -89,6 +102,7 @@ class OrderHistoryItemCollectionViewCell: UICollectionViewCell {
         contentView.addSubview(nameLabel)
         contentView.addSubview(costLabel)
         contentView.addSubview(buttonsView)
+        contentView.addSubview(dateLabel)
         addReview.addTarget(self, action: #selector(onAddReview), for: .touchUpInside)
         returnProduct.addTarget(self, action: #selector(onReturn), for: .touchUpInside)
         
@@ -102,6 +116,8 @@ class OrderHistoryItemCollectionViewCell: UICollectionViewCell {
             nameLabel.rightAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.rightAnchor, constant: -10),
             costLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor),
             costLabel.leftAnchor.constraint(equalTo: nameLabel.leftAnchor),
+            dateLabel.topAnchor.constraint(equalTo: costLabel.bottomAnchor),
+            dateLabel.leftAnchor.constraint(equalTo: nameLabel.leftAnchor),
             buttonsView.bottomAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.bottomAnchor, constant: -5),
             buttonsView.leftAnchor.constraint(equalTo: nameLabel.leftAnchor),
             buttonsView.rightAnchor.constraint(equalTo: contentView.rightAnchor),
@@ -111,7 +127,7 @@ class OrderHistoryItemCollectionViewCell: UICollectionViewCell {
     @objc
     func onAddReview() {
         guard let itemData = self.itemData else { return }
-        delegate?.addReview(item: itemData)
+        delegate?.addReview(item: itemData.product)
     }
     
     @objc
@@ -128,7 +144,39 @@ class OrderHistoryItemCollectionViewCell: UICollectionViewCell {
     
 }
 
+extension Date {
+    /// Returns the amount of years from another date
+    func years(from date: Date) -> Int {
+        return Calendar.current.dateComponents([.year], from: date, to: self).year ?? 0
+    }
+    /// Returns the amount of months from another date
+    func months(from date: Date) -> Int {
+        return Calendar.current.dateComponents([.month], from: date, to: self).month ?? 0
+    }
+    /// Returns the amount of days from another date
+    func days(from date: Date) -> Int {
+        return Calendar.current.dateComponents([.day], from: date, to: self).day ?? 0
+    }
+    /// Returns the a custom time interval description from another date
+    func offset(from date: Date, by dayCount: Int) -> Bool {
+        if years(from: date)   > 0 || months(from: date)  > 0{
+            return false
+        } else {
+            if days(from: date) > dayCount {
+                return false
+            }
+        }
+        return true
+    }
+    func toString(with format: String = "dd/MM/yyyy") -> String {
+        let df = DateFormatter()
+        df.locale = .current
+        df.dateFormat = format
+        return df.string(from: self)
+    }
+}
+
 protocol OrderHistoryItemDelegate {
     func addReview(item: Product)
-    func returnProduct(item: Product)
+    func returnProduct(item: OrderHistItem)
 }

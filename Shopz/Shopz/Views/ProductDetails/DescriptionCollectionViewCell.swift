@@ -25,7 +25,7 @@ class DescriptionCollectionViewCell: UICollectionViewCell, UIContextMenuInteract
         label.contentMode = .center
         label.textAlignment = .center
         label.isScrollEnabled = false
-//        label.sizeToFit()
+        label.textColor = UIColor(named: "text_color")
         label.isUserInteractionEnabled = false
         return label
     }()
@@ -33,6 +33,7 @@ class DescriptionCollectionViewCell: UICollectionViewCell, UIContextMenuInteract
     let costlabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
+        label.textColor = UIColor(named: "subtitle_text")
         label.text = "$50"
         return label
     }()
@@ -40,7 +41,7 @@ class DescriptionCollectionViewCell: UICollectionViewCell, UIContextMenuInteract
     let ratingsLabel: UILabel = {
         let label = UILabel()
         label.text = "4.4/5"
-        label.textColor = .systemGray
+        label.textColor = UIColor(named: "subtitle_text")
         label.contentMode = .left
         label.translatesAutoresizingMaskIntoConstraints = false 
         label.font = .italicSystemFont(ofSize: 10)
@@ -50,19 +51,19 @@ class DescriptionCollectionViewCell: UICollectionViewCell, UIContextMenuInteract
     let textView: UITextView = {
         let textView = UITextView()
         textView.translatesAutoresizingMaskIntoConstraints = false
-        textView.textColor = .darkGray
+        textView.textColor = UIColor(named: "subtitle_text")
         textView.text = "PLACEHOLDER"
         textView.isEditable = false
         textView.isSelectable = false
         textView.isUserInteractionEnabled = false
         textView.font = .italicSystemFont(ofSize: 12)
-//        textView.sizeToFit()
         textView.isScrollEnabled = false
         return textView
     }()
     
     let soldByLabel: UILabel = {
         let label = UILabel()
+        label.textColor = UIColor(named: "text_color")
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "SOLD BY "
         return label
@@ -80,7 +81,7 @@ class DescriptionCollectionViewCell: UICollectionViewCell, UIContextMenuInteract
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Add to Cart", for: .normal)
-        button.setTitleColor(.white, for: .normal)
+        button.setTitleColor(UIColor(named: "text_color"), for: .normal)
         if #available(iOS 15, *) {
             var config = UIButton.Configuration.filled()
             config.contentInsets = NSDirectionalEdgeInsets(top: 5, leading: 10, bottom: 5, trailing: 10)

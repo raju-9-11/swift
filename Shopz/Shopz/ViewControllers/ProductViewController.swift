@@ -21,6 +21,7 @@ class ProductViewController: CustomViewController, UICollectionViewDelegate, UIC
         cv.register(ProductDetailsTopCollectionViewCell.self, forCellWithReuseIdentifier: ProductDetailsTopCollectionViewCell.cellID)
         cv.register(DescriptionCollectionViewCell.self, forCellWithReuseIdentifier: DescriptionCollectionViewCell.cellID)
         cv.register(ReviewsCollectionViewCell.self, forCellWithReuseIdentifier: ReviewsCollectionViewCell.cellID)
+        cv.backgroundColor = .clear
         return cv
     }()
     
@@ -138,7 +139,7 @@ class ProductViewController: CustomViewController, UICollectionViewDelegate, UIC
     }
     
     override func setupLayout() {
-        view.backgroundColor = .white
+        view.backgroundColor = UIColor(named: "background_color")
         
         collectionView.dataSource = self
         collectionView.delegate = self
