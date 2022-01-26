@@ -27,6 +27,7 @@ class CheckoutViewController: CustomViewController, UICollectionViewDelegate, UI
     
     let topView: UIView = {
         let view = UIView()
+        view.backgroundColor = .clear
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -211,7 +212,7 @@ class CheckoutViewController: CustomViewController, UICollectionViewDelegate, UI
     }
     
     override func setupLayout() {
-        view.backgroundColor = .white
+        view.backgroundColor = UIColor(named: "background_color")
         
         giftWrapText.delegate = self
         continueButton.addTarget(self, action: #selector(onContinue), for: .touchUpInside)

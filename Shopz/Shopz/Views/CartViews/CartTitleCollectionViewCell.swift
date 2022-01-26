@@ -23,6 +23,7 @@ class CartTitleCollectionViewCell: UICollectionViewCell {
     let titleLabel: UILabel = {
         let label = UILabel()
         label.text = "Cart"
+        label.textColor = UIColor(named: "text_color")
         label.font = .systemFont(ofSize: 25, weight: .semibold)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label

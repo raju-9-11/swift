@@ -111,14 +111,6 @@ class ReviewsCollectionViewCell: UICollectionViewCell, UITableViewDataSource, UI
         NSLayoutConstraint.activate([
             titleLabel.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor, constant: 15),
             titleLabel.leftAnchor.constraint(equalTo: contentView.leftAnchor, constant: 15),
-            reviewList.topAnchor.constraint(equalTo: addReviewView.bottomAnchor, constant: 20),
-            reviewList.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
-            reviewList.widthAnchor.constraint(equalTo: contentView.widthAnchor),
-            reviewList.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            addReviewView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 20),
-            addReviewView.heightAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 0.2),
-            addReviewView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.9),
-            addReviewView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             addReviewTextView.topAnchor.constraint(equalTo: addReviewView.topAnchor, constant: 10),
             addReviewTextView.heightAnchor.constraint(equalTo: addReviewView.heightAnchor, multiplier: 0.6),
             addReviewTextView.widthAnchor.constraint(equalTo: addReviewView.widthAnchor, multiplier: 0.9),
@@ -126,7 +118,14 @@ class ReviewsCollectionViewCell: UICollectionViewCell, UITableViewDataSource, UI
             addReviewButton.widthAnchor.constraint(equalTo: addReviewView.widthAnchor, multiplier: 0.8),
             addReviewButton.centerXAnchor.constraint(equalTo: addReviewView.centerXAnchor),
             addReviewButton.topAnchor.constraint(equalTo: addReviewTextView.bottomAnchor, constant: 10),
-            addReviewButton.heightAnchor.constraint(equalTo: addReviewView.heightAnchor, multiplier: 0.2),
+            addReviewView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 20),
+            addReviewView.heightAnchor.constraint(equalToConstant: 150),
+            addReviewView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.9),
+            addReviewView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            reviewList.topAnchor.constraint(equalTo: addReviewView.bottomAnchor, constant: 20),
+            reviewList.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            reviewList.widthAnchor.constraint(equalTo: contentView.widthAnchor),
+            reviewList.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
         ])
     }
     
@@ -151,7 +150,7 @@ class ReviewsCollectionViewCell: UICollectionViewCell, UITableViewDataSource, UI
         addReviewView.sizeToFit()
         addReviewView.layoutSubviews()
         addReviewView.layoutIfNeeded()
-        attr.size.height = CGFloat(reviewElementData.reviews.count * 100) + 250
+        attr.size.height = CGFloat(reviewElementData.reviews.count * 100) + 200
         return attr
     }
 

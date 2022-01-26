@@ -79,7 +79,7 @@ class ProductViewController: CustomViewController, UICollectionViewDelegate, UIC
     }
     
     func getImageData(with itemData: Product) -> ImagesViewElement {
-        return ImagesViewElement(images: Array(repeating: UIImage(systemName: "photo.fill"), count: 5))
+        return ImagesViewElement(images: itemData.image_media)
     }
     
     func getDescriptionData(with itemData: Product) -> DescriptionElement {
@@ -107,14 +107,7 @@ class ProductViewController: CustomViewController, UICollectionViewDelegate, UIC
     
     
     func getReviews(with itemData: Product) -> ReviewElement {
-        return ReviewElement(reviews: [
-            Review(review: "Bad", owner: "moues"),
-            Review(review: "Really bad", owner: "tom"),
-            Review(review: "Worse", owner: "Pacman"),
-            Review(review: "bad", owner: "Test"),
-            Review(review: "Good", owner: "TEsting"),
-            Review(review: "Bad", owner: "tesing"),
-        ])
+        return ReviewElement(reviews: ApplicationDB.shared.getReviews(product: itemData))
     }
     
     func displayImage(_ image: UIImage?) {
@@ -129,7 +122,6 @@ class ProductViewController: CustomViewController, UICollectionViewDelegate, UIC
         self.navigationController?.isNavigationBarHidden = true
         self.tabBarController?.tabBar.isHidden = true
     }
-    
     
     @objc
     func dismissFullscreenImage(_ sender: UITapGestureRecognizer) {
@@ -152,6 +144,7 @@ class ProductViewController: CustomViewController, UICollectionViewDelegate, UIC
             collectionView.heightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.heightAnchor),
         ])
     }
+    
 
 }
 
@@ -160,9 +153,9 @@ class ProductDetailElement {
 }
 
 class ImagesViewElement: ProductDetailElement {
-    var images: [UIImage?]
+    var images: [String]
     
-    init(images: [UIImage?]) {
+    init(images: [String]) {
         self.images = images
     }
 }
@@ -188,16 +181,6 @@ class ReviewElement: ProductDetailElement {
     
     init(reviews: [Review]) {
         self.reviews = reviews
-    }
-}
-
-class Review {
-    var review: String
-    var owner: String
-    var id = UUID()
-    init(review: String, owner: String ) {
-        self.review = review
-        self.owner = owner
     }
 }
 

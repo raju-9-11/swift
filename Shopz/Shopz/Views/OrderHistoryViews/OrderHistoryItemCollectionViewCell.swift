@@ -6,12 +6,14 @@
 //
 
 import UIKit
+import Combine
 
 class OrderHistoryItemCollectionViewCell: UICollectionViewCell {
     
     static let cellID: String = "OrderHistoryItemCell"
     
     var delegate: OrderHistoryItemDelegate?
+    var cancellable: AnyCancellable?
     
     var itemData: OrderHistItem? {
         willSet {
@@ -21,6 +23,10 @@ class OrderHistoryItemCollectionViewCell: UICollectionViewCell {
                 if newValue!.date.offset(from: Date(), by: 6) {
                     buttonsView.addArrangedSubview(returnProduct)
                 }
+                self.cancellable = self.loadImage(for: newValue!.product.image_media[0]).sink(receiveValue: {
+                    [unowned self] image in
+                    self.imageView.image = image
+                })
                 self.dateLabel.text = "Purchase Date: \(newValue!.date.toString())"
                 self.setupLayout()
             }
@@ -29,6 +35,7 @@ class OrderHistoryItemCollectionViewCell: UICollectionViewCell {
     
     let nameLabel: UILabel = {
         let label = UILabel()
+        label.textColor = UIColor(named: "text_color")
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "Item name"
         return label
@@ -38,8 +45,8 @@ class OrderHistoryItemCollectionViewCell: UICollectionViewCell {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "$ 20"
+        label.textColor = UIColor(named: "subtitle_text")
         label.font = .boldSystemFont(ofSize: 20)
-        label.textColor = .systemGray2
         return label
     }()
     
@@ -48,7 +55,7 @@ class OrderHistoryItemCollectionViewCell: UICollectionViewCell {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "24/01/2020"
         label.font = .italicSystemFont(ofSize: 12)
-        label.textColor = .darkGray
+        label.textColor = UIColor(named: "subtitle_text")
         return label
     }()
     
@@ -103,6 +110,7 @@ class OrderHistoryItemCollectionViewCell: UICollectionViewCell {
         contentView.addSubview(costLabel)
         contentView.addSubview(buttonsView)
         contentView.addSubview(dateLabel)
+        contentView.backgroundColor = UIColor(named: "thumbnail_color")
         addReview.addTarget(self, action: #selector(onAddReview), for: .touchUpInside)
         returnProduct.addTarget(self, action: #selector(onReturn), for: .touchUpInside)
         
@@ -120,8 +128,19 @@ class OrderHistoryItemCollectionViewCell: UICollectionViewCell {
             dateLabel.leftAnchor.constraint(equalTo: nameLabel.leftAnchor),
             buttonsView.bottomAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.bottomAnchor, constant: -5),
             buttonsView.leftAnchor.constraint(equalTo: nameLabel.leftAnchor),
-            buttonsView.rightAnchor.constraint(equalTo: contentView.rightAnchor),
+//            buttonsView.rightAnchor.constraint(equalTo: contentView.rightAnchor),
         ])
+    }
+    
+    
+    func loadImage(for url: String) -> AnyPublisher<UIImage?, Never> {
+        return Just(url)
+            .flatMap({ poster -> AnyPublisher<UIImage?, Never> in
+                let url = URL(string: url)!
+                return ImageLoader.shared.loadImage(from: url)
+                
+            })
+           .eraseToAnyPublisher()
     }
     
     @objc
@@ -139,6 +158,7 @@ class OrderHistoryItemCollectionViewCell: UICollectionViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         self.removeViews()
+        cancellable?.cancel()
     }
     
     

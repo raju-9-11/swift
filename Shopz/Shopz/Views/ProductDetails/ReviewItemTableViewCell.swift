@@ -45,10 +45,12 @@ class ReviewItemTableViewCell: UITableViewCell {
         return textview
     }()
     
-    var review: Review = Review(review: "", owner: "") {
+    var review: Review? {
         willSet {
-            reviewView.text = newValue.review
-            nameLabel.text = newValue.owner
+            if newValue != nil {
+                reviewView.text = newValue?.review
+                nameLabel.text = newValue?.userName
+            }
             self.setupLayout()
         }
     }

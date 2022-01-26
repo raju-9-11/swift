@@ -21,7 +21,7 @@ class OrderHistoryViewController: CustomViewController, UICollectionViewDataSour
     
     let collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
-        layout.minimumLineSpacing = 2
+        layout.minimumLineSpacing = 5
         layout.minimumInteritemSpacing = 2
         layout.scrollDirection = .vertical
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
@@ -39,7 +39,7 @@ class OrderHistoryViewController: CustomViewController, UICollectionViewDataSour
         label.text = "No Items Bought yet"
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .monospacedSystemFont(ofSize: 10, weight: .regular)
-        label.textColor = .darkGray
+        label.textColor = UIColor(named: "thumbnail_text_color")
         return label
     }()
     
@@ -60,7 +60,7 @@ class OrderHistoryViewController: CustomViewController, UICollectionViewDataSour
             label.topAnchor.constraint(equalTo: imageView.centerYAnchor, constant: 50),
             label.centerXAnchor.constraint(equalTo: imageView.centerXAnchor),
         ])
-        view.backgroundColor = .white
+        view.backgroundColor = UIColor(named: "background_color")
         return view
     }()
     
@@ -99,7 +99,7 @@ class OrderHistoryViewController: CustomViewController, UICollectionViewDataSour
     
     override func setupLayout() {
         
-        view.backgroundColor = .white
+        view.backgroundColor = UIColor(named: "background_color")
         self.loadData()
         collectionView.dataSource = self
         collectionView.delegate = self

@@ -6,18 +6,24 @@
 //
 
 import UIKit
+import Combine
 
 class CartItemCollectionViewCell: UICollectionViewCell {
     
     static let cellID: String = "CartItemCell"
     
     var delegate: CartItemDelegate?
+    var cancellable: AnyCancellable?
     
     var itemData: CartItem? {
         willSet {
             if newValue != nil {
                 nameLabel.text = newValue?.product.product_name
                 costLabel.text = "$ \(newValue?.product.price ?? 0) "
+                self.cancellable = self.loadImage(for: newValue!.product.image_media[0]).sink(receiveValue: {
+                    [unowned self] image in
+                    self.imageView.image = image
+                })
                 self.setupLayout()
             }
         }
@@ -27,6 +33,7 @@ class CartItemCollectionViewCell: UICollectionViewCell {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "Item name"
+        label.textColor = UIColor(named: "text_color")
         label.numberOfLines = 3
         return label
     }()
@@ -35,7 +42,7 @@ class CartItemCollectionViewCell: UICollectionViewCell {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "$ 20"
-        label.textColor = .systemGray2
+        label.textColor = UIColor(named: "subtitle_text")
         return label
     }()
     
@@ -51,7 +58,7 @@ class CartItemCollectionViewCell: UICollectionViewCell {
     let bottomLine: UIView = {
         let view = UIView()
         view.layer.cornerRadius = 1
-        view.backgroundColor = .systemGray
+        view.backgroundColor = UIColor(named: "text_color")
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -69,7 +76,8 @@ class CartItemCollectionViewCell: UICollectionViewCell {
         contentView.addSubview(nameLabel)
         contentView.addSubview(costLabel)
         contentView.addSubview(closeButton)
-        contentView.addSubview(bottomLine)
+//        contentView.addSubview(bottomLine)
+        contentView.backgroundColor = UIColor(named: "thumbnail_color")
         closeButton.addTarget(self, action: #selector(onDelete), for: .touchUpInside)
         
         NSLayoutConstraint.activate([
@@ -84,11 +92,21 @@ class CartItemCollectionViewCell: UICollectionViewCell {
             nameLabel.rightAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.rightAnchor, constant: -10),
             closeButton.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             closeButton.rightAnchor.constraint(equalTo: contentView.rightAnchor, constant: -20),
-            bottomLine.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
-            bottomLine.leftAnchor.constraint(equalTo: imageView.rightAnchor),
-            bottomLine.heightAnchor.constraint(equalToConstant: 1),
-            bottomLine.rightAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.rightAnchor),
+//            bottomLine.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+//            bottomLine.leftAnchor.constraint(equalTo: imageView.rightAnchor),
+//            bottomLine.heightAnchor.constraint(equalToConstant: 1),
+//            bottomLine.rightAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.rightAnchor),
         ])
+    }
+    
+    func loadImage(for url: String) -> AnyPublisher<UIImage?, Never> {
+        return Just(url)
+            .flatMap({ poster -> AnyPublisher<UIImage?, Never> in
+                let url = URL(string: url)!
+                return ImageLoader.shared.loadImage(from: url)
+                
+            })
+           .eraseToAnyPublisher()
     }
     
     @objc
@@ -99,6 +117,7 @@ class CartItemCollectionViewCell: UICollectionViewCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
+        cancellable?.cancel()
         self.removeViews()
     }
     

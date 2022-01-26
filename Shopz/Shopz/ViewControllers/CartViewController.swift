@@ -38,7 +38,7 @@ class CartViewController: CustomViewController, UICollectionViewDataSource, UICo
         label.text = "Cart is Empty"
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .monospacedSystemFont(ofSize: 10, weight: .regular)
-        label.textColor = .darkGray
+        label.textColor = UIColor(named: "subtitle_text")
         return label
     }()
     
@@ -59,7 +59,7 @@ class CartViewController: CustomViewController, UICollectionViewDataSource, UICo
             label.topAnchor.constraint(equalTo: imageView.centerYAnchor, constant: 50),
             label.centerXAnchor.constraint(equalTo: imageView.centerXAnchor),
         ])
-        view.backgroundColor = .white
+        view.backgroundColor = .clear
         return view
     }()
     
@@ -128,7 +128,7 @@ class CartViewController: CustomViewController, UICollectionViewDataSource, UICo
     }
     
     override func setupLayout() {
-        view.backgroundColor = .white
+        view.backgroundColor = UIColor(named: "background_color")
         self.loadData()
         collectionView.dataSource = self
         collectionView.delegate = self

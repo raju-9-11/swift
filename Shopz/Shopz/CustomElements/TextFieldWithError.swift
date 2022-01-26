@@ -88,8 +88,8 @@ class TextFieldWithError: UIView, UITextFieldDelegate {
         textField.layer.borderColor = UIColor.gray.cgColor
         textField.layer.borderWidth = 1
         textField.layer.cornerRadius = 5
-        textField.tintColor = .darkGray
-        textField.textColor = .black
+        textField.tintColor = UIColor(named: "subtitle_text")
+        textField.textColor = UIColor(named: "text_color")
         textField.backgroundColor = .clear
         return textField
     }()

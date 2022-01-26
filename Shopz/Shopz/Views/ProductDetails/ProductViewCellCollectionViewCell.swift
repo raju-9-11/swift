@@ -6,10 +6,12 @@
 //
 
 import UIKit
+import Combine
 
 class ProductViewCellCollectionViewCell: UICollectionViewCell {
     
     static let cellID = "ProductImageView"
+    var cancellable: AnyCancellable?
     
     let imageView: UIImageView = {
         let imageView = UIImageView()
@@ -19,9 +21,14 @@ class ProductViewCellCollectionViewCell: UICollectionViewCell {
         return imageView
     }()
     
-    var data: UIImage? = UIImage(systemName: "home.fill") {
+    var data: String? {
         willSet {
-            imageView.image = newValue
+            if newValue != nil {
+                cancellable = self.loadImage(for: newValue!).sink(receiveValue: {
+                    [unowned self] image in
+                    imageView.image = image
+                })
+            }
             self.setupLayout()
         }
     }
@@ -36,9 +43,20 @@ class ProductViewCellCollectionViewCell: UICollectionViewCell {
         ])
     }
     
+    func loadImage(for url: String) -> AnyPublisher<UIImage?, Never> {
+        return Just(url)
+            .flatMap({ poster -> AnyPublisher<UIImage?, Never> in
+                let url = URL(string: url)!
+                return ImageLoader.shared.loadImage(from: url)
+                
+            })
+           .eraseToAnyPublisher()
+    }
+    
     override func prepareForReuse() {
         super.prepareForReuse()
         self.removeViews()
+        cancellable?.cancel()
     }
     
 }

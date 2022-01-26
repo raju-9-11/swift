@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Combine
 
 class ProductDetailsTopCollectionViewCell: UICollectionViewCell, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
     
@@ -14,10 +15,12 @@ class ProductDetailsTopCollectionViewCell: UICollectionViewCell, UICollectionVie
     var imageData = ImagesViewElement(images: []) {
         willSet {
             self.setupLayout()
+            self.collectionView.reloadData()
         }
     }
     
     static let cellID = "TopCellProduct"
+    var cancellable: AnyCancellable?
     
     var cellFrame = CGSize(width: 100, height: 100)
     
@@ -67,13 +70,28 @@ class ProductDetailsTopCollectionViewCell: UICollectionViewCell, UICollectionVie
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        delegate?.displayImage(imageData.images[indexPath.row])
+        self.cancellable = self.loadImage(for: imageData.images[indexPath.row]).sink(receiveValue: {
+            [unowned self] image in
+            self.delegate?.displayImage(image)
+        })
     }
+    
+    func loadImage(for url: String) -> AnyPublisher<UIImage?, Never> {
+        return Just(url)
+            .flatMap({ poster -> AnyPublisher<UIImage?, Never> in
+                let url = URL(string: url)!
+                return ImageLoader.shared.loadImage(from: url)
+                
+            })
+           .eraseToAnyPublisher()
+    }
+    
     
     
     override func prepareForReuse() {
         super.prepareForReuse()
         self.removeViews()
+        cancellable?.cancel()
     }
     
     override func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {

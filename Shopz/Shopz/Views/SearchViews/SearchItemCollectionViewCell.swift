@@ -6,17 +6,20 @@
 //
 
 import UIKit
+import Combine
 
 class SearchItemCollectionViewCell: UICollectionViewCell {
     
     
     static let cellID = "SearchListItem"
     
+    var cancellable: AnyCancellable?
+    
     let nameLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.numberOfLines = 3
-        label.textColor = .black
+        label.textColor = UIColor(named: "text_color")
         label.font = .italicSystemFont(ofSize: 15)
         label.lineBreakMode = .byWordWrapping
         return label
@@ -25,7 +28,7 @@ class SearchItemCollectionViewCell: UICollectionViewCell {
     let imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.contentMode = .scaleAspectFit
+        imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
         return imageView
     }()
@@ -34,32 +37,38 @@ class SearchItemCollectionViewCell: UICollectionViewCell {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "$ 0"
-        label.textColor = .darkGray
+        label.textColor = UIColor(named: "subtitle_text")
         label.font = .italicSystemFont(ofSize: 16)
         return label
     }()
     
     let bottomLine: UIView = {
         let view = UIView()
-        view.backgroundColor = .systemGray
+        view.backgroundColor = UIColor(named: "subtitle_text")
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
     
     let ratingLabel: UILabel = {
         let label = UILabel()
+        label.textColor = UIColor(named: "thumbnail_text_color")
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .italicSystemFont(ofSize: 10)
         label.text = "0.0/5.0"
         return label
     }()
     
-    var data: Product = Product(product_id: 0, product_name: "", seller_id: 0, image_media: [], shipping_cost: 0, description: "", price: 0, rating: 0, category: "") {
+    var data: Product? {
         willSet {
-            nameLabel.text = newValue.product_name
-            costLabel.text = "$ \(newValue.price)"
-            imageView.image = UIImage(systemName: newValue.image_media[0])
-            ratingLabel.text = "\(newValue.rating)/5.0"
+            if newValue != nil {
+                nameLabel.text = newValue!.product_name
+                costLabel.text = "$ \(newValue!.price)"
+                cancellable = self.loadImage(for: newValue!.image_media[0]).sink(receiveValue: {
+                    [unowned self] image in
+                    self.imageView.image = image
+                })
+                ratingLabel.text = "\(newValue!.rating)/5.0"
+            }
             self.setupLayout()
         }
     }
@@ -92,8 +101,19 @@ class SearchItemCollectionViewCell: UICollectionViewCell {
         ])
     }
     
+    func loadImage(for url: String) -> AnyPublisher<UIImage?, Never> {
+        return Just(url)
+            .flatMap({ poster -> AnyPublisher<UIImage?, Never> in
+                let url = URL(string: url)!
+                return ImageLoader.shared.loadImage(from: url)
+                
+            })
+           .eraseToAnyPublisher()
+    }
+    
     override func prepareForReuse() {
         super.prepareForReuse()
         self.removeViews()
+        cancellable?.cancel()
     }
 }

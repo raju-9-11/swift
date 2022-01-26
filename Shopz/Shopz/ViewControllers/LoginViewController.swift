@@ -21,7 +21,7 @@ class LoginViewController: CustomViewController, TextFieldWithErrorDelegate {
     let containerView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .white
+        view.backgroundColor = UIColor(named: "background_color")
         view.layer.cornerRadius = 6
         return view
     }()
@@ -39,7 +39,7 @@ class LoginViewController: CustomViewController, TextFieldWithErrorDelegate {
     let signupLabel: UILabel = {
         let label = UILabel()
         label.text = "Don't have an account? "
-        label.textColor = .black
+        label.textColor = UIColor(named: "text_color")
         label.translatesAutoresizingMaskIntoConstraints = false
         label.contentMode = .center
         label.adjustsFontSizeToFitWidth = true
@@ -60,7 +60,7 @@ class LoginViewController: CustomViewController, TextFieldWithErrorDelegate {
         let label = UILabel()
         label.text = "Sign In"
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.textColor = .black
+        label.textColor = UIColor(named: "text_color")
         label.font = .systemFont(ofSize: 36, weight: .heavy)
         return label
     }()
@@ -74,42 +74,7 @@ class LoginViewController: CustomViewController, TextFieldWithErrorDelegate {
         label.textColor = UIColor(red: 0.692, green: 0.582, blue: 0.582, alpha: 1)
         return label
     }()
-    
-//    let emailField: UITextField = {
-//        let textField = UITextField()
-//        textField.backgroundColor = .clear
-//        textField.borderStyle = .roundedRect
-//        textField.translatesAutoresizingMaskIntoConstraints = false
-//        textField.placeholder = "Enter Email"
-//        textField.layer.borderColor = UIColor.gray.cgColor
-//        textField.layer.borderWidth = 1
-//        textField.layer.cornerRadius = 5
-//        textField.tintColor = .darkGray
-//        textField.textColor = .black
-//        textField.attributedPlaceholder = NSAttributedString(
-//            string: "Enter Email",
-//            attributes: [NSAttributedString.Key.foregroundColor: UIColor.darkGray]
-//        )
-//        return textField
-//    }()
-//
-//    let passwordField: UITextField = {
-//        let textField = UITextField()
-//        textField.borderStyle = .roundedRect
-//        textField.backgroundColor = .clear
-//        textField.translatesAutoresizingMaskIntoConstraints = false
-//        textField.isSecureTextEntry = true
-//        textField.layer.borderColor = UIColor.gray.cgColor
-//        textField.layer.borderWidth = 1
-//        textField.layer.cornerRadius = 5
-//        textField.attributedPlaceholder = NSAttributedString(
-//            string: "Enter Password",
-//            attributes: [NSAttributedString.Key.foregroundColor: UIColor.darkGray]
-//        )
-//        textField.textColor = .black
-//        return textField
-//    }()
-    
+
     let emailField: TextFieldWithError = {
         let emailField = TextFieldWithError()
         emailField.translatesAutoresizingMaskIntoConstraints = false

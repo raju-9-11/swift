@@ -33,6 +33,7 @@ class PaymentViewController: CustomViewController, UICollectionViewDelegate, UIC
     
     let topView: UIView = {
         let view = UIView()
+        view.backgroundColor = .clear
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -159,7 +160,7 @@ class PaymentViewController: CustomViewController, UICollectionViewDelegate, UIC
     }
     
     override func setupLayout() {
-        view.backgroundColor = .white
+        view.backgroundColor = UIColor(named: "background_color")
 
         paymentCardsCollectionView.dataSource = self
         paymentCardsCollectionView.delegate = self

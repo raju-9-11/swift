@@ -20,8 +20,8 @@ class FormTextFieldCollectionViewCell: UICollectionViewCell, UITextFieldDelegate
         textField.layer.borderColor = UIColor.gray.cgColor
         textField.layer.borderWidth = 1
         textField.layer.cornerRadius = 5
-        textField.tintColor = .darkGray
-        textField.textColor = .black
+        textField.tintColor = UIColor(named: "subtitle_text")
+        textField.textColor = UIColor(named: "text_color")
         textField.backgroundColor = .clear
         return textField
     }()
@@ -88,6 +88,7 @@ class FormTextFieldCollectionViewCell: UICollectionViewCell, UITextFieldDelegate
         textField.addTarget(self, action: #selector(textFieldEditingChanged(sender:)), for: .allEditingEvents)
         contentView.addSubview(textField)
         contentView.addSubview(errorLabel)
+        contentView.backgroundColor = .clear
         NSLayoutConstraint.activate([
             textField.widthAnchor.constraint(equalTo: contentView.widthAnchor),
             textField.heightAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 0.6),

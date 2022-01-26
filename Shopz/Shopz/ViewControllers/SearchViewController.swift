@@ -124,7 +124,7 @@ class SearchViewController: CustomViewController, UICollectionViewDelegate, UICo
     
     
     override func setupLayout() {
-        view.backgroundColor = .white
+        view.backgroundColor = UIColor(named: "background_color")
         searchList.dataSource = self
         searchList.delegate = self
         
@@ -157,6 +157,13 @@ class SearchViewController: CustomViewController, UICollectionViewDelegate, UICo
     func loadData(with categories: [Category] = []) {
         self.searchListData = StorageDB.getProducts()
         self.categoryListData = categories
+        searchList.reloadData()
+        categoryList.reloadData()
+    }
+    
+    func loadData(with products: [Product]) {
+        self.searchListData = products
+        self.categoryListData = []
         searchList.reloadData()
         categoryList.reloadData()
     }

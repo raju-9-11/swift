@@ -90,6 +90,11 @@ class ApplicationDB {
                 "user_id": "integer",
                 "expiry_date": "date",
                 "name": "text"
+            ]) && createTable(tableName: "review_items", with: [
+                "review_id": "integer primary key autoincrement",
+                "user_name": "text",
+                "product_id": "text",
+                "review": "text"
             ])
         }
         return false
@@ -739,6 +744,19 @@ class ApplicationDB {
         let cart = ApplicationDB.shared.getShoppingList(with: list.id)
         ApplicationDB.shared.addToOrderHistory(list: cart)
         ApplicationDB.shared.clearShoppingList(list: list)
+    }
+    
+    // MARK: - Review functions
+    
+    func addReview(review: String, productID: Int) {
+        
+    }
+    
+    func getReviews(product: Product) -> [Review] {
+        
+        var reviews: [Review] = []
+        
+        return reviews
     }
     
     
