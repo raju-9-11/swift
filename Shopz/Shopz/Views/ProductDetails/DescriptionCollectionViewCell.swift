@@ -21,6 +21,7 @@ class DescriptionCollectionViewCell: UICollectionViewCell, UIContextMenuInteract
         label.text = "Title"
         label.isSelectable = false
         label.isEditable = false
+        label.isUserInteractionEnabled = false
         label.font = .systemFont(ofSize: 16, weight: .semibold)
         label.contentMode = .center
         label.textAlignment = .center
@@ -72,7 +73,7 @@ class DescriptionCollectionViewCell: UICollectionViewCell, UIContextMenuInteract
     let sellerButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("Placeholder", for: .normal)
+        button.setTitle("Unknown", for: .normal)
         button.setTitleColor(.blue, for: .normal)
         return button
     }()
@@ -144,13 +145,17 @@ class DescriptionCollectionViewCell: UICollectionViewCell, UIContextMenuInteract
         return view
     }()
     
-    var data: DescriptionElement = DescriptionElement(description: "", title: "", cost: 0, rating: 0, seller: SellerData(name: "", imageMedia: "")) {
+    var data: DescriptionElement? {
         willSet {
-            titleLabel.text = newValue.title
-            textView.text = newValue.description
-            ratingsLabel.text = "\(newValue.rating)/5.0"
-            costlabel.text = "$ \(newValue.cost)"
-            sellerButton.setTitle(newValue.seller.name, for: .normal)
+            if newValue != nil {
+                titleLabel.text = newValue!.title
+                textView.text = newValue!.description
+                ratingsLabel.text = "\(newValue!.rating)/5.0"
+                costlabel.text = "$ \(newValue!.cost)"
+                if newValue?.seller != nil {
+                    sellerButton.setTitle(newValue!.seller!.seller_name, for: .normal)
+                }
+            }
             self.setupLayout()
         }
     }
@@ -160,15 +165,16 @@ class DescriptionCollectionViewCell: UICollectionViewCell, UIContextMenuInteract
         sellerButton.addTarget(self, action: #selector(onSellerClick), for: .touchUpInside)
         costRatings.addArrangedSubview(costlabel)
         costRatings.addArrangedSubview(ratingsLabel)
-        buttonsView.addArrangedSubview(addToCart)
-        
+        contentView.backgroundColor = .clear
         
         let contextMenuInteraction = UIContextMenuInteraction(delegate: self)
         addToCart.addInteraction(contextMenuInteraction)
         addToCart.addTarget(self, action: #selector(onAddToCart), for: .touchUpInside)
         buyNow.addTarget(self, action: #selector(onBuy), for: .touchUpInside)
-        
-        buttonsView.addArrangedSubview(buyNow)
+        if Auth.auth != nil {
+            buttonsView.addArrangedSubview(addToCart)
+            buttonsView.addArrangedSubview(buyNow)
+        }
         sellerView.addArrangedSubview(soldByLabel)
         sellerView.addArrangedSubview(sellerButton)
         
@@ -224,11 +230,15 @@ class DescriptionCollectionViewCell: UICollectionViewCell, UIContextMenuInteract
     
     @objc
     func onSellerClick() {
-        delegate?.displaySeller(sellerData: data.seller)
+        if data != nil, data?.seller != nil {
+            delegate?.displaySeller(sellerData: data!.seller!)
+        }
     }
     
     override func prepareForReuse() {
         super.prepareForReuse()
+        buyNow.removeFromSuperview()
+        addToCart.removeFromSuperview()
         self.removeViews()
     }
     
@@ -242,7 +252,7 @@ class DescriptionCollectionViewCell: UICollectionViewCell, UIContextMenuInteract
 }
 
 protocol DescriptionCellDelegate {
-    func displaySeller(sellerData: SellerData)
+    func displaySeller(sellerData: Seller)
     func buyClicked()
     func addToCartClicked()
     func addToShoppingList(list: ShoppingList)

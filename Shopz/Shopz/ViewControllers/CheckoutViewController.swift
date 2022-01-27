@@ -24,6 +24,7 @@ class CheckoutViewController: CustomViewController, UICollectionViewDelegate, UI
     
     var shoppingList: ShoppingList?
     var cart: [CartItem] = []
+    var product: Product?
     
     let topView: UIView = {
         let view = UIView()
@@ -270,6 +271,13 @@ class CheckoutViewController: CustomViewController, UICollectionViewDelegate, UI
         pvc = nil
     }
     
+    func bind(with product: Product) {
+        self.product = product
+        billingLabels[0].text = "1"
+        billingLabels[1].text = "$ \(product.shipping_cost)"
+        billingLabels[2].text = "$ \(product.price)"
+    }
+    
     func bind(with cart: [CartItem]) {
         self.cart = cart
         billingLabels[0].text = "\(cart.count)"
@@ -344,6 +352,7 @@ class CheckoutViewController: CustomViewController, UICollectionViewDelegate, UI
         giftWrapText.errorState = false
         if pvc == nil {
             pvc = PaymentViewController()
+            pvc?.product = self.product
             pvc?.cart = self.cart
             pvc?.shoppingListData = self.shoppingList
         }

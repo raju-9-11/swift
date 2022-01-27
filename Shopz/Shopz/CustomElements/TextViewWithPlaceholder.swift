@@ -7,17 +7,117 @@
 
 import UIKit
 
-class TextViewWithPlaceHolder: UITextView, UITextViewDelegate {
+class TextViewWithPlaceHolder: UIView, UITextViewDelegate {
+    
+    var isEditing: Bool = false
+    
+    var customBackgroundColor: UIColor? {
+        get {
+            return self.textField.backgroundColor
+        }
+        set {
+            self.textField.backgroundColor = newValue
+        }
+    }
     
     
-    var placeholderColor: UIColor? = .lightGray
-    var textViewTextColor: UIColor = .black
+    var placeholderColor: UIColor? = UIColor(named: "subtitle_text") {
+        willSet {
+            if textField.textColor == placeholderColor {
+                textField.textColor = newValue
+            }
+        }
+    }
+    
+    var textViewTextColor: UIColor? = UIColor(named: "text_color") {
+        willSet {
+            if textField.textColor == textViewTextColor {
+                textField.textColor = newValue
+            }
+        }
+    }
+    
+    var textAlignment: NSTextAlignment {
+        get {
+            return textField.textAlignment
+        }
+        set {
+            textField.textAlignment = newValue
+        }
+    }
+    
+    var font: UIFont? {
+        get {
+            return textField.font
+        }
+        set {
+            textField.font = newValue
+        }
+    }
+    
+    var isEditable: Bool {
+        get {
+            return textField.isEditable
+        }
+        set {
+            textField.isEditable = newValue
+        }
+    }
+    
+    var contentInset: UIEdgeInsets {
+        get {
+            return textField.contentInset
+        }
+        set {
+            textField.contentInset = newValue
+        }
+    }
+    
+    var text: String {
+        get {
+            if textField.textColor == textViewTextColor {
+                return textField.text
+            }
+            
+            return ""
+        }
+        set {
+            self.textField.text = newValue
+            if newValue.isEmpty {
+                textField.text = placeholder
+                textField.textColor = placeholderColor
+            }
+        }
+    }
+    
+    var isSelectable: Bool {
+        get {
+            return textField.isSelectable
+        }
+        set {
+            textField.isSelectable = newValue
+        }
+    }
+    
+    private let textField: UITextView = {
+        let textview = UITextView()
+        textview.layer.cornerRadius = 6
+        textview.textColor = UIColor(named: "subtitle_text")
+        textview.layer.borderColor = UIColor.darkGray.cgColor
+        textview.layer.borderWidth = 1
+        textview.translatesAutoresizingMaskIntoConstraints = false
+        return textview
+    }()
+    
+    func removeBorder() {
+        self.textField.layer.borderColor = UIColor.clear.cgColor
+    }
     
     var placeholder: String = "" {
         willSet {
-            if text.isEmpty {
-                text = newValue
-                textColor = placeholderColor
+            if let text = textField.text, text.isEmpty {
+                textField.text = newValue
+                textField.textColor = placeholderColor
             }
         }
     }
@@ -26,16 +126,28 @@ class TextViewWithPlaceHolder: UITextView, UITextViewDelegate {
         super.init(coder: coder)
     }
     
-    override init(frame: CGRect, textContainer: NSTextContainer?) {
-        super.init(frame: frame, textContainer: textContainer)
-        self.delegate = self
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        
+        self.backgroundColor = .clear
+        textField.delegate = self
+        
+        
+        self.addSubview(textField)
+        NSLayoutConstraint.activate([
+            textField.topAnchor.constraint(equalTo: self.topAnchor),
+            textField.bottomAnchor.constraint(equalTo: self.bottomAnchor),
+            textField.widthAnchor.constraint(equalTo: self.widthAnchor),
+            textField.centerXAnchor.constraint(equalTo: self.centerXAnchor),
+        ])
     }
     
     func textViewDidBeginEditing(_ textView: UITextView) {
-        if textView.textColor == UIColor.lightGray {
+        if textView.textColor == placeholderColor {
             textView.text = nil
             textView.textColor = textViewTextColor
         }
+        isEditing = true
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
@@ -43,6 +155,7 @@ class TextViewWithPlaceHolder: UITextView, UITextViewDelegate {
             textView.text = placeholder
             textView.textColor = placeholderColor
         }
+        isEditing = false
     }
 }
 

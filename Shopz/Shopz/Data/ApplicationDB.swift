@@ -492,6 +492,32 @@ class ApplicationDB {
         closeDB()
     }
     
+    func userHasPurchased(product: Product) -> Bool {
+        
+        guard let auth = Auth.auth else { return false }
+        guard initDB() else { return false }
+        
+        var statement: OpaquePointer?
+        
+        if sqlite3_prepare(db, "select * from order_history where product_id=\(product.product_id) and user_id=\(auth.user.id)", -1, &statement, nil) != SQLITE_OK {
+            print("Error: \(String(cString: sqlite3_errmsg(db)))")
+            sqlite3_finalize(statement)
+            closeDB()
+            return false
+        }
+        
+        if sqlite3_step(statement) == SQLITE_ROW {
+            sqlite3_finalize(statement)
+            closeDB()
+            return true
+        }
+        
+        sqlite3_finalize(statement)
+        closeDB()
+        return false
+        
+    }
+    
     // MARK: - Shopping List functions
     func getShoppingLists() -> [ShoppingList] {
         
@@ -738,6 +764,11 @@ class ApplicationDB {
         ApplicationDB.shared.clearCart()
     }
     
+    func checkoutProduct(product: Product) {
+        guard Auth.auth != nil else { return }
+        ApplicationDB.shared.addToOrderHistory(list: [CartItem(product: product, itemId: 0)])
+    }
+    
     func checkoutShoppingList(list: ShoppingList) {
         guard Auth.auth != nil else { return }
         
@@ -750,11 +781,41 @@ class ApplicationDB {
     
     func addReview(review: String, productID: Int) {
         
+        guard let auth = Auth.auth else { return }
+        
+        guard initDB() else { return }
+        
+        if sqlite3_exec(db, "insert into review_items (user_name, product_id, review) values ('\(auth.user.firstName)',\(productID), '\(review)' )", nil, nil, nil) != SQLITE_OK {
+            print("Error: \(String(cString: sqlite3_errmsg(db)))")
+            closeDB()
+            return
+        }
+        
+        closeDB()
+        
     }
     
     func getReviews(product: Product) -> [Review] {
         
         var reviews: [Review] = []
+        guard initDB() else { return [] }
+        var statement: OpaquePointer?
+        
+        if sqlite3_prepare(db, "select review_id, user_name, product_id, review from review_items where product_id=\(product.product_id)", -1, &statement, nil) != SQLITE_OK {
+            print("Error: \(String(cString: sqlite3_errmsg(db)))")
+            sqlite3_finalize(statement)
+            closeDB()
+        }
+        
+        while sqlite3_step(statement) == SQLITE_ROW {
+            let reviewId = Int(sqlite3_column_int(statement, 0))
+            let userName = String(cString: sqlite3_column_text(statement, 1))
+            let productId = Int(sqlite3_column_int(statement, 2))
+            let review = String(cString: sqlite3_column_text(statement, 3))
+            reviews.append(Review(reviewId: reviewId, userName: userName, review: review, productId: productId))
+        }
+        sqlite3_finalize(statement)
+        closeDB()
         
         return reviews
     }

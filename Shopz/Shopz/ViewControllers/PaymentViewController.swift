@@ -9,6 +9,8 @@ import UIKit
 
 class PaymentViewController: CustomViewController, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
     
+    var product: Product?
+    
     var cart: [CartItem] = [] {
         willSet {
             totalLabelCost.text = "$ \(newValue.map({ item in return item.product.price+item.product.shipping_cost }).reduce(0, +))"
@@ -281,7 +283,9 @@ class PaymentViewController: CustomViewController, UICollectionViewDelegate, UIC
             Toast.shared.showToast(message: "Select a payment method", type: .error)
             return
         }
-        if shoppingListData == nil {
+        if product != nil {
+            ApplicationDB.shared.checkoutProduct(product: product!)
+        } else if shoppingListData == nil {
             ApplicationDB.shared.checkoutCart()
         } else {
             ApplicationDB.shared.checkoutShoppingList(list: shoppingListData!)

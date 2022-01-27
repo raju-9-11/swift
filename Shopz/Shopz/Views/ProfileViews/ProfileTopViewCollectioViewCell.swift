@@ -11,7 +11,7 @@ class ProfileTopViewCollectioViewCell: UICollectionViewCell {
     
     static let cellID: String = "ProfileTopViewCell"
     
-    weak var delegate: ImagesViewDelegate?
+    weak var delegate: ProfileImagesViewDelegate?
     
     let profileTopView: UIView = {
         let view = UIView()
@@ -86,6 +86,7 @@ class ProfileTopViewCollectioViewCell: UICollectionViewCell {
     var cellFrame = CGRect(x: 0, y: 0, width: 100, height: 100)
     
     func setupLayout() {
+        profilePic.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(onLongProfilePress)))
         contentView.addSubview(bgImage)
         contentView.addSubview(profilePic)
         contentView.addSubview(editProfileButton)
@@ -113,6 +114,11 @@ class ProfileTopViewCollectioViewCell: UICollectionViewCell {
     }
     
     @objc
+    func onLongProfilePress() {
+        delegate?.pickProfilePic()
+    }
+    
+    @objc
     func onBgClick() {
         delegate?.displayImage(bgImage.image)
     }
@@ -124,7 +130,7 @@ class ProfileTopViewCollectioViewCell: UICollectionViewCell {
     
     @objc
     func onEdit() {
-        Auth.auth?.logout()
+        
     }
     
     override func prepareForReuse() {
@@ -141,5 +147,10 @@ class ProfileTopViewCollectioViewCell: UICollectionViewCell {
     }
     
     
+}
+
+protocol ProfileImagesViewDelegate: AnyObject {
+    func displayImage(_ image: UIImage?)
+    func pickProfilePic()
 }
 

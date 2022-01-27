@@ -49,12 +49,39 @@ class StorageDB {
         return []
     }
     
+    static func getProducts(of id: Int) -> [Product] {
+        if let path = Bundle.main.path(forResource: "StaticData", ofType: "json") {
+            do {
+                
+                let data = try Data(contentsOf: URL(fileURLWithPath: path), options: .mappedIfSafe)
+                let jsonResult = try JSONDecoder().decode(JsonModel.self, from: data)
+                return jsonResult.products.filter({ product in return product.seller_id == id })
+            } catch {
+                print("JSON ERROR")
+            }
+        }
+        return []
+    }
+    
     static func getProduct(with id: Int) -> Product? {
         if let path = Bundle.main.path(forResource: "StaticData", ofType: "json") {
             do {
                 let data = try Data(contentsOf: URL(fileURLWithPath: path), options: .mappedIfSafe)
                 let jsonResult = try JSONDecoder().decode(JsonModel.self, from: data)
                 return jsonResult.products.filter({ product in return product.product_id == id }).first
+            } catch {
+                print("JSON ERROR")
+            }
+        }
+        return nil
+    }
+    
+    static func getSellerData(of id: Int) -> Seller? {
+        if let path = Bundle.main.path(forResource: "StaticData", ofType: "json") {
+            do {
+                let data = try Data(contentsOf: URL(fileURLWithPath: path), options: .mappedIfSafe)
+                let jsonResult = try JSONDecoder().decode(JsonModel.self, from: data)
+                return jsonResult.sellers.filter({ seller in return seller.seller_id == id }).first
             } catch {
                 print("JSON ERROR")
             }

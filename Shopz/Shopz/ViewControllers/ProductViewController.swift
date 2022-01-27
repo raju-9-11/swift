@@ -7,7 +7,9 @@
 
 import UIKit
 
-class ProductViewController: CustomViewController, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, ImagesViewDelegate, DescriptionCellDelegate {
+class ProductViewController: CustomViewController, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, ImagesViewDelegate, DescriptionCellDelegate, ReviewElementDelegate {
+    
+    var bottomConstraint: NSLayoutConstraint?
     
     let collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -21,20 +23,24 @@ class ProductViewController: CustomViewController, UICollectionViewDelegate, UIC
         cv.register(ProductDetailsTopCollectionViewCell.self, forCellWithReuseIdentifier: ProductDetailsTopCollectionViewCell.cellID)
         cv.register(DescriptionCollectionViewCell.self, forCellWithReuseIdentifier: DescriptionCollectionViewCell.cellID)
         cv.register(ReviewsCollectionViewCell.self, forCellWithReuseIdentifier: ReviewsCollectionViewCell.cellID)
+        cv.register(AddReviewCollectionViewCell.self, forCellWithReuseIdentifier: AddReviewCollectionViewCell.cellID)
         cv.backgroundColor = .clear
         return cv
     }()
     
     let sellerVC = SellerHomeViewController()
     
-    var productData = Product(product_id: 0, product_name: "", seller_id: 0, image_media: [], shipping_cost: 0, description: "", price: 0, rating: 0, category: "") {
+    var productData: Product? {
         willSet {
-            cells = [getImageData(with: newValue), getDescriptionData(with: newValue), getReviews(with: newValue)]
-            collectionView.reloadData()
+            if newValue != nil {
+                self.loadData(with: newValue!)
+            }
         }
     }
     
     var cells: [ProductDetailElement] = []
+    
+    var cvc: CheckoutViewController?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -47,7 +53,18 @@ class ProductViewController: CustomViewController, UICollectionViewDelegate, UIC
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        collectionView.reloadData()
         self.children.forEach({ child in child.view.removeFromSuperview();child.removeFromParent() })
+    }
+    
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesBegan(touches, with: event)
+        self.view.endEditing(true)
+    }
+    
+    deinit {
+        cvc = nil
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -66,6 +83,14 @@ class ProductViewController: CustomViewController, UICollectionViewDelegate, UIC
             return cell
         }
         
+        if let _ = cells[indexPath.row] as? AddReviewElement {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: AddReviewCollectionViewCell.cellID, for: indexPath) as! AddReviewCollectionViewCell
+            cell.delegate = self
+            cell.setupLayout()
+            cell.cellFrame = CGSize(width: collectionView.frame.width, height: 100)
+            return cell
+        }
+        
         if let item = cells[indexPath.row] as? ReviewElement {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ReviewsCollectionViewCell.cellID, for: indexPath) as! ReviewsCollectionViewCell
             cell.reviewElementData = item
@@ -78,15 +103,31 @@ class ProductViewController: CustomViewController, UICollectionViewDelegate, UIC
         
     }
     
-    func getImageData(with itemData: Product) -> ImagesViewElement {
-        return ImagesViewElement(images: itemData.image_media)
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        self.view.endEditing(true)
     }
     
-    func getDescriptionData(with itemData: Product) -> DescriptionElement {
-        return DescriptionElement(description: itemData.description, title: itemData.product_name, cost: itemData.price, rating: itemData.rating, seller: SellerData(name: "Pacman", imageMedia: ""))
+    func addReview(review: String) {
+        if let productData = productData {
+            ApplicationDB.shared.addReview(review: review, productID: productData.product_id)
+            self.loadData(with: productData)
+        }
     }
     
-    func displaySeller(sellerData: SellerData) {
+    func reviewBeginEditing(frame: CGRect?) {
+        bottomConstraint?.constant = -1 * ((frame?.height ?? 0) - (self.tabBarController?.tabBar.frame.height ?? 0))
+        DispatchQueue.main.async { [weak self] in
+            self?.collectionView.scrollToItem(at: IndexPath(row: 2, section: 0), at: .bottom, animated: true)
+        }
+    }
+    func reviewDidEndEditing() {
+        bottomConstraint?.constant = 0
+        DispatchQueue.main.async { [weak self] in
+            self?.collectionView.scrollToItem(at: IndexPath(row: 2, section: 0), at: .bottom, animated: true)
+        }
+    }
+    
+    func displaySeller(sellerData: Seller) {
         sellerVC.willMove(toParent: self)
         sellerVC.sellerData = sellerData
         self.addChild(sellerVC)
@@ -94,20 +135,27 @@ class ProductViewController: CustomViewController, UICollectionViewDelegate, UIC
     }
     
     func buyClicked() {
-        print("Buy Clicked...")
+        if cvc == nil {
+            cvc = CheckoutViewController()
+        }
+        if productData != nil {
+            cvc?.bind(with: productData!)
+        }
+        cvc!.willMove(toParent: self)
+        self.addChild(cvc!)
+        self.view.addSubview(cvc!.view)
     }
     
     func addToCartClicked() {
-        ApplicationDB.shared.addToCart(item: productData)
+        if let productData = productData {
+            ApplicationDB.shared.addToCart(item: productData)
+        }
     }
     
     func addToShoppingList(list: ShoppingList) {
-        ApplicationDB.shared.addToShoppingList(item: productData, list: list)
-    }
-    
-    
-    func getReviews(with itemData: Product) -> ReviewElement {
-        return ReviewElement(reviews: ApplicationDB.shared.getReviews(product: itemData))
+        if let productData = productData {
+            ApplicationDB.shared.addToShoppingList(item: productData, list: list)
+        }
     }
     
     func displayImage(_ image: UIImage?) {
@@ -135,14 +183,27 @@ class ProductViewController: CustomViewController, UICollectionViewDelegate, UIC
         
         collectionView.dataSource = self
         collectionView.delegate = self
+        bottomConstraint = collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         
         view.addSubview(collectionView)
         NSLayoutConstraint.activate([
             collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             collectionView.widthAnchor.constraint(equalTo: view.widthAnchor),
             collectionView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            collectionView.heightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.heightAnchor),
         ])
+        bottomConstraint?.isActive = true
+    }
+    
+    func loadData(with product: Product) {
+        cells = [
+            ImagesViewElement(images: product.image_media),
+            DescriptionElement(description: product.description, title: product.product_name, cost: product.price, rating: product.rating, seller: StorageDB.getSellerData(of: product.seller_id)),
+            ReviewElement(reviews: ApplicationDB.shared.getReviews(product: product))
+        ]
+        if ApplicationDB.shared.userHasPurchased(product: product) {
+            cells.insert(AddReviewElement(), at: 2)
+        }
+        collectionView.reloadData()
     }
     
 
@@ -165,9 +226,9 @@ class DescriptionElement: ProductDetailElement {
     var title: String
     var cost: Decimal
     var rating: Decimal
-    var seller: SellerData
+    var seller: Seller?
     
-    init(description: String, title: String, cost: Decimal, rating: Decimal, seller: SellerData) {
+    init(description: String, title: String, cost: Decimal, rating: Decimal, seller: Seller?) {
         self.description = description
         self.title = title
         self.cost = cost
@@ -176,21 +237,14 @@ class DescriptionElement: ProductDetailElement {
     }
 }
 
+class AddReviewElement: ProductDetailElement {
+    
+}
+
 class ReviewElement: ProductDetailElement {
     var reviews: [Review] = []
     
     init(reviews: [Review]) {
         self.reviews = reviews
-    }
-}
-
-class SellerData {
-    var id = UUID()
-    var name: String
-    var imageMedia: String
-    
-    init(name: String, imageMedia: String) {
-        self.name = name
-        self.imageMedia = imageMedia
     }
 }

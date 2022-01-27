@@ -22,6 +22,7 @@ class ReviewItemTableViewCell: UITableViewCell {
         let imageView = RoundedImage()
         imageView.image = UIImage(systemName: "person.circle")
         imageView.clipsToBounds = true
+        imageView.contentMode = .scaleToFill
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
     }()
@@ -73,14 +74,14 @@ class ReviewItemTableViewCell: UITableViewCell {
         containerView.addSubview(reviewView)
         contentView.addSubview(containerView)
         NSLayoutConstraint.activate([
-            containerView.rightAnchor.constraint(equalTo: contentView.rightAnchor, constant: -10),
+            containerView.rightAnchor.constraint(equalTo: contentView.rightAnchor),
             containerView.heightAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 0.8),
-            containerView.leftAnchor.constraint(equalTo: profilePic.rightAnchor, constant: 10),
+            containerView.leftAnchor.constraint(equalTo: profilePic.rightAnchor, constant: 5),
             containerView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            profilePic.leftAnchor.constraint(equalTo: contentView.leftAnchor, constant: 20),
+            profilePic.leftAnchor.constraint(equalTo: contentView.leftAnchor, constant: 10),
             profilePic.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
-            profilePic.heightAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 0.4),
-            profilePic.widthAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 0.4),
+            profilePic.heightAnchor.constraint(equalToConstant: 25),
+            profilePic.widthAnchor.constraint(equalToConstant: 25),
             nameLabel.topAnchor.constraint(equalTo: containerView.topAnchor),
             nameLabel.leftAnchor.constraint(equalTo: containerView.leftAnchor),
             reviewView.topAnchor.constraint(equalTo: nameLabel.bottomAnchor),

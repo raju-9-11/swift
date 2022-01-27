@@ -23,14 +23,12 @@ class AboutCollectionViewCell: UICollectionViewCell {
     let aboutView: TextViewWithPlaceHolder = {
         let textView = TextViewWithPlaceHolder()
         textView.translatesAutoresizingMaskIntoConstraints = false
-        textView.layer.cornerRadius = 6
+        textView.removeBorder()
         textView.font = .systemFont(ofSize: 13, weight: .regular)
-        textView.textColor = UIColor(named: "thumbnail_text_color")
-        textView.placeholder = "Write about placeholder"
-        textView.placeholderColor = UIColor(named: "thumbnail_text_color")
+        textView.placeholder = "Write about you .."
         textView.textAlignment = .center
         textView.isEditable = false
-        textView.backgroundColor = .clear
+        textView.customBackgroundColor = .clear
         textView.contentInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         return textView
     }()

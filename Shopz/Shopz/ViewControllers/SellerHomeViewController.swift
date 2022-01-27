@@ -7,169 +7,137 @@
 
 import UIKit
 
-class SellerHomeViewController: CustomViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
+class SellerHomeViewController: CustomViewController {
     
-    var sellerData: SellerData = SellerData(name: "Pacman", imageMedia: "") {
+    var sellerData: Seller? {
         willSet {
-            self.loadData()
+            if newValue != nil {
+                self.loadData(with: newValue!)
+            }
         }
     }
     
-    // MARK: Data
-    lazy var popularItems: [ Product ]  = {
-        var array: [Product] = []
-        StorageDB.getProducts()[0...10].forEach({ prod in array.append(prod) })
-        return array
+    lazy var itemSize: CGSize = {
+        let frame = CGSize(width: view.frame.width * 0.8, height: view.frame.width*0.8)
+        var side: CGFloat = 100
+        var excessWidth: CGFloat = frame.width.truncatingRemainder(dividingBy: side)
+        while(excessWidth > 10) {
+            side += 2
+            excessWidth = frame.width.truncatingRemainder(dividingBy: side)
+        }
+        return CGSize(width: side, height: side)
     }()
     
-    
-    // MARK: - UI Elements
-    let popularItemsList: UICollectionView = {
-        let layout = UICollectionViewFlowLayout()
-        layout.minimumLineSpacing = 5
-        layout.minimumInteritemSpacing = 5
-        layout.scrollDirection = .horizontal
-        let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        cv.bounces = true
-        cv.showsHorizontalScrollIndicator = false
-        cv.backgroundColor = .clear
-        cv.contentInset = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 5)
-        cv.translatesAutoresizingMaskIntoConstraints = false
-        return cv
+    let tableView: UITableView = {
+        let tableView = UITableView()
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.backgroundColor = .clear
+        tableView.allowsSelection = false
+        tableView.register(SellerHomeTitleViewCell.self, forCellReuseIdentifier: SellerHomeTitleViewCell.cellID)
+        tableView.register(SellerDescriptionCell.self, forCellReuseIdentifier: SellerDescriptionCell.cellID)
+        tableView.register(SellerHomeBodyCell.self, forCellReuseIdentifier: SellerHomeBodyCell.cellID)
+        tableView.separatorStyle = .none
+        return tableView
     }()
-    
-    let popularItemsLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Popular Items"
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .systemFont(ofSize: 12, weight: .bold)
-        return label
-    }()
-    
-    let popularItemsView: UIView = {
-        let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .clear
-        return view
-    }()
-    
-    let categoryList: UICollectionView = {
-        let layout = UICollectionViewFlowLayout()
-        layout.minimumInteritemSpacing = 5
-        layout.minimumLineSpacing = 10
-        layout.sectionInset = UIEdgeInsets(top: 10, left: 5, bottom: 10, right: 5)
-        let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        cv.backgroundColor = .clear
-        cv.contentInset = UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5)
-        cv.translatesAutoresizingMaskIntoConstraints = false
-        return cv
-    }()
-    
-    let categories: [Category] = {
-        return StorageDB.getCategories()
-    }()
-    
-    let categoryView: UIView = {
-        let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .clear
-        return view
-    }()
-    
-    let categoryLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Categories"
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .systemFont(ofSize: 12, weight: .bold)
-        return label
-    }()
-
     
     // MARK: - LoadView
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         self.setupLayout()
-        
     }
     
-    // MARK: - CollectionView delegate
-    
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return collectionView == popularItemsList ? popularItems.count : categories.count
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        if collectionView == categoryList {
-            return CGSize(width: collectionView.frame.width*0.3, height: collectionView.frame.width*0.3)
-        }
-        return CGSize(width: collectionView.frame.height*0.95, height: collectionView.frame.height*0.95)
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        if collectionView == popularItemsList {
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ItemThumbNailCollectionViewCell.cellID, for: indexPath) as! ItemThumbNailCollectionViewCell
-            cell.data = popularItems[indexPath.row]
-            return cell
-        }
-        if collectionView == categoryList {
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CategoryThumbnailCollectionViewCell.cellID, for: indexPath) as! CategoryThumbnailCollectionViewCell
-            cell.data = categories[indexPath.row]
-            return cell
-        }
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ItemThumbNailCollectionViewCell.cellID, for: indexPath)
-        return cell
-    }
+    var elements: [SellerHomeElement] = []
     
     
     // MARK: - Layout and other functions
     override func setupLayout() {
         self.title = "Home"
-        view.backgroundColor = .white
+        view.backgroundColor = UIColor(named: "background_color")
         
-        popularItemsList.delegate = self
-        popularItemsList.dataSource = self
-        popularItemsList.register(ItemThumbNailCollectionViewCell.self, forCellWithReuseIdentifier: ItemThumbNailCollectionViewCell.cellID)
+        tableView.delegate = self
+        tableView.dataSource = self
         
-        categoryList.delegate = self
-        categoryList.dataSource = self
-        categoryList.register(CategoryThumbnailCollectionViewCell.self, forCellWithReuseIdentifier: CategoryThumbnailCollectionViewCell.cellID)
-        
-        
-        popularItemsView.addSubview(popularItemsList)
-        popularItemsView.addSubview(popularItemsLabel)
-        view.addSubview(popularItemsView)
-        categoryView.addSubview(categoryLabel)
-        categoryView.addSubview(categoryList)
-        view.addSubview(categoryView)
+        view.addSubview(tableView)
         NSLayoutConstraint.activate([
-            popularItemsView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
-            popularItemsView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            popularItemsView.widthAnchor.constraint(equalTo: view.widthAnchor),
-            popularItemsView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.2),
-            popularItemsLabel.topAnchor.constraint(equalTo: popularItemsView.topAnchor, constant: 10),
-            popularItemsLabel.leftAnchor.constraint(equalTo: popularItemsView.leftAnchor, constant: 10),
-            popularItemsList.topAnchor.constraint(equalTo: popularItemsLabel.bottomAnchor, constant: 5),
-            popularItemsList.centerXAnchor.constraint(equalTo: popularItemsView.centerXAnchor),
-            popularItemsList.heightAnchor.constraint(equalTo: popularItemsView.heightAnchor, multiplier: 0.8),
-            popularItemsList.widthAnchor.constraint(equalTo: popularItemsView.widthAnchor),
-            categoryView.topAnchor.constraint(equalTo: popularItemsView.bottomAnchor, constant: 10),
-            categoryView.widthAnchor.constraint(equalTo: view.widthAnchor),
-            categoryView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            categoryView.heightAnchor.constraint(equalTo: view.heightAnchor),
-            categoryLabel.topAnchor.constraint(equalTo: categoryView.safeAreaLayoutGuide.topAnchor, constant: 10),
-            categoryLabel.centerXAnchor.constraint(equalTo: categoryView.centerXAnchor),
-            categoryList.topAnchor.constraint(equalTo: categoryLabel.bottomAnchor, constant: 5),
-            categoryList.widthAnchor.constraint(equalTo: categoryView.widthAnchor),
-            categoryList.centerXAnchor.constraint(equalTo: categoryView.centerXAnchor),
-            categoryList.bottomAnchor.constraint(equalTo: categoryView.bottomAnchor),
+            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            tableView.widthAnchor.constraint(equalTo: view.widthAnchor),
+            tableView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
         ])
     }
     
-    func loadData() {
-        // Data Loading here
+    func loadData(with seller: Seller) {
+        elements = [
+            TitleElement(title: seller.seller_name),
+            SellerDescriptionElement(description: seller.description),
+            BodyElement(products: StorageDB.getProducts(of: seller.seller_id))
+        ]
+        tableView.reloadData()
     }
+}
 
+extension SellerHomeViewController: UITableViewDelegate, UITableViewDataSource {
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return elements.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        switch(elements[indexPath.row]) {
+        case let item as TitleElement:
+            let cell = tableView.dequeueReusableCell(withIdentifier: SellerHomeTitleViewCell.cellID, for: indexPath) as! SellerHomeTitleViewCell
+            cell.title = item.title
+            return cell
+        case let item as SellerDescriptionElement:
+            let cell = tableView.dequeueReusableCell(withIdentifier: SellerDescriptionCell.cellID, for: indexPath) as! SellerDescriptionCell
+            cell.sellerDescription = item.description
+            return cell
+        case let item as BodyElement:
+            let cell = tableView.dequeueReusableCell(withIdentifier: SellerHomeBodyCell.cellID, for: indexPath) as! SellerHomeBodyCell
+            cell.itemSize = itemSize
+            cell.productData = item.products
+            return cell
+        default:
+            let cell = tableView.dequeueReusableCell(withIdentifier: SellerHomeBodyCell.cellID, for: indexPath)
+            return cell
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        if indexPath.row == 2 {
+            let height = (itemSize.height + 5) * CGFloat(StorageDB.getProducts(of: sellerData?.seller_id ?? -1).count)
+            return height
+        }
+        return 100
+    }
+    
+}
 
+class SellerHomeElement {
+    var id = UUID()
+}
+
+class TitleElement: SellerHomeElement {
+    var title: String
+    
+    init(title: String) {
+        self.title = title
+    }
+}
+
+class SellerDescriptionElement: SellerHomeElement {
+    var description: String
+    
+    init(description: String) {
+        self.description = description
+    }
+}
+
+class BodyElement: SellerHomeElement {
+    var products: [Product]
+    
+    init(products: [Product]) {
+        self.products = products
+    }
 }
 
