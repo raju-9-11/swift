@@ -129,16 +129,13 @@ class CheckoutViewController: CustomViewController, UICollectionViewDelegate, UI
         return ApplicationDB.shared.getAddressList()
     }()
     
-    var pvc: PaymentViewController?
+    var paymentVC: PaymentViewController?
 
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setupLayout()
     }
     
-    override func willMove(toParent parent: UIViewController?) {
-        super.willMove(toParent: parent)
-    }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return addressListData.count + 1
@@ -268,7 +265,9 @@ class CheckoutViewController: CustomViewController, UICollectionViewDelegate, UI
     
     deinit {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name.paymentCompletion, object: nil)
-        pvc = nil
+        paymentVC = nil
+        shoppingList = nil
+        product = nil
     }
     
     func bind(with product: Product) {
@@ -331,7 +330,6 @@ class CheckoutViewController: CustomViewController, UICollectionViewDelegate, UI
         }
         print("Payment Complete")
         self.dismiss(animated: true, completion: nil)
-        self.willMove(toParent: nil)
         if let vc = self.parent as? CartViewController {
             vc.loadData()
         }
@@ -350,15 +348,17 @@ class CheckoutViewController: CustomViewController, UICollectionViewDelegate, UI
             return
         }
         giftWrapText.errorState = false
-        if pvc == nil {
-            pvc = PaymentViewController()
-            pvc?.product = self.product
-            pvc?.cart = self.cart
-            pvc?.shoppingListData = self.shoppingList
+        if paymentVC == nil {
+            paymentVC = PaymentViewController()
+            paymentVC?.product = self.product
+            if !self.cart.isEmpty {
+                paymentVC?.cart = self.cart
+            }
+            paymentVC?.shoppingListData = self.shoppingList
         }
-        pvc!.modalPresentationStyle = .fullScreen
-        pvc!.modalTransitionStyle = .coverVertical
-        self.present(pvc!, animated: true)
+        paymentVC!.modalPresentationStyle = .fullScreen
+        paymentVC!.modalTransitionStyle = .coverVertical
+        self.present(paymentVC!, animated: true)
     }
     
     func onToggle(_ elem: CheckBox) {

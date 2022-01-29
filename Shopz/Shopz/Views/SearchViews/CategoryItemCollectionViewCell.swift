@@ -70,7 +70,7 @@ class CategoryItemCollectionViewCell: UICollectionViewCell {
         NSLayoutConstraint.activate([
             customBackgroundView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             customBackgroundView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            customBackgroundView.heightAnchor.constraint(equalTo: containerView.heightAnchor, multiplier: 1, constant: 10),
+            customBackgroundView.heightAnchor.constraint(equalTo: containerView.heightAnchor, multiplier: 1.1, constant: 10),
             customBackgroundView.widthAnchor.constraint(equalTo: containerView.widthAnchor, multiplier: 1, constant: 15),
             containerView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             containerView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
@@ -91,7 +91,7 @@ class CategoryItemCollectionViewCell: UICollectionViewCell {
     
     override func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
         let attr = layoutAttributes
-        attr.size = cellSize
+        attr.size.height = customBackgroundView.frame.height
         attr.size.width = customBackgroundView.frame.width
         return attr
     }

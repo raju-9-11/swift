@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ProductViewController: CustomViewController, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, ImagesViewDelegate, DescriptionCellDelegate, ReviewElementDelegate {
+class ProductViewController: CustomViewController {
     
     var bottomConstraint: NSLayoutConstraint?
     
@@ -28,7 +28,7 @@ class ProductViewController: CustomViewController, UICollectionViewDelegate, UIC
         return cv
     }()
     
-    let sellerVC = SellerHomeViewController()
+    var sellerVC: SellerHomeViewController?
     
     var productData: Product? {
         willSet {
@@ -47,14 +47,11 @@ class ProductViewController: CustomViewController, UICollectionViewDelegate, UIC
         self.setupLayout()
     }
     
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return cells.count
-    }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         collectionView.reloadData()
-        self.children.forEach({ child in child.view.removeFromSuperview();child.removeFromParent() })
+        collectionView.layoutSubviews()
     }
     
     
@@ -65,117 +62,7 @@ class ProductViewController: CustomViewController, UICollectionViewDelegate, UIC
     
     deinit {
         cvc = nil
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        if let item = cells[indexPath.row] as? ImagesViewElement {
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProductDetailsTopCollectionViewCell.cellID, for: indexPath) as! ProductDetailsTopCollectionViewCell
-            cell.imageData = item
-            cell.delegate = self
-            cell.cellFrame = CGSize(width: collectionView.frame.width, height: collectionView.frame.height*0.35)
-            return cell
-        }
-        if let item = cells[indexPath.row] as? DescriptionElement {
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: DescriptionCollectionViewCell.cellID, for: indexPath) as! DescriptionCollectionViewCell
-            cell.data = item
-            cell.delegate = self
-            cell.cellFrame = CGSize(width: collectionView.frame.width, height: 100)
-            return cell
-        }
-        
-        if let _ = cells[indexPath.row] as? AddReviewElement {
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: AddReviewCollectionViewCell.cellID, for: indexPath) as! AddReviewCollectionViewCell
-            cell.delegate = self
-            cell.setupLayout()
-            cell.cellFrame = CGSize(width: collectionView.frame.width, height: 100)
-            return cell
-        }
-        
-        if let item = cells[indexPath.row] as? ReviewElement {
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ReviewsCollectionViewCell.cellID, for: indexPath) as! ReviewsCollectionViewCell
-            cell.reviewElementData = item
-            cell.cellFrame = CGSize(width: collectionView.frame.width, height: collectionView.frame.height)
-            return cell
-        }
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: DescriptionCollectionViewCell.cellID, for: indexPath) as! DescriptionCollectionViewCell
-        cell.cellFrame = CGSize(width: collectionView.frame.width, height: collectionView.frame.height)
-        return cell
-        
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        self.view.endEditing(true)
-    }
-    
-    func addReview(review: String) {
-        if let productData = productData {
-            ApplicationDB.shared.addReview(review: review, productID: productData.product_id)
-            self.loadData(with: productData)
-        }
-    }
-    
-    func reviewBeginEditing(frame: CGRect?) {
-        bottomConstraint?.constant = -1 * ((frame?.height ?? 0) - (self.tabBarController?.tabBar.frame.height ?? 0))
-        DispatchQueue.main.async { [weak self] in
-            self?.collectionView.scrollToItem(at: IndexPath(row: 2, section: 0), at: .bottom, animated: true)
-        }
-    }
-    func reviewDidEndEditing() {
-        bottomConstraint?.constant = 0
-        DispatchQueue.main.async { [weak self] in
-            self?.collectionView.scrollToItem(at: IndexPath(row: 2, section: 0), at: .bottom, animated: true)
-        }
-    }
-    
-    func displaySeller(sellerData: Seller) {
-        sellerVC.willMove(toParent: self)
-        sellerVC.sellerData = sellerData
-        self.addChild(sellerVC)
-        self.view.addSubview(sellerVC.view)
-    }
-    
-    func buyClicked() {
-        if cvc == nil {
-            cvc = CheckoutViewController()
-        }
-        if productData != nil {
-            cvc?.bind(with: productData!)
-        }
-        cvc!.willMove(toParent: self)
-        self.addChild(cvc!)
-        self.view.addSubview(cvc!.view)
-    }
-    
-    func addToCartClicked() {
-        if let productData = productData {
-            ApplicationDB.shared.addToCart(item: productData)
-        }
-    }
-    
-    func addToShoppingList(list: ShoppingList) {
-        if let productData = productData {
-            ApplicationDB.shared.addToShoppingList(item: productData, list: list)
-        }
-    }
-    
-    func displayImage(_ image: UIImage?) {
-        let newImageView = UIImageView(image: image)
-        newImageView.frame = UIScreen.main.bounds
-        newImageView.backgroundColor = .black
-        newImageView.contentMode = .scaleAspectFit
-        newImageView.isUserInteractionEnabled = true
-        let tap = UITapGestureRecognizer(target: self, action: #selector(dismissFullscreenImage))
-        newImageView.addGestureRecognizer(tap)
-        self.view.addSubview(newImageView)
-        self.navigationController?.isNavigationBarHidden = true
-        self.tabBarController?.tabBar.isHidden = true
-    }
-    
-    @objc
-    func dismissFullscreenImage(_ sender: UITapGestureRecognizer) {
-        self.navigationController?.isNavigationBarHidden = false
-        self.tabBarController?.tabBar.isHidden = false
-        sender.view?.removeFromSuperview()
+        sellerVC = nil
     }
     
     override func setupLayout() {
@@ -207,6 +94,121 @@ class ProductViewController: CustomViewController, UICollectionViewDelegate, UIC
     }
     
 
+}
+
+extension ProductViewController: UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return cells.count
+    }
+    
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        if let item = cells[indexPath.row] as? ImagesViewElement {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProductDetailsTopCollectionViewCell.cellID, for: indexPath) as! ProductDetailsTopCollectionViewCell
+            cell.imageData = item
+            cell.delegate = self
+            cell.cellFrame = CGSize(width: collectionView.frame.width, height: collectionView.frame.height*0.35)
+            return cell
+        }
+        if let item = cells[indexPath.row] as? DescriptionElement {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: DescriptionCollectionViewCell.cellID, for: indexPath) as! DescriptionCollectionViewCell
+            cell.data = item
+            cell.delegate = self
+            cell.cellFrame = CGSize(width: collectionView.frame.width, height: 100)
+            cell.layoutIfNeeded()
+            collectionView.layoutSubviews()
+            return cell
+        }
+        
+        if let _ = cells[indexPath.row] as? AddReviewElement {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: AddReviewCollectionViewCell.cellID, for: indexPath) as! AddReviewCollectionViewCell
+            cell.delegate = self
+            cell.setupLayout()
+            cell.cellFrame = CGSize(width: collectionView.frame.width, height: 100)
+            return cell
+        }
+        
+        if let item = cells[indexPath.row] as? ReviewElement {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ReviewsCollectionViewCell.cellID, for: indexPath) as! ReviewsCollectionViewCell
+            cell.reviewElementData = item
+            cell.cellFrame = CGSize(width: collectionView.frame.width, height: collectionView.frame.height)
+            return cell
+        }
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: DescriptionCollectionViewCell.cellID, for: indexPath) as! DescriptionCollectionViewCell
+        cell.cellFrame = CGSize(width: collectionView.frame.width, height: collectionView.frame.height)
+        return cell
+        
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        self.view.endEditing(true)
+    }
+}
+
+extension ProductViewController: ReviewElementDelegate, ImagesViewDelegate, DescriptionCellDelegate, ImageSlideShowDelegate {
+    
+    func addReview(review: String) {
+        if let productData = productData {
+            ApplicationDB.shared.addReview(review: review, productID: productData.product_id)
+            self.loadData(with: productData)
+        }
+    }
+    
+    func reviewBeginEditing(frame: CGRect?) {
+        bottomConstraint?.constant = -1 * ((frame?.height ?? 0) - (self.tabBarController?.tabBar.frame.height ?? 0))
+        DispatchQueue.main.async { [weak self] in
+            self?.collectionView.scrollToItem(at: IndexPath(row: 2, section: 0), at: .bottom, animated: true)
+        }
+    }
+    func reviewDidEndEditing() {
+        bottomConstraint?.constant = 0
+        DispatchQueue.main.async { [weak self] in
+            self?.collectionView.scrollToItem(at: IndexPath(row: 2, section: 0), at: .bottom, animated: true)
+        }
+    }
+    
+    func displaySeller(sellerData: Seller) {
+        sellerVC = nil
+        sellerVC = SellerHomeViewController()
+        sellerVC?.sellerData = sellerData
+        self.navigationController?.pushViewController(sellerVC!, animated: true)
+    }
+    
+    func buyClicked() {
+        cvc = nil
+        cvc = CheckoutViewController()
+        if productData != nil {
+            cvc?.bind(with: productData!)
+        }
+        self.navigationController?.pushViewController(cvc!, animated: true)
+    }
+    
+    func addToCartClicked() {
+        if let productData = productData {
+            ApplicationDB.shared.addToCart(item: productData)
+        }
+    }
+    
+    func addToShoppingList(list: ShoppingList) {
+        if let productData = productData {
+            ApplicationDB.shared.addToShoppingList(item: productData, list: list)
+        }
+    }
+    
+    func displayImage(_ image: UIImage?) {
+        let imageView = ImageSlideShow()
+        imageView.image = image
+        imageView.delegate = self
+        self.view.addSubview(imageView)
+        self.navigationController?.isNavigationBarHidden = true
+        self.tabBarController?.tabBar.isHidden = true
+    }
+    
+    func onHide(_ imageSlideShow: ImageSlideShow) {
+        self.navigationController?.isNavigationBarHidden = false
+        self.tabBarController?.tabBar.isHidden = false
+    }
 }
 
 class ProductDetailElement {

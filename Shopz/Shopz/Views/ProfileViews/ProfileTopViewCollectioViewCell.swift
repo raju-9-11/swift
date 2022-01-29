@@ -115,7 +115,7 @@ class ProfileTopViewCollectioViewCell: UICollectionViewCell {
     
     @objc
     func onLongProfilePress() {
-        delegate?.pickProfilePic()
+        delegate?.pickProfilePic(profilePic)
     }
     
     @objc
@@ -151,6 +151,6 @@ class ProfileTopViewCollectioViewCell: UICollectionViewCell {
 
 protocol ProfileImagesViewDelegate: AnyObject {
     func displayImage(_ image: UIImage?)
-    func pickProfilePic()
+    func pickProfilePic(_ sender: UIImageView)
 }
 

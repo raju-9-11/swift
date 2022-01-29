@@ -13,8 +13,6 @@ class HomeViewController: CustomViewController, UICollectionViewDataSource, UICo
     // MARK: Data
     var popularItems: [ Product ]  = []
     
-    var pvc: ProductViewController?
-    
     // MARK: - UI Elements
     let popularItemsList: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -94,10 +92,6 @@ class HomeViewController: CustomViewController, UICollectionViewDataSource, UICo
         self.setupLayout()          
     }
     
-    deinit {
-        pvc = nil
-    }
-    
     // MARK: - CollectionView delegate
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -110,19 +104,9 @@ class HomeViewController: CustomViewController, UICollectionViewDataSource, UICo
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if collectionView == popularItemsList {
-            let product: Product = popularItems[indexPath.row]
-            if pvc == nil {
-                pvc = ProductViewController()
-            }
-            pvc!.productData = product
-            pvc!.willMove(toParent: self)
-            self.addChild(pvc!)
-            self.view.addSubview(pvc!.view)
+            self.displayProduct(product: popularItems[indexPath.row])
         } else {
-            let category: Category = categories[indexPath.row]
-            if let vc = self.tabBarController as? MainController {
-                vc.displayProducts(with: category)
-            }
+            self.displayProducts(with: [categories[indexPath.row]])
         }
     }
     
@@ -186,15 +170,6 @@ class HomeViewController: CustomViewController, UICollectionViewDataSource, UICo
         ])
     }
     
-    @objc
-    func onProductBack() {
-        pvc!.view.removeFromSuperview()
-        pvc!.willMove(toParent: nil)
-        pvc!.removeFromParent()
-        pvc = nil
-        self.tabBarController?.navigationItem.rightBarButtonItem = nil
-    }
-    
     
     func loadData() {
         self.categories = getCategories()
@@ -212,18 +187,4 @@ class HomeViewController: CustomViewController, UICollectionViewDataSource, UICo
     }
 
 
-}
-
-class CustomViewController: UIViewController {
-    
-    var requiresAuth: Bool = false
-    
-    func setupLayout() {
-        //PLACEHOLDER
-    }
-
-    func removeViews() {
-        self.view.subviews.forEach({ view in view.removeFromSuperview() })
-        self.children.forEach({ vc in vc.willMove(toParent: nil);vc.removeFromParent() })
-    }
 }

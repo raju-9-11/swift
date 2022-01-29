@@ -23,8 +23,10 @@ class AddNewCardViewController: CustomViewController {
     let backGroundView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .white
+        view.backgroundColor = UIColor(named: "background_color")
         view.layer.cornerRadius = 10
+        view.layer.borderColor = UIColor.darkGray.cgColor
+        view.layer.borderWidth = 1
         return view
     }()
     
@@ -69,17 +71,20 @@ class AddNewCardViewController: CustomViewController {
     let addButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Add Card", for: .normal)
+        button.backgroundColor = .systemBlue.withAlphaComponent(0.5)
+        button.layer.cornerRadius = 6
+        button.setTitleColor(.white, for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .black.withAlphaComponent(0.5)
         self.setupLayout()
     }
     
     override func setupLayout() {
+        view.backgroundColor = UIColor(named: "background_color")?.withAlphaComponent(0.5)
         containerView.addArrangedSubview(titleLabel)
         containerView.addArrangedSubview(cardNumberField)
         containerView.addArrangedSubview(nameField)
@@ -89,7 +94,7 @@ class AddNewCardViewController: CustomViewController {
         view.addSubview(containerView)
         addButton.addTarget(self, action: #selector(onAddCard), for: .touchUpInside)
         containerView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(onTextDismiss)))
-        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(onDismiss)))
+        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismissSearchBar)))
         NSLayoutConstraint.activate([
             containerView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             containerView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
@@ -123,7 +128,7 @@ class AddNewCardViewController: CustomViewController {
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = "MM/yy"
             dateFormatter.locale = .current
-            guard let _ = dateFormatter.date(from: dateString) else {
+            guard let date = dateFormatter.date(from: dateString), date.getOffset(from: Date()) > 0 else {
                 validityDate.errorState = true
                 return
             }

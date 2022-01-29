@@ -7,15 +7,20 @@
 
 import UIKit
 
-class SellerHomeViewController: CustomViewController {
+class SellerHomeViewController: UIViewController {
     
     var sellerData: Seller? {
         willSet {
             if newValue != nil {
                 self.loadData(with: newValue!)
+                self.title = "\(newValue!.seller_name)'s Shop"
             }
         }
     }
+    
+    var pvc: ProductViewController?
+    
+    var elements: [SellerHomeElement] = []
     
     lazy var itemSize: CGSize = {
         let frame = CGSize(width: view.frame.width * 0.8, height: view.frame.width*0.8)
@@ -46,12 +51,13 @@ class SellerHomeViewController: CustomViewController {
         self.setupLayout()
     }
     
-    var elements: [SellerHomeElement] = []
+    deinit {
+        pvc = nil
+    }
     
     
     // MARK: - Layout and other functions
-    override func setupLayout() {
-        self.title = "Home"
+    func setupLayout() {
         view.backgroundColor = UIColor(named: "background_color")
         
         tableView.delegate = self
@@ -74,6 +80,14 @@ class SellerHomeViewController: CustomViewController {
         ]
         tableView.reloadData()
     }
+    
+    func displayProduct(product: Product) {
+        pvc = nil
+        pvc = ProductViewController()
+        pvc!.productData = product
+        self.navigationController?.pushViewController(pvc!, animated: true)
+    }
+    
 }
 
 extension SellerHomeViewController: UITableViewDelegate, UITableViewDataSource {
@@ -95,6 +109,7 @@ extension SellerHomeViewController: UITableViewDelegate, UITableViewDataSource {
         case let item as BodyElement:
             let cell = tableView.dequeueReusableCell(withIdentifier: SellerHomeBodyCell.cellID, for: indexPath) as! SellerHomeBodyCell
             cell.itemSize = itemSize
+            cell.delegate = self
             cell.productData = item.products
             return cell
         default:
@@ -105,12 +120,18 @@ extension SellerHomeViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if indexPath.row == 2 {
-            let height = (itemSize.height + 5) * CGFloat(StorageDB.getProducts(of: sellerData?.seller_id ?? -1).count)
+            let height = (itemSize.height + 5) * CGFloat(StorageDB.getProducts(of: sellerData?.seller_id ?? -1).count) + 10
             return height
         }
         return 100
     }
     
+}
+
+extension SellerHomeViewController: SellerHomeBodtCellDelegate {
+    func onItemSelect(_ product: Product) {
+        self.displayProduct(product: product)
+    }
 }
 
 class SellerHomeElement {

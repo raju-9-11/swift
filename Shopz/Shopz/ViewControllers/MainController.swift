@@ -9,40 +9,7 @@ import UIKit
 
 class MainController: UITabBarController, UITextFieldDelegate, UISearchBarDelegate {
     
-    var lvc: LoginViewController?
-    
     var custTabbar: UITabBar?
-    
-    override open var selectedIndex: Int {
-        willSet {
-            self.onDismiss()
-        }
-    }
-    
-    lazy var searchBar: UISearchBar = {
-        let searchBar = UISearchBar(frame: .zero)
-        searchBar.placeholder = "Search"
-        return searchBar
-    }()
-    
-    let containerView: UIView = {
-        let view = UIView()
-        view.backgroundColor = UIColor(named: "background_color")!.withAlphaComponent(0.5)
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
-    
-    lazy var searchList: UITableView = {
-        let tv = UITableView()
-        tv.backgroundColor = UIColor(named: "background_coloras")
-        tv.register(SearchbarTableViewCell.self, forCellReuseIdentifier: SearchbarTableViewCell.cellID)
-        return tv
-    }()
-    
-    let pvc = ProductViewController()
-    
-    
-    var searchListDataFiltered: [ Product ] = []
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
@@ -54,15 +21,15 @@ class MainController: UITabBarController, UITextFieldDelegate, UISearchBarDelega
     }
     
     func setTabs() {
-        let homeVC = HomeViewController()
+        let homeVC = UINavigationController(rootViewController: HomeViewController())
         homeVC.tabBarItem = UITabBarItem(title: "Home", image: UIImage(systemName: "house.fill"), tag: 0)
-        let profileVC = ProfileViewController()
+        let profileVC = UINavigationController(rootViewController: ProfileViewController())
         profileVC.tabBarItem = UITabBarItem(title: "Profile", image: UIImage(systemName: "person.fill"), tag: 1)
-        let cartVC = CartViewController()
+        let cartVC = UINavigationController(rootViewController: CartViewController())
         cartVC.tabBarItem = UITabBarItem(title: "Cart", image: UIImage(systemName: "cart.fill"), tag: 2)
-        let searchVC = SearchViewController()
+        let searchVC = UINavigationController(rootViewController: SearchViewController())
         searchVC.tabBarItem = UITabBarItem(title: "Search", image: UIImage(systemName: "magnifyingglass"), tag: 3)
-        let orderhistVC = OrderHistoryViewController()
+        let orderhistVC = UINavigationController(rootViewController: OrderHistoryViewController())
         orderhistVC.tabBarItem = UITabBarItem(title: "Order history", image: UIImage(systemName: "photo.fill"), tag: 4)
         self.viewControllers = [homeVC, profileVC, cartVC, searchVC, orderhistVC]
         self.selectedViewController = homeVC
@@ -77,89 +44,10 @@ class MainController: UITabBarController, UITextFieldDelegate, UISearchBarDelega
         self.tabBar.tintColor = UIColor(named: "tabbar_text_color")
         self.tabBar.unselectedItemTintColor = UIColor(named: "tabbar_unselected_color")
         
-        searchBar.delegate = self
-        searchList.delegate = self
-        searchList.dataSource = self
-        
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(onLogin), name: .userLogin, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(onLogout), name: .userLogout, object: nil)
-        self.navigationItem.titleView = searchBar
     }
     
     deinit {
         NotificationCenter.default.removeObserver(self)
-        self.lvc = nil
-    }
-    
-    @objc
-    func onLogin() {
-        lvc?.willMove(toParent: nil)
-        lvc?.view.removeFromSuperview()
-        lvc?.removeFromParent()
-        self.navigationController?.isNavigationBarHidden = false
-        self.lvc = nil
-    }
-    
-    @objc
-    func onLogout() {
-        if let vc = selectedViewController as? CustomViewController, vc.requiresAuth {
-            DispatchQueue.main.async {
-                self.displayOn(viewController: vc)
-            }
-        }
-    }
-    
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        if searchText.isEmpty {
-            searchListDataFiltered = []
-        } else {
-            self.searchListDataFiltered = StorageDB.getProducts().filter({ prod in return prod.product_name.fuzzyMatch(searchText) })
-        }
-        searchList.frame.size.height = CGFloat(self.searchListDataFiltered.count*50)
-        searchList.reloadData()
-    }
-    
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        displayProducts(with: self.searchListDataFiltered)
-        self.onDismiss()
-    }
-    
-    func displayProducts(with category: Category) {
-        self.selectedIndex = 3
-        if let vc = self.selectedViewController as? SearchViewController {
-            vc.loadData(with: [category])
-        }
-    }
-    
-    func displayProducts(with products: [Product]) {
-        self.selectedIndex = 3
-        if let vc = self.selectedViewController as? SearchViewController {
-            vc.loadData(with: products)
-        }
-    }
-    
-    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-        
-        searchList.frame = self.view.frame
-        searchList.frame.origin.y = self.searchBar.frame.origin.y + self.searchBar.frame.height
-        searchList.frame.size.height = 0
-        self.view.addSubview(containerView)
-        self.view.addSubview(searchList)
-        containerView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(onDismiss)))
-        NSLayoutConstraint.activate([
-            containerView.heightAnchor.constraint(equalTo: self.view.heightAnchor),
-            containerView.widthAnchor.constraint(equalTo: self.view.widthAnchor),
-            containerView.centerYAnchor.constraint(equalTo: self.view.centerYAnchor),
-            containerView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-        ])
-    }
-    
-    @objc
-    func onDismiss() {
-        searchBar.resignFirstResponder()
-        searchList.removeFromSuperview()
-        containerView.removeFromSuperview()
     }
     
     @objc
@@ -167,61 +55,17 @@ class MainController: UITabBarController, UITextFieldDelegate, UISearchBarDelega
         self.selectedIndex = 0
     }
     
-    func displayOn(viewController: UIViewController) {
-        if  lvc == nil {
-            lvc = LoginViewController()
-        }
-        lvc!.modalPresentationStyle = .fullScreen
-        lvc!.modalTransitionStyle = .coverVertical
-        viewController.addChild(lvc!)
-        self.navigationController?.isNavigationBarHidden = true
-        viewController.view.addSubview(lvc!.view)
-    }
-    
-}
-
-extension MainController: UITableViewDataSource, UITableViewDelegate {
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return searchListDataFiltered.count
-    }
-    
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 50
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: SearchbarTableViewCell.cellID) as! SearchbarTableViewCell
-        cell.textLabel?.text = searchListDataFiltered[indexPath.row].product_name
-        return cell
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        pvc.productData = searchListDataFiltered[indexPath.row]
-        pvc.willMove(toParent: selectedViewController)
-        selectedViewController?.addChild(pvc)
-        selectedViewController?.view.addSubview(pvc.view)
-        self.onDismiss()
-    }
 }
 
 extension MainController: UITabBarControllerDelegate {
     
     func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
-        if let vc = viewController as? CustomViewController {
-            vc.children.forEach({ $0.view.removeFromSuperview(); $0.removeFromParent() })
-        }
-        if let vc = viewController as? CustomViewController, vc.requiresAuth {
-            if Auth.auth == nil {
-                displayOn(viewController: viewController)
-                return true
-            }
-        } else {
-            self.navigationController?.isNavigationBarHidden = false
+        if let _ = viewController as? CustomViewController {
+            // Code here
         }
         
-        if viewController.tabBarItem.tag == 3 {
-            searchBar.becomeFirstResponder()
+        if let vc = selectedViewController as? SearchViewController {
+            vc.searchBar.becomeFirstResponder()
         }
         return true
     }

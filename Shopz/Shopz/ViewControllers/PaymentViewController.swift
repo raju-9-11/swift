@@ -9,10 +9,17 @@ import UIKit
 
 class PaymentViewController: CustomViewController, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
     
-    var product: Product?
+    var product: Product? {
+        willSet{
+            if newValue != nil {
+                totalLabelCost.text = "$ \(newValue!.price+newValue!.shipping_cost)"
+            }
+        }
+    }
     
     var cart: [CartItem] = [] {
         willSet {
+            print("Test2")
             totalLabelCost.text = "$ \(newValue.map({ item in return item.product.price+item.product.shipping_cost }).reduce(0, +))"
         }
     }
@@ -142,9 +149,9 @@ class PaymentViewController: CustomViewController, UICollectionViewDelegate, UIC
             _ in
             let delete = UIAction(title: "Delete Card", image: UIImage(systemName: "trash"), attributes: .destructive, handler: {
                 _ in
+                ApplicationDB.shared.deleteCard(card: self.cards[indexPath.row])
                 self.cards.remove(at: indexPath.row)
                 collectionView.deleteItems(at: [indexPath])
-                ApplicationDB.shared.deleteCard(card: self.cards[indexPath.row])
                 self.cards = ApplicationDB.shared.getCards()
                 collectionView.reloadData()
             })

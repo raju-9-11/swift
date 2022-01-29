@@ -7,7 +7,7 @@
 
 import UIKit
 
-class OrderHistoryViewController: CustomViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, OrderHistoryItemDelegate {
+class OrderHistoryViewController: CustomViewController {
     
     var listItems: [OrderHistItem] = [] {
         willSet {
@@ -15,8 +15,6 @@ class OrderHistoryViewController: CustomViewController, UICollectionViewDataSour
             self.placeholderView.isHidden = !newValue.isEmpty
         }
     }
-    
-    var prodVC: ProductViewController?
 
     
     let collectionView: UICollectionView = {
@@ -66,7 +64,6 @@ class OrderHistoryViewController: CustomViewController, UICollectionViewDataSour
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
-        prodVC = nil
     }
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
@@ -121,12 +118,13 @@ class OrderHistoryViewController: CustomViewController, UICollectionViewDataSour
     }
     
     @objc
-    func onLogout() {
-        self.removeViews()
+    override func onLogout() {
+        super.onLogout()
     }
     
     @objc
-    func onLogin() {
+    override func onLogin() {
+        super.onLogin()
         self.setupLayout()
     }
     
@@ -134,6 +132,10 @@ class OrderHistoryViewController: CustomViewController, UICollectionViewDataSour
         self.listItems = getList()
         self.collectionView.reloadData()
     }
+    
+}
+
+extension OrderHistoryViewController: UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return listItems.count
@@ -155,23 +157,42 @@ class OrderHistoryViewController: CustomViewController, UICollectionViewDataSour
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: collectionView.frame.width - 2, height: 120)
     }
+}
+
+extension OrderHistoryViewController: OrderHistoryItemDelegate {
     
     func addReview(item: Product) {
-        if prodVC == nil {
-            prodVC = ProductViewController()
-            prodVC?.productData = item
-        }
-        prodVC!.removeViews()
-        prodVC!.setupLayout()
-        prodVC!.productData = item
-        self.addChild(prodVC!)
-        self.willMove(toParent: self)
-        self.view.addSubview(prodVC!.view)
+        self.displayProduct(product: item)
     }
     
-    func returnProduct(item: OrderHistItem) {
-        print("Returning \(item.product.product_name)...")
+    func returnProduct(item: OrderHistItem, sender: UIButton) {
+        let alert = UIAlertController(title: "Are you Sure?", message: "Please enter reason for return", preferredStyle: .alert)
+        
+        alert.addTextField(configurationHandler: { textfield in
+            textfield.placeholder = "Enter Reason"
+        })
+        
+        alert.addAction(UIAlertAction(title: "Return", style: .default, handler: {
+            _ in
+            let textfield = alert.textFields![0]
+            print(textfield.text ?? "")
+            if textfield.text?.count ?? 0 > 0 {
+                ApplicationDB.shared.removeFromOrderHistory(item: item)
+                for (index,histitem) in self.listItems.enumerated() {
+                    if item.itemId == histitem.itemId {
+                        self.listItems.remove(at: index)
+                        self.collectionView.deleteItems(at: [IndexPath(row: index, section: 0)])
+                        break
+                    }
+                }
+            }
+        }))
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: .destructive, handler: nil))
+        
+        self.present(alert, animated: true)
+        
+        
     }
-    
 }
 

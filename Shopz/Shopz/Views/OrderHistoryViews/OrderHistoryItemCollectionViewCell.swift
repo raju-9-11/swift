@@ -152,7 +152,7 @@ class OrderHistoryItemCollectionViewCell: UICollectionViewCell {
     @objc
     func onReturn() {
         guard let itemData = self.itemData else { return }
-        delegate?.returnProduct(item: itemData)
+        delegate?.returnProduct(item: itemData, sender: returnProduct)
     }
     
     override func prepareForReuse() {
@@ -179,7 +179,7 @@ extension Date {
     }
     /// Returns the a custom time interval description from another date
     func offset(from date: Date, by dayCount: Int) -> Bool {
-        if years(from: date)   > 0 || months(from: date)  > 0{
+        if years(from: date) != 0 || months(from: date) != 0 {
             return false
         } else {
             if days(from: date) > dayCount {
@@ -188,6 +188,16 @@ extension Date {
         }
         return true
     }
+    
+    func getOffset(from date: Date) -> Int {
+        let currentCalendar = Calendar.current
+
+        guard let start = currentCalendar.ordinality(of: .day, in: .era, for: date) else { return 0 }
+        guard let end = currentCalendar.ordinality(of: .day, in: .era, for: self) else { return 0 }
+
+        return end - start
+    }
+    
     func toString(with format: String = "dd/MM/yyyy") -> String {
         let df = DateFormatter()
         df.locale = .current
@@ -198,5 +208,5 @@ extension Date {
 
 protocol OrderHistoryItemDelegate {
     func addReview(item: Product)
-    func returnProduct(item: OrderHistItem)
+    func returnProduct(item: OrderHistItem, sender: UIButton)
 }

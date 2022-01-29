@@ -7,7 +7,7 @@
 
 import UIKit
 
-class CartViewController: CustomViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, CartItemDelegate, ButtonsViewDelegate {
+class CartViewController: CustomViewController {
     
     var cartTitle: String = "Cart"
     var buttonsView: ButtonsViewState = .checkout
@@ -25,9 +25,9 @@ class CartViewController: CustomViewController, UICollectionViewDataSource, UICo
     
     weak var delegate: ShoppingListViewDelegate?
     
-    lazy var listItems: [CartItem] = [] {
+    var listItems: [CartItem] = [] {
         willSet {
-            self.tabBarItem.badgeValue = "\(newValue.count)"
+            self.navigationController?.tabBarItem.badgeValue = "\(newValue.count)"
             self.collectionView.isHidden = newValue.isEmpty
             self.placeholderView.isHidden = !newValue.isEmpty
         }
@@ -89,7 +89,7 @@ class CartViewController: CustomViewController, UICollectionViewDataSource, UICo
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
         DispatchQueue.main.async {
             if Auth.auth != nil, let count = ApplicationDB.shared.getCartCount() {
-                self.tabBarItem.badgeValue = "\(count)"
+                self.navigationController?.tabBarItem.badgeValue = "\(count)"
             }
         }
         self.requiresAuth = true
@@ -97,8 +97,8 @@ class CartViewController: CustomViewController, UICollectionViewDataSource, UICo
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        NotificationCenter.default.addObserver(self, selector: #selector(onLogout), name: .userLogout, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(onLogin), name: .userLogin, object: nil)
+        self.title = "Cart"
+        
         NotificationCenter.default.addObserver(self, selector: #selector(updateBadge), name: .cartUpdate, object: nil)
         if (requiresAuth && Auth.auth != nil) || ( !requiresAuth ) 	{
             self.setupLayout()
@@ -128,10 +128,13 @@ class CartViewController: CustomViewController, UICollectionViewDataSource, UICo
     }
     
     override func setupLayout() {
+        
         view.backgroundColor = UIColor(named: "background_color")
+        
         self.loadData()
         collectionView.dataSource = self
         collectionView.delegate = self
+        
         if let layout = (collectionView.collectionViewLayout as? UICollectionViewFlowLayout) {
             layout.headerReferenceSize = CGSize(width: collectionView.frame.width, height: 50)
             layout.footerReferenceSize = CGSize(width: collectionView.frame.width, height: 50)
@@ -153,14 +156,15 @@ class CartViewController: CustomViewController, UICollectionViewDataSource, UICo
     }
     
     @objc
-    func onLogout() {
-        self.tabBarItem.badgeValue = nil
-        self.removeViews()
+    override func onLogout() {
+        super.onLogout()
+        self.navigationController?.tabBarItem.badgeValue = nil
     }
     
     @objc
-    func onLogin() {
-        self.tabBarItem.badgeValue = "\(listItems.count)"
+    override func onLogin() {
+        super.onLogin()
+        self.navigationController?.tabBarItem.badgeValue = "\(listItems.count)"
         self.setupLayout()
     }
     
@@ -178,9 +182,26 @@ class CartViewController: CustomViewController, UICollectionViewDataSource, UICo
     @objc
     func updateBadge() {
         if let count = ApplicationDB.shared.getCartCount() {
-            self.tabBarItem.badgeValue = "\(count)"
+            self.navigationController?.tabBarItem.badgeValue = "\(count)"
         }
     }
+    
+    @objc
+    func onCheckout() {
+        if cvc == nil {
+            cvc = CheckoutViewController()
+        }
+        if listDetails == nil {
+            cvc?.bind(with: listItems)
+        } else {
+            cvc?.bind(with: listItems, shoppingList: listDetails!)
+        }
+        self.navigationController?.pushViewController(cvc!, animated: true)
+    }
+    
+}
+
+extension CartViewController: UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return listItems.count
@@ -209,6 +230,26 @@ class CartViewController: CustomViewController, UICollectionViewDataSource, UICo
         return headerView
     }
     
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        self.displayProduct(product: listItems[indexPath.row].product)
+    }
+}
+
+extension CartViewController: CartItemDelegate, ButtonsViewDelegate {
+    
+    
+    func onDelete() {
+        self.listItems.removeAll()
+        guard let listDetails = listDetails else {
+            return
+        }
+        delegate?.deleteListClicked(list: listDetails)
+        self.willMove(toParent: nil)
+        self.view.removeFromSuperview()
+        self.removeFromParent()
+    }
+    
+    
     func removeItem(item: CartItem) {
         if listDetails == nil {
             ApplicationDB.shared.removeFromCart(item: item)
@@ -222,32 +263,6 @@ class CartViewController: CustomViewController, UICollectionViewDataSource, UICo
                 break
             }
         }
-    }
-    
-    @objc
-    func onCheckout() {
-        if cvc == nil {
-            cvc = CheckoutViewController()
-        }
-        if listDetails == nil {
-            cvc?.bind(with: listItems)
-        } else {
-            cvc?.bind(with: listItems, shoppingList: listDetails!)
-        }
-        cvc!.willMove(toParent: self)
-        self.addChild(cvc!)
-        self.view.addSubview(cvc!.view)
-    }
-    
-    func onDelete() {
-        self.listItems.removeAll()
-        guard let listDetails = listDetails else {
-            return
-        }
-        delegate?.deleteListClicked(list: listDetails)
-        self.willMove(toParent: nil)
-        self.view.removeFromSuperview()
-        self.removeFromParent()
     }
     
 }

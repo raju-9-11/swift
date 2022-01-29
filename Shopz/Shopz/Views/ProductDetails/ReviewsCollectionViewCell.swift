@@ -65,7 +65,7 @@ class ReviewsCollectionViewCell: UICollectionViewCell, UITableViewDataSource, UI
             titleLabel.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor, constant: 15),
             titleLabel.leftAnchor.constraint(equalTo: contentView.leftAnchor, constant: 15),
             reviewList.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 10),
-            reviewList.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            reviewList.bottomAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.bottomAnchor),
             reviewList.widthAnchor.constraint(equalTo: contentView.widthAnchor),
             reviewList.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
         ])
@@ -79,7 +79,7 @@ class ReviewsCollectionViewCell: UICollectionViewCell, UITableViewDataSource, UI
     override func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
         let attr = layoutAttributes
         attr.size = cellFrame
-        attr.size.height = CGFloat(reviewElementData.reviews.count * 100)
+        attr.size.height = CGFloat(reviewElementData.reviews.count * 120)
         return attr
     }
 

@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ProfileViewController: CustomViewController, UICollectionViewDataSource, UICollectionViewDelegate, UIImagePickerControllerDelegate, ShoppingListCellDelegate, ProfileImagesViewDelegate, ShoppingListViewDelegate, UINavigationControllerDelegate {
+class ProfileViewController: CustomViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     let containerView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -44,59 +44,173 @@ class ProfileViewController: CustomViewController, UICollectionViewDataSource, U
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        NotificationCenter.default.addObserver(self, selector: #selector(onLogin), name: .userLogin, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(onLogout), name: .userLogout, object: nil)
         if (requiresAuth && Auth.auth != nil) || ( !requiresAuth ){
             self.setupLayout()
         }
     }
     
     deinit {
-        NotificationCenter.default.removeObserver(self)
         svc = nil
     }
     
     func displayImage(_ image: UIImage?) {
-        let newImageView = UIImageView(image: image)
-        newImageView.frame = UIScreen.main.bounds
-        newImageView.backgroundColor = UIColor(named: "background_color")?.withAlphaComponent(0.5)
-        newImageView.contentMode = .scaleAspectFit
-        newImageView.isUserInteractionEnabled = true
-        let tap = UITapGestureRecognizer(target: self, action: #selector(dismissFullscreenImage))
-        newImageView.addGestureRecognizer(tap)
-        self.view.addSubview(newImageView)
+        let imageView = ImageSlideShow()
+        imageView.image = image
+        imageView.delegate = self
+        self.view.addSubview(imageView)
         self.navigationController?.isNavigationBarHidden = true
         self.tabBarController?.tabBar.isHidden = true
     }
     
-    func pickProfilePic() {
-        imagePicker = UIImagePickerController()
-        imagePicker.allowsEditing = true
-        imagePicker.sourceType = .photoLibrary
-        imagePicker.modalPresentationStyle = .overFullScreen
-        imagePicker.delegate = self
-        present(imagePicker, animated: true)
+    func pickProfilePic(_ sender: UIImageView) {
+        let alert = UIAlertController(title: "Choose Image", message: nil, preferredStyle: .actionSheet)
+        
+        if UIImagePickerController.isSourceTypeAvailable(.camera) {
+            alert.addAction(UIAlertAction(title: "Camera", style: .default, handler: { _ in
+                self.imagePicker = UIImagePickerController()
+                self.imagePicker.allowsEditing = true
+                self.imagePicker.sourceType = .camera
+                self.imagePicker.modalPresentationStyle = .overFullScreen
+                self.imagePicker.delegate = self
+                self.present(self.imagePicker, animated: true)
+            }))
+        }
+        
+        alert.addAction(UIAlertAction(title: "Gallery", style: .default, handler: { _ in
+            self.imagePicker = UIImagePickerController()
+            self.imagePicker.allowsEditing = true
+            self.imagePicker.sourceType = .photoLibrary
+            self.imagePicker.modalPresentationStyle = .overFullScreen
+            self.imagePicker.delegate = self
+            self.present(self.imagePicker, animated: true)
+        }))
+        
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            alert.popoverPresentationController?.sourceView = sender
+            alert.popoverPresentationController?.sourceRect = sender.bounds
+            alert.popoverPresentationController?.permittedArrowDirections = [.down, .up]
+        }
+        
+        alert.addAction(UIAlertAction.init(title: "Cancel", style: .cancel, handler: nil))
+        
+            
+        self.present(alert, animated: true, completion: nil)
+
     }
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        let image = info[.originalImage] as! UIImage
+        
+        let info = convertFromUIImagePickerControllerInfoKeyDictionary(info)
+        
+        guard let image = info[convertFromUIImagePickerControllerInfoKey(UIImagePickerController.InfoKey.originalImage)] as? UIImage else { return }
         elements[0] = ProfileData(bgImageMedia: image.jpegData(compressionQuality: 1), profileImageMedia: image.jpegData(compressionQuality: 1))
         containerView.reloadData()
         imagePicker.dismiss(animated: true, completion: nil)
     }
     
-    @objc
-    func dismissFullscreenImage(_ sender: UITapGestureRecognizer) {
-        self.navigationController?.isNavigationBarHidden = false
-        self.tabBarController?.tabBar.isHidden = false
-        sender.view?.removeFromSuperview()
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        imagePicker.dismiss(animated: true, completion: nil)
     }
     
+    private func convertFromUIImagePickerControllerInfoKeyDictionary(_ input: [UIImagePickerController.InfoKey: Any]) -> [String: Any] {
+        return Dictionary(uniqueKeysWithValues: input.map { key, value in (key.rawValue, value) })
+    }
+
     
+    private func convertFromUIImagePickerControllerInfoKey(_ input: UIImagePickerController.InfoKey) -> String {
+        return input.rawValue
+    }
+
+    
+    override func setupLayout() {
+
+        self.title = "Profile"
+        view.backgroundColor = UIColor(named: "profile_background")
+
+        containerView.delegate = self
+        containerView.dataSource = self
+        
+        view.addSubview(containerView)
+        
+        NSLayoutConstraint.activate([
+            containerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            containerView.heightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.heightAnchor),
+            containerView.widthAnchor.constraint(equalTo: view.widthAnchor),
+            containerView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+        ])
+        self.loadData()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.loadData()
+    }
+    
+    func loadData() {
+        elements = [
+            ProfileData(bgImageMedia: UIImage(systemName: "photo.fill")?.pngData(), profileImageMedia: UIImage(systemName: "person.circle.fill")?.pngData()),
+            AboutData(),
+            ShoppingListData(shoppingLists: ApplicationDB.shared.getShoppingLists()),
+            ProfileFooterElement()
+        ]
+        containerView.reloadData()
+    }
+    
+    @objc
+    override func onLogin() {
+        super.onLogin()
+        self.loadData()
+        self.setupLayout()
+    }
+    
+    @objc
+    override func onLogout() {
+        super.onLogout()
+    }
+
+}
+
+
+extension ProfileViewController: UICollectionViewDataSource, UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return elements.count
     }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let item = elements[indexPath.row]
+        if let profileItem = item as? ProfileData {
+            let cell = containerView.dequeueReusableCell(withReuseIdentifier: ProfileTopViewCollectioViewCell.cellID, for: indexPath) as! ProfileTopViewCollectioViewCell
+            cell.cellFrame = collectionView.frame
+            cell.delegate = self
+            cell.profileData = profileItem
+            return cell
+        }
+        if let aboutData = item as? AboutData {
+            let cell = containerView.dequeueReusableCell(withReuseIdentifier: AboutCollectionViewCell.cellID, for: indexPath) as! AboutCollectionViewCell
+            cell.aboutData = aboutData
+            cell.cellFrame = collectionView.frame
+            return cell
+        }
+        if let shoppingListData = item as? ShoppingListData {
+            let cell = containerView.dequeueReusableCell(withReuseIdentifier: ShoppingListCollectionViewCell.cellID, for: indexPath) as! ShoppingListCollectionViewCell
+            cell.shoppingListData = shoppingListData
+            cell.cellFrame = collectionView.frame
+            cell.delegate = self
+            return cell
+        }
+        if let _ = item as? ProfileFooterElement {
+            let cell = containerView.dequeueReusableCell(withReuseIdentifier: ProfileFooterViewCollectionViewCell.cellID, for: indexPath) as! ProfileFooterViewCollectionViewCell
+            cell.cellFrame = collectionView.frame
+            return cell
+        }
+        let cell = containerView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath)
+        return cell
+        
+    }
+}
+
+extension ProfileViewController: ShoppingListCellDelegate, ProfileImagesViewDelegate, ShoppingListViewDelegate {
     
     func listItemClicked(indexPath: IndexPath, shoppingListData: ShoppingList?) {
         if svc == nil {
@@ -104,10 +218,9 @@ class ProfileViewController: CustomViewController, UICollectionViewDataSource, U
             svc?.delegate = self
         }
         if let listData = shoppingListData {
-            svc!.listDetails = listData
-            svc!.willMove(toParent: self)
-            self.addChild(svc!)
-            self.view.addSubview(svc!.view)
+            svc?.listDetails = listData
+            svc?.title = "\(listData.name)"
+            self.navigationController?.pushViewController(svc!, animated: true)
         }
     }
     
@@ -164,87 +277,17 @@ class ProfileViewController: CustomViewController, UICollectionViewDataSource, U
         self.loadData()
     }
     
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let item = elements[indexPath.row]
-        if let profileItem = item as? ProfileData {
-            let cell = containerView.dequeueReusableCell(withReuseIdentifier: ProfileTopViewCollectioViewCell.cellID, for: indexPath) as! ProfileTopViewCollectioViewCell
-            cell.cellFrame = collectionView.frame
-            cell.delegate = self
-            cell.profileData = profileItem
-            return cell
-        }
-        if let aboutData = item as? AboutData {
-            let cell = containerView.dequeueReusableCell(withReuseIdentifier: AboutCollectionViewCell.cellID, for: indexPath) as! AboutCollectionViewCell
-            cell.aboutData = aboutData
-            cell.cellFrame = collectionView.frame
-            return cell
-        }
-        if let shoppingListData = item as? ShoppingListData {
-            let cell = containerView.dequeueReusableCell(withReuseIdentifier: ShoppingListCollectionViewCell.cellID, for: indexPath) as! ShoppingListCollectionViewCell
-            cell.shoppingListData = shoppingListData
-            cell.cellFrame = collectionView.frame
-            cell.delegate = self
-            return cell
-        }
-        if let _ = item as? ProfileFooterElement {
-            let cell = containerView.dequeueReusableCell(withReuseIdentifier: ProfileFooterViewCollectionViewCell.cellID, for: indexPath) as! ProfileFooterViewCollectionViewCell
-            cell.cellFrame = collectionView.frame
-            return cell
-        }
-        let cell = containerView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath)
-        return cell
-        
-    }
-    
     func deleteListClicked(list: ShoppingList) {
         ApplicationDB.shared.removeShoppingList(list: list)
         self.loadData()
     }
-    
-    override func setupLayout() {
+}
 
-        view.backgroundColor = UIColor(named: "profile_background")
-
-        containerView.delegate = self
-        containerView.dataSource = self
-        
-        view.addSubview(containerView)
-        
-        NSLayoutConstraint.activate([
-            containerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            containerView.heightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.heightAnchor),
-            containerView.widthAnchor.constraint(equalTo: view.widthAnchor),
-            containerView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-        ])
-        self.loadData()
+extension ProfileViewController: ImageSlideShowDelegate {
+    func onHide(_ imageSlideShow: ImageSlideShow) {
+        self.navigationController?.isNavigationBarHidden = false
+        self.tabBarController?.tabBar.isHidden = false
     }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        self.loadData()
-    }
-    
-    func loadData() {
-        elements = [
-            ProfileData(bgImageMedia: UIImage(systemName: "photo.fill")?.pngData(), profileImageMedia: UIImage(systemName: "person.circle.fill")?.pngData()),
-            AboutData(),
-            ShoppingListData(shoppingLists: ApplicationDB.shared.getShoppingLists()),
-            ProfileFooterElement()
-        ]
-        containerView.reloadData()
-    }
-    
-    @objc
-    func onLogin() {
-        self.loadData()
-        self.setupLayout()
-    }
-    
-    @objc
-    func onLogout() {
-        self.removeViews()
-    }
-
 }
 
 class RoundedImage: UIImageView {

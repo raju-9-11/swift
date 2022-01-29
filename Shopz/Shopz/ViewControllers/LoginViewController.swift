@@ -7,7 +7,7 @@
 
 import UIKit
 
-class LoginViewController: CustomViewController, TextFieldWithErrorDelegate {
+class LoginViewController: UIViewController, TextFieldWithErrorDelegate {
     
     // MARK: - UI Elements
     
@@ -174,7 +174,7 @@ class LoginViewController: CustomViewController, TextFieldWithErrorDelegate {
         self.view.endEditing(true)
     }
     
-    override func setupLayout() {
+    func setupLayout() {
         emailField.delegate = self
         passwordField.delegate = self
         view.backgroundColor = .systemGray

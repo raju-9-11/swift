@@ -485,10 +485,26 @@ class ApplicationDB {
         list.forEach({ item in
             if sqlite3_exec(db, "insert into order_history (product_id, purchase_date, user_id) values (\(item.product.product_id), '\(dateString)', '\(auth.user.id)')", nil, nil, nil) != SQLITE_OK{
                 print("Error: \(String(cString: sqlite3_errmsg(db)))")
+                closeDB()
                 Toast.shared.showToast(message: "Unable to Checkout")
                 return
             }
         })
+        closeDB()
+    }
+    
+    func removeFromOrderHistory(item: OrderHistItem) {
+        
+        guard Auth.auth != nil else { return }
+        guard initDB() else { return }
+        
+        if sqlite3_exec(db, "delete from order_history where item_id=\(item.itemId)", nil, nil, nil) != SQLITE_OK{
+            print("Error: \(String(cString: sqlite3_errmsg(db)))")
+            closeDB()
+            Toast.shared.showToast(message: "Unable to return at the moment")
+            return
+        }
+        Toast.shared.showToast(message: "Return Accepted")
         closeDB()
     }
     

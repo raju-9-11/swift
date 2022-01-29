@@ -10,6 +10,8 @@ import UIKit
 class SellerHomeBodyCell: UITableViewCell {
     
     static let cellID = "SELLERBOdyellid"
+    
+    weak var delegate: SellerHomeBodtCellDelegate?
 
     var productData: [Product] = [] {
         willSet {
@@ -38,6 +40,7 @@ class SellerHomeBodyCell: UITableViewCell {
         cv.contentInset = UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5)
         cv.register(ItemThumbNailCollectionViewCell.self, forCellWithReuseIdentifier: ItemThumbNailCollectionViewCell.cellID)
         cv.translatesAutoresizingMaskIntoConstraints = false
+        cv.isScrollEnabled = false
         cv.backgroundColor = .clear
         return cv
     }()
@@ -77,8 +80,16 @@ extension SellerHomeBodyCell: UICollectionViewDelegate, UICollectionViewDataSour
         return cell
     }
     
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        delegate?.onItemSelect(productData[indexPath.row])
+    }
+    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return itemSize ?? CGSize(width: 100, height: 100)
     }
     
+}
+
+protocol SellerHomeBodtCellDelegate: AnyObject {
+    func onItemSelect(_ product: Product)
 }
