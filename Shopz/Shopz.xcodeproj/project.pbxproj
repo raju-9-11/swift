@@ -34,11 +34,15 @@
 		9D5E29A6275F7B4A00ED86ED /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D5E29A5275F7B4A00ED86ED /* HomeViewController.swift */; };
 		9D5E29AB275F7B4B00ED86ED /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9D5E29AA275F7B4B00ED86ED /* Assets.xcassets */; };
 		9D5E29AE275F7B4B00ED86ED /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9D5E29AC275F7B4B00ED86ED /* LaunchScreen.storyboard */; };
+		9D67187A27A6A317006A7963 /* DataConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D67187927A6A317006A7963 /* DataConfig.swift */; };
+		9D67187C27A6A382006A7963 /* AddAddressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D67187B27A6A382006A7963 /* AddAddressViewController.swift */; };
 		9D7D23792782E0D300EE2B96 /* CartTitleCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D7D23782782E0D300EE2B96 /* CartTitleCollectionViewCell.swift */; };
 		9D7D237B2782E14B00EE2B96 /* CartButtonsCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D7D237A2782E14B00EE2B96 /* CartButtonsCollectionViewCell.swift */; };
 		9D894130278D41D0004DDDDF /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D89412F278D41D0004DDDDF /* User.swift */; };
 		9D894132278DBB04004DDDDF /* Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D894131278DBB04004DDDDF /* Category.swift */; };
 		9D894135278DBF32004DDDDF /* CategoryThumbnailCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D894134278DBF32004DDDDF /* CategoryThumbnailCollectionViewCell.swift */; };
+		9D984BE727A6E3CB00604A08 /* DropDown.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D984BE627A6E3CB00604A08 /* DropDown.swift */; };
+		9D984BE927A6E8DD00604A08 /* DropDownWithError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D984BE827A6E8DD00604A08 /* DropDownWithError.swift */; };
 		9D9B16C827685F8A00BE8456 /* Auth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D9B16C727685F8A00BE8456 /* Auth.swift */; };
 		9D9B16CC27689BE300BE8456 /* FormTextFieldCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D9B16CB27689BE300BE8456 /* FormTextFieldCollectionViewCell.swift */; };
 		9D9B16CE27689BF800BE8456 /* FormDatePickerCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D9B16CD27689BF800BE8456 /* FormDatePickerCollectionViewCell.swift */; };
@@ -115,11 +119,16 @@
 		9D5E29AA275F7B4B00ED86ED /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		9D5E29AD275F7B4B00ED86ED /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		9D5E29AF275F7B4B00ED86ED /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		9D67187927A6A317006A7963 /* DataConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataConfig.swift; sourceTree = "<group>"; };
+		9D67187B27A6A382006A7963 /* AddAddressViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddAddressViewController.swift; sourceTree = "<group>"; };
+		9D67187F27A6DF73006A7963 /* libiOSDropDown.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libiOSDropDown.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		9D7D23782782E0D300EE2B96 /* CartTitleCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartTitleCollectionViewCell.swift; sourceTree = "<group>"; };
 		9D7D237A2782E14B00EE2B96 /* CartButtonsCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartButtonsCollectionViewCell.swift; sourceTree = "<group>"; };
 		9D89412F278D41D0004DDDDF /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		9D894131278DBB04004DDDDF /* Category.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Category.swift; sourceTree = "<group>"; };
 		9D894134278DBF32004DDDDF /* CategoryThumbnailCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryThumbnailCollectionViewCell.swift; sourceTree = "<group>"; };
+		9D984BE627A6E3CB00604A08 /* DropDown.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropDown.swift; sourceTree = "<group>"; };
+		9D984BE827A6E8DD00604A08 /* DropDownWithError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropDownWithError.swift; sourceTree = "<group>"; };
 		9D9B16C727685F8A00BE8456 /* Auth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Auth.swift; sourceTree = "<group>"; };
 		9D9B16CB27689BE300BE8456 /* FormTextFieldCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormTextFieldCollectionViewCell.swift; sourceTree = "<group>"; };
 		9D9B16CD27689BF800BE8456 /* FormDatePickerCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormDatePickerCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -177,6 +186,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3FABA265055375A3A6D847BE /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				9D67187F27A6DF73006A7963 /* libiOSDropDown.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		8559B8E306DA3D2F47DE057B /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
 		9D0514A32767202100459650 /* Delegate */ = {
 			isa = PBXGroup;
 			children = (
@@ -222,6 +246,7 @@
 			children = (
 				9D118E642770AACC004B2587 /* AddressItemCollectionViewCell.swift */,
 				9DA99A1027719C6F00B8053B /* AddAddressCollectionViewCell.swift */,
+				9D67187B27A6A382006A7963 /* AddAddressViewController.swift */,
 			);
 			path = CheckoutViews;
 			sourceTree = "<group>";
@@ -250,6 +275,8 @@
 				9DA6942727A1499E00947DA1 /* TabItem.swift */,
 				9D9C2FE527A5CF0A009D4FAE /* ImageSlideShow.swift */,
 				9D9C2FE727A5DBCB009D4FAE /* CustomViewController.swift */,
+				9D984BE627A6E3CB00604A08 /* DropDown.swift */,
+				9D984BE827A6E8DD00604A08 /* DropDownWithError.swift */,
 			);
 			path = CustomElements;
 			sourceTree = "<group>";
@@ -269,6 +296,8 @@
 			children = (
 				9D5E29A0275F7B4A00ED86ED /* Shopz */,
 				9D5E299F275F7B4A00ED86ED /* Products */,
+				8559B8E306DA3D2F47DE057B /* Pods */,
+				3FABA265055375A3A6D847BE /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -321,6 +350,7 @@
 				9D9D9D8B276751CA00FD1D54 /* StaticData.json */,
 				9D3DD7DD277EEA3900AED9C7 /* ApplicationDB.swift */,
 				9D3DD7E0277EEA8C00AED9C7 /* StorageDB.swift */,
+				9D67187927A6A317006A7963 /* DataConfig.swift */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -514,6 +544,7 @@
 				9DFB3CF5279EC88100A27215 /* Address.swift in Sources */,
 				9DE006C02771B1EF0025840F /* PaymentResultViewController.swift in Sources */,
 				9DA6943327A1CBE800947DA1 /* ImageLoader.swift in Sources */,
+				9D984BE727A6E3CB00604A08 /* DropDown.swift in Sources */,
 				9D54542A27A2C1DF00180C23 /* SellerHomeBodyCell.swift in Sources */,
 				9D118E5E27708101004B2587 /* CategoryItemCollectionViewCell.swift in Sources */,
 				9D3DD7E1277EEA8C00AED9C7 /* StorageDB.swift in Sources */,
@@ -526,6 +557,7 @@
 				9D9B16D027689C0600BE8456 /* FormButtonCollectionViewCell.swift in Sources */,
 				9D118E6027708D31004B2587 /* SellerHomeViewController.swift in Sources */,
 				9D9D9D8E2767523D00FD1D54 /* LoginViewController.swift in Sources */,
+				9D67187C27A6A382006A7963 /* AddAddressViewController.swift in Sources */,
 				9D118E652770AACC004B2587 /* AddressItemCollectionViewCell.swift in Sources */,
 				9DB1520127968A8800F96369 /* Toast.swift in Sources */,
 				9D9D9D9A27675C4500FD1D54 /* ItemThumbNailCollectionViewCell.swift in Sources */,
@@ -533,6 +565,7 @@
 				9DA6942C27A1C62900947DA1 /* Review.swift in Sources */,
 				9DA99A1127719C6F00B8053B /* AddAddressCollectionViewCell.swift in Sources */,
 				9D54542827A2BDD500180C23 /* SellerHomeTitleViewCell.swift in Sources */,
+				9D67187A27A6A317006A7963 /* DataConfig.swift in Sources */,
 				9DA6942A27A1C1E700947DA1 /* SearchbarTableViewCell.swift in Sources */,
 				9D118E62277099BD004B2587 /* CheckoutViewController.swift in Sources */,
 				9D894130278D41D0004DDDDF /* User.swift in Sources */,
@@ -557,6 +590,7 @@
 				9D3DD7E6277F10D200AED9C7 /* CheckBox.swift in Sources */,
 				9DFB3CF3279E7DDB00A27215 /* CartItem.swift in Sources */,
 				9D5E29A6275F7B4A00ED86ED /* HomeViewController.swift in Sources */,
+				9D984BE927A6E8DD00604A08 /* DropDownWithError.swift in Sources */,
 				9D5E29A2275F7B4A00ED86ED /* AppDelegate.swift in Sources */,
 				9DFB3CF7279EE40700A27215 /* CardData.swift in Sources */,
 				9D1F09382770560D000BF602 /* ProductDetailsTopCollectionViewCell.swift in Sources */,

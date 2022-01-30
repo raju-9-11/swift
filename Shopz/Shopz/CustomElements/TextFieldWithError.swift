@@ -141,7 +141,12 @@ class TextFieldWithError: UIView, UITextFieldDelegate {
     
     @objc
     func onChange(_ textField: UITextField) {
-        guard let textMask = textMask else { return }
+        guard let textMask = textMask else {
+            if keyBoardType == .numberPad {
+                text = text.replacingOccurrences( of: "[^0-9]", with: "", options: .regularExpression)
+            }
+            return
+        }
         text = text.applyPatternOnNumbers(pattern: textMask)
     }
     

@@ -136,6 +136,7 @@ class SearchViewController: CustomViewController, CategoryItemDelegate, Category
         
         view.addSubview(searchList)
         view.addSubview(categoryList)
+        
         NSLayoutConstraint.activate([
             categoryList.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             categoryList.widthAnchor.constraint(equalTo: view.widthAnchor),
@@ -146,6 +147,11 @@ class SearchViewController: CustomViewController, CategoryItemDelegate, Category
             searchList.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             searchList.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
         ])
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.searchBar.becomeFirstResponder()
     }
     
     override func viewWillDisappear(_ animated: Bool) {

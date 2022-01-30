@@ -14,7 +14,7 @@ class AddressItemCollectionViewCell: UICollectionViewCell {
     var address: Address? {
         willSet {
             if newValue != nil {
-                addressTextView.text = newValue!.address
+                addressTextView.text = "\(newValue!.addressLine1) \n \(newValue!.addressLine2) \n \(newValue!.city), \(newValue!.pincode), \(newValue!.country)"
                 self.setupLayout()
             }
         }

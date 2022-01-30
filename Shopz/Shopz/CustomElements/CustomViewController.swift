@@ -15,13 +15,17 @@ class CustomViewController: UIViewController {
     
     var searchVC: SearchViewController?
     
-    var searchListDataFiltered: [Product] = []
+    var searchListDataFiltered: [Product] = [] {
+        willSet {
+            self.searchBarList.frame.size.height = min(CGFloat(self.searchListDataFiltered.count*50), self.view.frame.height*0.8)
+        }
+    }
     
     var lvc: LoginViewController?
     
     let maskView: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor(named: "background_color")!.withAlphaComponent(0.5)
+        view.backgroundColor = UIColor(named: "background_color")?.withAlphaComponent(0.5)
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -30,6 +34,7 @@ class CustomViewController: UIViewController {
         let tv = UITableView()
         tv.backgroundColor = UIColor(named: "background_coloras")
         tv.register(SearchbarTableViewCell.self, forCellReuseIdentifier: SearchbarTableViewCell.cellID)
+        tv.isScrollEnabled = false
         return tv
     }()
     
@@ -123,7 +128,7 @@ extension CustomViewController: UISearchBarDelegate {
         } else {
             self.searchListDataFiltered = StorageDB.getProducts().filter({ prod in return prod.product_name.fuzzyMatch(searchText) })
         }
-        searchBarList.frame.size.height = CGFloat(self.searchListDataFiltered.count*50)
+        
         searchBarList.reloadData()
     }
     
@@ -147,6 +152,16 @@ extension CustomViewController: UISearchBarDelegate {
             maskView.centerYAnchor.constraint(equalTo: self.view.centerYAnchor),
             maskView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
         ])
+        
+        if let searchText = searchBar.text {
+            if searchText.isEmpty {
+                searchListDataFiltered = []
+            } else {
+                self.searchListDataFiltered = StorageDB.getProducts().filter({ prod in return prod.product_name.fuzzyMatch(searchText) })
+            }
+        }
+        
+        searchBarList.reloadData()
     }
     
     @objc
@@ -169,7 +184,7 @@ extension CustomViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: SearchbarTableViewCell.cellID) as! SearchbarTableViewCell
-        cell.textLabel?.text = searchListDataFiltered[indexPath.row].product_name
+        cell.text = searchListDataFiltered[indexPath.row].product_name
         return cell
     }
     

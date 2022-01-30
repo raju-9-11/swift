@@ -28,7 +28,7 @@ class SearchItemCollectionViewCell: UICollectionViewCell {
     let imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.contentMode = .scaleAspectFill
+        imageView.contentMode = .scaleAspectFit
         imageView.clipsToBounds = true
         return imageView
     }()
@@ -114,6 +114,7 @@ class SearchItemCollectionViewCell: UICollectionViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         self.removeViews()
+        self.imageView.image = UIImage(systemName: "photo.fill")
         cancellable?.cancel()
     }
 }

@@ -9,17 +9,46 @@ import UIKit
 
 class SearchbarTableViewCell: UITableViewCell {
     
-    static let cellID: String = "SearchBarItemCellID"
-
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        // Initialization code
+    var text: String = "" {
+        willSet {
+            label.text = newValue
+            self.setupLayout()
+        }
     }
-
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
+    
+    var font: UIFont {
+        get {
+            return label.font
+        }
+        set {
+            label.font = newValue
+        }
+    }
+    
+    lazy var label: UILabel = {
+        let label = UILabel()
+        label.text = ""
+        label.textColor = UIColor(named: "text_color")
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = .monospacedSystemFont(ofSize: 15, weight: .regular)
+        return label
+    }()
+    
+    static let cellID: String = "SearchBarItemCellID"
+    
+    func setupLayout() {
+        contentView.addSubview(label)
+        NSLayoutConstraint.activate([
+            label.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            label.leftAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.leftAnchor, constant: 5),
+            label.rightAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.rightAnchor)
+        ])
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        self.removeViews()
+        self.text = ""
     }
 
 }

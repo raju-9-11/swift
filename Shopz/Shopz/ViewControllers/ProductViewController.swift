@@ -148,9 +148,9 @@ extension ProductViewController: UICollectionViewDelegate, UICollectionViewDeleg
 
 extension ProductViewController: ReviewElementDelegate, ImagesViewDelegate, DescriptionCellDelegate, ImageSlideShowDelegate {
     
-    func addReview(review: String) {
+    func addReview(review: String, rating: Int) {
         if let productData = productData {
-            ApplicationDB.shared.addReview(review: review, productID: productData.product_id)
+            ApplicationDB.shared.addReview(review: review, rating: rating, productID: productData.product_id)
             self.loadData(with: productData)
         }
     }

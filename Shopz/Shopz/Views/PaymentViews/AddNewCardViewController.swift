@@ -7,16 +7,24 @@
 
 import UIKit
 
-class AddNewCardViewController: CustomViewController {
+class AddNewCardViewController: UIViewController {
     
-    let containerView: UIStackView = {
-        let view = UIStackView()
+    weak var delegate: AddCardDelegate?
+    
+    lazy var containerView: UIStackView = {
+        let view = UIStackView(arrangedSubviews: [titleLabel, cardNumberField, nameField, validityDate, addButton])
         view.translatesAutoresizingMaskIntoConstraints = false
         view.axis = .vertical
         view.distribution = .fillProportionally
         view.spacing = 10
         view.contentMode = .center
         view.backgroundColor = .clear
+        return view
+    }()
+    
+    let maskView: UIView = {
+        let view = UIView(frame: UIScreen.main.bounds)
+        view.backgroundColor = UIColor(named: "background_color")?.withAlphaComponent(0.5)
         return view
     }()
     
@@ -77,24 +85,29 @@ class AddNewCardViewController: CustomViewController {
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
+    
+    var bottomConstraint: NSLayoutConstraint?
 
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setupLayout()
     }
     
-    override func setupLayout() {
+    func setupLayout() {
         view.backgroundColor = UIColor(named: "background_color")?.withAlphaComponent(0.5)
-        containerView.addArrangedSubview(titleLabel)
-        containerView.addArrangedSubview(cardNumberField)
-        containerView.addArrangedSubview(nameField)
-        containerView.addArrangedSubview(validityDate)
-        containerView.addArrangedSubview(addButton)
+        
         view.addSubview(backGroundView)
         view.addSubview(containerView)
         addButton.addTarget(self, action: #selector(onAddCard), for: .touchUpInside)
         containerView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(onTextDismiss)))
-        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismissSearchBar)))
+        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(onDismiss)))
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(onKeyboardShow), name: UIResponder.keyboardDidShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(onKeyboardHide), name: UIResponder.keyboardDidHideNotification, object: nil)
+        
+        bottomConstraint = containerView.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        bottomConstraint?.isActive = true
+        
         NSLayoutConstraint.activate([
             containerView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             containerView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
@@ -106,41 +119,57 @@ class AddNewCardViewController: CustomViewController {
         ])
     }
     
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
+    
+    @objc
+    func onKeyboardShow(notification: Notification) {
+        guard let userInfo = notification.userInfo else { return }
+        let _ = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
+        bottomConstraint?.constant = -120
+    }
+    
+    @objc
+    func onKeyboardHide(notification: Notification) {
+        bottomConstraint?.constant = 0
+    }
+    
     @objc
     func onTextDismiss() {
         self.containerView.endEditing(true)
-        print("Tap")
     }
     
     @objc
     func onAddCard() {
-        if let vc = self.parent as? PaymentViewController {
-            if nameField.text.isEmpty || cardNumberField.text.isEmpty || cardNumberField.text.count != cardNumberField.textMask!.count || validityDate.text.count != validityDate.textMask!.count || validityDate.text.isEmpty {
-                nameField.errorState = nameField.text.isEmpty
-                cardNumberField.errorState = cardNumberField.text.isEmpty || cardNumberField.text.count != cardNumberField.textMask!.count
-                validityDate.errorState = validityDate.text.count != validityDate.textMask!.count || validityDate.text.isEmpty
-                return
-            }
-            nameField.errorState = false
-            cardNumberField.errorState = false
-            validityDate.errorState = false
-            let dateString = validityDate.text.replacingOccurrences(of: " ", with: "")
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "MM/yy"
-            dateFormatter.locale = .current
-            guard let date = dateFormatter.date(from: dateString), date.getOffset(from: Date()) > 0 else {
-                validityDate.errorState = true
-                return
-            }
-            vc.onAddCard(name: nameField.text, cardNumber: cardNumberField.text, date: validityDate.text)
-            self.onDismiss()
+        if nameField.text.isEmpty || cardNumberField.text.isEmpty || cardNumberField.text.count != cardNumberField.textMask!.count || validityDate.text.count != validityDate.textMask!.count || validityDate.text.isEmpty {
+            nameField.errorState = nameField.text.isEmpty
+            cardNumberField.errorState = cardNumberField.text.isEmpty || cardNumberField.text.count != cardNumberField.textMask!.count
+            validityDate.errorState = validityDate.text.count != validityDate.textMask!.count || validityDate.text.isEmpty
+            return
         }
+        nameField.errorState = false
+        cardNumberField.errorState = false
+        validityDate.errorState = false
+        let dateString = validityDate.text.replacingOccurrences(of: " ", with: "")
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "MM/yy"
+        dateFormatter.locale = .current
+        guard let date = dateFormatter.date(from: dateString), (date.months(from: Date()) > 0 && date.years(from: Date()) >= 0 )  else {
+            validityDate.errorState = true
+            return
+        }
+        delegate?.onAddClick(name: nameField.text, cardNumber: cardNumberField.text, date: date)
+        self.onDismiss()
     }
     
     @objc
     func onDismiss() {
-        self.willMove(toParent: nil)
-        self.removeFromParent()
-        self.view.removeFromSuperview()
+        self.dismiss(animated: true, completion: nil)
     }
+}
+
+protocol AddCardDelegate: AnyObject {
+    func onAddClick(name: String, cardNumber: String, date: Date)
 }

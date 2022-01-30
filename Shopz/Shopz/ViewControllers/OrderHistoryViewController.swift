@@ -155,7 +155,7 @@ extension OrderHistoryViewController: UICollectionViewDataSource, UICollectionVi
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: collectionView.frame.width - 2, height: 120)
+        return CGSize(width: collectionView.frame.width - 2, height: 140)
     }
 }
 

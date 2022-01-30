@@ -97,7 +97,8 @@ class AddReviewCollectionViewCell: UICollectionViewCell {
     
     @objc
     func onAddReview() {
-        delegate?.addReview(review: addReviewTextView.text)
+        self.addReviewTextView.text = ""
+        delegate?.addReview(review: addReviewTextView.text, rating: 0)
     }
     
     
@@ -116,7 +117,7 @@ class AddReviewCollectionViewCell: UICollectionViewCell {
 
 
 protocol ReviewElementDelegate {
-    func addReview(review: String)
+    func addReview(review: String, rating: Int)
     func reviewBeginEditing(frame: CGRect?)
     func reviewDidEndEditing()
 }

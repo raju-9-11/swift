@@ -182,7 +182,10 @@ class HomeViewController: CustomViewController, UICollectionViewDataSource, UICo
     
     func getPopularItems() -> [Product] {
         var array: [Product] = []
-        StorageDB.getProducts()[...10].forEach({ prod in array.append(prod)})
+        let products = StorageDB.getProducts()
+        if products.count >= 10 {
+            array.append(contentsOf: products[...10].map({ prod in return prod }))
+        }
         return array
     }
 

@@ -20,18 +20,44 @@ class OrderHistoryItemCollectionViewCell: UICollectionViewCell {
             if newValue != nil {
                 nameLabel.text = newValue?.product.product_name
                 costLabel.text = "$ \(newValue?.product.price ?? 0) "
-                if newValue!.date.offset(from: Date(), by: 6) {
-                    buttonsView.addArrangedSubview(returnProduct)
+                if let date = newValue?.deliveryDate {
+                    if date.getOffset(from: Date()) <= 0 {
+                        statusLabel.backgroundColor = .green
+                        statusLabel.text = "Delivered: \(date.toString())"
+                        returnProduct.setTitle("Return", for: .normal)
+                        buttonsView.addArrangedSubview(addReview)
+                    } else {
+                        statusLabel.text = "Expected: \(date.toString())"
+                        statusLabel.backgroundColor = .red
+                        returnProduct.setTitle("Cancel", for: .normal)
+                    }
+                } else {
+                    statusLabel.text = "Unknown"
+                    statusLabel.backgroundColor = .darkGray
                 }
                 self.cancellable = self.loadImage(for: newValue!.product.image_media[0]).sink(receiveValue: {
                     [unowned self] image in
                     self.imageView.image = image
                 })
-                self.dateLabel.text = "Purchase Date: \(newValue!.date.toString())"
+                if newValue!.purchaseDate.getOffset(from: Date()) < 5 {
+                    buttonsView.addArrangedSubview(returnProduct)
+                }
+                self.dateLabel.text = "Purchase Date: \(newValue!.purchaseDate.toString())"
                 self.setupLayout()
             }
         }
     }
+    
+    let statusLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.textColor = .white
+        label.text = "Unknown"
+        label.backgroundColor = .darkGray
+        label.layer.cornerRadius = 6
+        label.font = .monospacedSystemFont(ofSize: 15, weight: .regular)
+        return label
+    }()
     
     let nameLabel: UILabel = {
         let label = UILabel()
@@ -76,7 +102,7 @@ class OrderHistoryItemCollectionViewCell: UICollectionViewCell {
         button.contentEdgeInsets = UIEdgeInsets(top: 5, left: 10, bottom: 5, right: 10)
         button.layer.cornerRadius = 6
         button.titleLabel?.adjustsFontSizeToFitWidth = true
-        button.backgroundColor = UIColor(red: 0.933, green: 0.502, blue: 0.502, alpha: 1)
+        button.backgroundColor = .blue.withAlphaComponent(0.5)
         return button
     }()
     
@@ -93,7 +119,7 @@ class OrderHistoryItemCollectionViewCell: UICollectionViewCell {
     
     
     lazy var buttonsView: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [addReview])
+        let stackView = UIStackView(arrangedSubviews: [])
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .horizontal
         stackView.spacing = 3
@@ -110,6 +136,7 @@ class OrderHistoryItemCollectionViewCell: UICollectionViewCell {
         contentView.addSubview(costLabel)
         contentView.addSubview(buttonsView)
         contentView.addSubview(dateLabel)
+        contentView.addSubview(statusLabel)
         contentView.backgroundColor = UIColor(named: "thumbnail_color")
         addReview.addTarget(self, action: #selector(onAddReview), for: .touchUpInside)
         returnProduct.addTarget(self, action: #selector(onReturn), for: .touchUpInside)
@@ -128,6 +155,8 @@ class OrderHistoryItemCollectionViewCell: UICollectionViewCell {
             dateLabel.leftAnchor.constraint(equalTo: nameLabel.leftAnchor),
             buttonsView.bottomAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.bottomAnchor, constant: -5),
             buttonsView.leftAnchor.constraint(equalTo: nameLabel.leftAnchor),
+            statusLabel.topAnchor.constraint(equalTo: dateLabel.bottomAnchor),
+            statusLabel.leftAnchor.constraint(equalTo: dateLabel.leftAnchor),
 //            buttonsView.rightAnchor.constraint(equalTo: contentView.rightAnchor),
         ])
     }
@@ -158,6 +187,7 @@ class OrderHistoryItemCollectionViewCell: UICollectionViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         self.removeViews()
+        self.imageView.image = UIImage(systemName: "photo.fill")
         cancellable?.cancel()
     }
     
@@ -191,11 +221,15 @@ extension Date {
     
     func getOffset(from date: Date) -> Int {
         let currentCalendar = Calendar.current
-
-        guard let start = currentCalendar.ordinality(of: .day, in: .era, for: date) else { return 0 }
-        guard let end = currentCalendar.ordinality(of: .day, in: .era, for: self) else { return 0 }
-
+        
+        guard let start = currentCalendar.ordinality(of: .day, in: .year, for: date) else { return 0 }
+        guard let end = currentCalendar.ordinality(of: .day, in: .year, for: self) else { return 0 }
+        
         return end - start
+    }
+    
+    func offset(by days: Int) -> Date {
+        return Calendar.current.date(byAdding: .day, value: days, to: self) ?? self
     }
     
     func toString(with format: String = "dd/MM/yyyy") -> String {

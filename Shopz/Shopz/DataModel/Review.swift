@@ -13,5 +13,6 @@ struct Review {
     var reviewId: Int
     var userName: String
     var review: String
+    var rating: Int
     var productId: Int
 }

@@ -9,7 +9,11 @@ import Foundation
 
 
 struct Address {
-    var address: String
+    var addressLine1: String
+    var addressLine2: String
+    var pincode: String
+    var city: String
+    var country: String
     var addressId: Int
     var userId: Int
 }

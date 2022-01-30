@@ -19,7 +19,6 @@ class PaymentViewController: CustomViewController, UICollectionViewDelegate, UIC
     
     var cart: [CartItem] = [] {
         willSet {
-            print("Test2")
             totalLabelCost.text = "$ \(newValue.map({ item in return item.product.price+item.product.shipping_cost }).reduce(0, +))"
         }
     }
@@ -267,21 +266,10 @@ class PaymentViewController: CustomViewController, UICollectionViewDelegate, UIC
     @objc
     func displayAddCardVC() {
         let anvc = AddNewCardViewController()
-        anvc.willMove(toParent: self)
-        self.addChild(anvc)
-        self.view.addSubview(anvc.view)
-    }
-    
-    func onAddCard(name: String, cardNumber: String, date: String) {
-        let dateString = date.replacingOccurrences(of: " ", with: "")
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "MM/yy"
-        dateFormatter.locale = .current
-        guard let date = dateFormatter.date(from: dateString) else { return }
-        let cardNumber = cardNumber.replacingOccurrences(of: " - ", with: "")
-        ApplicationDB.shared.addCard(name: name, date: date, cardNumber: cardNumber)
-        self.cards = ApplicationDB.shared.getCards()
-        self.paymentCardsCollectionView.reloadData()
+        anvc.modalTransitionStyle = .crossDissolve
+        anvc.modalPresentationStyle = .overCurrentContext
+        anvc.delegate = self
+        self.present(anvc, animated: true, completion: nil)
     }
     
     @objc
@@ -291,11 +279,11 @@ class PaymentViewController: CustomViewController, UICollectionViewDelegate, UIC
             return
         }
         if product != nil {
-            ApplicationDB.shared.checkoutProduct(product: product!)
+            ApplicationDB.shared.checkoutProduct(product: product!, deliveryDate: Date().offset(by: 1))
         } else if shoppingListData == nil {
-            ApplicationDB.shared.checkoutCart()
+            ApplicationDB.shared.checkoutCart(deliveryDate: Date().offset(by: 1))
         } else {
-            ApplicationDB.shared.checkoutShoppingList(list: shoppingListData!)
+            ApplicationDB.shared.checkoutShoppingList(list: shoppingListData!, deliveryDate: Date().offset(by: 1))
         }
         let vc = PaymentResultViewController()
         vc.modalPresentationStyle = .fullScreen
@@ -312,5 +300,15 @@ class PaymentViewController: CustomViewController, UICollectionViewDelegate, UIC
         self.dismiss(animated: true, completion: nil)
     }
 
+}
+
+extension PaymentViewController: AddCardDelegate {
+    
+    func onAddClick(name: String, cardNumber: String, date: Date) {
+        let cardNumber = cardNumber.replacingOccurrences(of: " - ", with: "")
+        ApplicationDB.shared.addCard(name: name, date: date, cardNumber: cardNumber)
+        self.cards = ApplicationDB.shared.getCards()
+        self.paymentCardsCollectionView.reloadData()
+    }
 }
 

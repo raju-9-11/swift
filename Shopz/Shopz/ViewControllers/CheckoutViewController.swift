@@ -8,7 +8,7 @@
 import UIKit
 import CryptoKit
 
-class CheckoutViewController: CustomViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, CheckBoxDelegate, TextFieldWithErrorDelegate {
+class CheckoutViewController: CustomViewController {
     
     lazy var cartDetails: UILabel = {
         return titleLabel(text: "Cart Details")
@@ -136,72 +136,12 @@ class CheckoutViewController: CustomViewController, UICollectionViewDelegate, UI
         self.setupLayout()
     }
     
-    
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return addressListData.count + 1
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        if indexPath.row == addressListData.count {
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: AddAddressCollectionViewCell.cellID, for: indexPath) as! AddAddressCollectionViewCell
-            cell.setupLayout()
-            return cell
-        }
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: AddressItemCollectionViewCell.cellID, for: indexPath) as! AddressItemCollectionViewCell
-        cell.isCustSelected = selectedAddress == indexPath.row
-        cell.address = addressListData[indexPath.row]
-        return cell
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
-        if indexPath.row != selectedAddress && indexPath.row != addressListData.count {
-            return UIContextMenuConfiguration(identifier: nil, previewProvider: nil, actionProvider: {
-                _ in
-                let delete = UIAction(title: "Delete Address", image: UIImage(systemName: "trash"), attributes: .destructive, handler: {
-                    _ in
-                    ApplicationDB.shared.removeAddress(address: self.addressListData[indexPath.row])
-                    self.addressListData = ApplicationDB.shared.getAddressList()
-                    self.addressList.deleteItems(at: [indexPath])
-                    self.addressList.reloadData()
-                })
-                
-                return UIMenu(children: [delete])
-            })
-        }
-        return UIContextMenuConfiguration()
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: collectionView.frame.width*0.48, height: collectionView.frame.width*0.48)
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        if indexPath.row < addressListData.count {
-            self.selectedAddress = indexPath.row
-        } else {
-            onAddClick()
-        }
-        self.view.endEditing(true)
-    }
-    
     func onAddClick() {
-        let alert = UIAlertController(title: "Add Address", message: "Enter New Address", preferredStyle: .alert)
-        alert.addTextField(configurationHandler: {
-            textfield in
-            textfield.placeholder = "Enter Address"
-        })
-        let addAction = UIAlertAction(title: "Add", style: .default, handler: {
-            _ in
-            if let address = alert.textFields![0].text, !address.isEmpty {
-                ApplicationDB.shared.addAddress(address: address)
-                self.addressListData = ApplicationDB.shared.getAddressList()
-                self.addressList.reloadData()
-            }
-        })
-        let cancelAction = UIAlertAction(title: "Cancel", style: .destructive, handler: nil)
-        alert.addAction(addAction)
-        alert.addAction(cancelAction)
-        present(alert, animated: true, completion: nil)
+        let addAddressVC = AddAddressViewController()
+        addAddressVC.modalPresentationStyle = .overCurrentContext
+        addAddressVC.modalTransitionStyle = .crossDissolve
+        addAddressVC.delegate = self
+        present(addAddressVC, animated: true)
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -217,8 +157,8 @@ class CheckoutViewController: CustomViewController, UICollectionViewDelegate, UI
         giftWrapSwitch.delegate = self
         
         billingDetailsContainer.addArrangedSubview(newStackView(views: [defaultLabel(text: "Total number of items"), billingLabels[0]]))
+        billingDetailsContainer.addArrangedSubview(newStackView(views: [defaultLabel(text: "Total product cost"), billingLabels[2]]))
         billingDetailsContainer.addArrangedSubview(newStackView(views: [defaultLabel(text: "Shipping cost"), billingLabels[1]]))
-        billingDetailsContainer.addArrangedSubview(newStackView(views: [defaultLabel(text: "Total cost"), billingLabels[2]]))
         topView.addSubview(cartDetails)
         topView.addSubview(billingDetailsContainer)
         
@@ -360,6 +300,60 @@ class CheckoutViewController: CustomViewController, UICollectionViewDelegate, UI
         paymentVC!.modalTransitionStyle = .coverVertical
         self.present(paymentVC!, animated: true)
     }
+
+}
+
+extension CheckoutViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return addressListData.count + 1
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        if indexPath.row == addressListData.count {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: AddAddressCollectionViewCell.cellID, for: indexPath) as! AddAddressCollectionViewCell
+            cell.setupLayout()
+            return cell
+        }
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: AddressItemCollectionViewCell.cellID, for: indexPath) as! AddressItemCollectionViewCell
+        cell.isCustSelected = selectedAddress == indexPath.row
+        cell.address = addressListData[indexPath.row]
+        return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        if indexPath.row != selectedAddress && indexPath.row != addressListData.count {
+            return UIContextMenuConfiguration(identifier: nil, previewProvider: nil, actionProvider: {
+                _ in
+                let delete = UIAction(title: "Delete Address", image: UIImage(systemName: "trash"), attributes: .destructive, handler: {
+                    _ in
+                    ApplicationDB.shared.removeAddress(address: self.addressListData[indexPath.row])
+                    self.addressListData = ApplicationDB.shared.getAddressList()
+                    self.addressList.deleteItems(at: [indexPath])
+                    self.addressList.reloadData()
+                })
+                
+                return UIMenu(children: [delete])
+            })
+        }
+        return UIContextMenuConfiguration()
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: collectionView.frame.width*0.48, height: collectionView.frame.width*0.48)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if indexPath.row < addressListData.count {
+            self.selectedAddress = indexPath.row
+        } else {
+            onAddClick()
+        }
+        self.view.endEditing(true)
+    }
+}
+
+extension CheckoutViewController: CheckBoxDelegate, TextFieldWithErrorDelegate, AddAddressDelegate {
     
     func onToggle(_ elem: CheckBox) {
         if !elem.isOn {
@@ -379,7 +373,12 @@ class CheckoutViewController: CustomViewController, UICollectionViewDelegate, UI
             self.view.endEditing(true)
         }
     }
-
+    
+    func addAddressClick(_ address: Address) {
+        ApplicationDB.shared.addAddress(address: address)
+        self.addressListData = ApplicationDB.shared.getAddressList()
+        self.addressList.reloadData()
+    }
 }
 
 extension Notification.Name {

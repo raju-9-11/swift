@@ -11,5 +11,6 @@ import Foundation
 struct OrderHistItem {
     var itemId: Int
     var product: Product
-    var date: Date
+    var purchaseDate: Date
+    var deliveryDate: Date?
 }

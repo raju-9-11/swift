@@ -16,6 +16,5 @@ struct User {
     var ph: String
     var country: String
     var city: String
-//    var address: String
     var about: String
 }
