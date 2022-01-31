@@ -82,7 +82,7 @@ class DescriptionCollectionViewCell: UICollectionViewCell, UIContextMenuInteract
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Add to Cart", for: .normal)
-        button.setTitleColor(UIColor(named: "text_color"), for: .normal)
+        button.setTitleColor(.white, for: .normal)
         if #available(iOS 15, *) {
             var config = UIButton.Configuration.filled()
             config.contentInsets = NSDirectionalEdgeInsets(top: 5, leading: 10, bottom: 5, trailing: 10)
@@ -94,6 +94,14 @@ class DescriptionCollectionViewCell: UICollectionViewCell, UIContextMenuInteract
             button.layer.cornerRadius = 6
             button.contentEdgeInsets = UIEdgeInsets(top: 5, left: 10, bottom: 5, right: 10)
         }
+        return button
+    }()
+    
+    let shoppingListButton: UIButton = {
+        let button = UIButton(frame: CGRect(origin: .zero, size: CGSize(width: 20, height: 20)))
+        button.setImage(UIImage(systemName: "cart.fill"), for: .normal)
+        button.tintColor = UIColor(named: "text_color")
+        button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
     
@@ -168,12 +176,15 @@ class DescriptionCollectionViewCell: UICollectionViewCell, UIContextMenuInteract
         contentView.backgroundColor = .clear
         
         let contextMenuInteraction = UIContextMenuInteraction(delegate: self)
-        addToCart.addInteraction(contextMenuInteraction)
+        shoppingListButton.addInteraction(contextMenuInteraction)
+        shoppingListButton.addTarget(self, action: #selector(onShoppingClick), for: .touchUpInside)
+        
         addToCart.addTarget(self, action: #selector(onAddToCart), for: .touchUpInside)
         buyNow.addTarget(self, action: #selector(onBuy), for: .touchUpInside)
         if Auth.auth != nil {
             buttonsView.addArrangedSubview(addToCart)
             buttonsView.addArrangedSubview(buyNow)
+            buttonsView.addArrangedSubview(shoppingListButton)
         }
         sellerView.addArrangedSubview(soldByLabel)
         sellerView.addArrangedSubview(sellerButton)
@@ -205,6 +216,9 @@ class DescriptionCollectionViewCell: UICollectionViewCell, UIContextMenuInteract
         return UIContextMenuConfiguration(identifier: nil, previewProvider: nil, actionProvider: {
             suggActions in
             let shoppingLists = ApplicationDB.shared.getShoppingLists()
+            if shoppingLists.isEmpty {
+                Toast.shared.showToast(message: "No shopping list found")
+            }
             let menu = shoppingLists.map({ list in return UIAction(
                 title: list.name,
                 image: UIImage(systemName: "heart.fill"),
@@ -216,6 +230,11 @@ class DescriptionCollectionViewCell: UICollectionViewCell, UIContextMenuInteract
             return UIMenu(title: "Add to Shopping List" , children: menu)
             
         })
+    }
+    
+    @objc
+    func onShoppingClick() {
+        Toast.shared.showToast(message: "Press and hold to select list")
     }
     
     @objc

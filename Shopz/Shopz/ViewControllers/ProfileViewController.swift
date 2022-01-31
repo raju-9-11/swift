@@ -22,6 +22,7 @@ class ProfileViewController: CustomViewController, UIImagePickerControllerDelega
         cv.register(AboutCollectionViewCell.self, forCellWithReuseIdentifier: AboutCollectionViewCell.cellID)
         cv.register(ShoppingListCollectionViewCell.self, forCellWithReuseIdentifier: ShoppingListCollectionViewCell.cellID)
         cv.register(ProfileFooterViewCollectionViewCell.self, forCellWithReuseIdentifier: ProfileFooterViewCollectionViewCell.cellID)
+        cv.register(ProfileReviewsViewCollectionViewCell.self, forCellWithReuseIdentifier: ProfileReviewsViewCollectionViewCell.cellID)
         cv.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "Cell")
         cv.backgroundColor = .clear
         return cv
@@ -151,6 +152,7 @@ class ProfileViewController: CustomViewController, UIImagePickerControllerDelega
             ProfileData(bgImageMedia: UIImage(systemName: "photo.fill")?.pngData(), profileImageMedia: UIImage(systemName: "person.circle.fill")?.pngData()),
             AboutData(),
             ShoppingListData(shoppingLists: ApplicationDB.shared.getShoppingLists()),
+            ProfileReviewListElemrnt(reviews: ApplicationDB.shared.getUserReviews()),
             ProfileFooterElement()
         ]
         containerView.reloadData()
@@ -199,6 +201,12 @@ extension ProfileViewController: UICollectionViewDataSource, UICollectionViewDel
             cell.delegate = self
             return cell
         }
+        if let reviewsData = item as? ProfileReviewListElemrnt {
+            let cell = containerView.dequeueReusableCell(withReuseIdentifier: ProfileReviewsViewCollectionViewCell.cellID, for: indexPath) as! ProfileReviewsViewCollectionViewCell
+            cell.cellFrame = collectionView.frame
+            cell.reviewElementData = reviewsData
+            return cell
+        }
         if let _ = item as? ProfileFooterElement {
             let cell = containerView.dequeueReusableCell(withReuseIdentifier: ProfileFooterViewCollectionViewCell.cellID, for: indexPath) as! ProfileFooterViewCollectionViewCell
             cell.cellFrame = collectionView.frame
@@ -210,7 +218,7 @@ extension ProfileViewController: UICollectionViewDataSource, UICollectionViewDel
     }
 }
 
-extension ProfileViewController: ShoppingListCellDelegate, ProfileImagesViewDelegate, ShoppingListViewDelegate {
+extension ProfileViewController: ShoppingListCellDelegate, ProfileImagesViewDelegate, ShoppingListViewDelegate, ProfileReviewsViewDelegate {
     
     func listItemClicked(indexPath: IndexPath, shoppingListData: ShoppingList?) {
         if svc == nil {
@@ -281,6 +289,14 @@ extension ProfileViewController: ShoppingListCellDelegate, ProfileImagesViewDele
         ApplicationDB.shared.removeShoppingList(list: list)
         self.loadData()
     }
+    
+    func editTapped() {
+        //
+    }
+    
+    func reviewSelect(review: Review, product: Product) {
+        self.displayProduct(product: product)
+    }
 }
 
 extension ProfileViewController: ImageSlideShowDelegate {
@@ -327,6 +343,14 @@ final class ShoppingListData: ProfileViewElement {
     
     init(shoppingLists: [ShoppingList]) {
         self.shoppingLists = shoppingLists
+    }
+}
+
+final class ProfileReviewListElemrnt: ProfileViewElement {
+    var reviews: [Review]
+    
+    init(reviews: [Review]) {
+        self.reviews = reviews
     }
 }
 

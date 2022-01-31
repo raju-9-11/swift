@@ -25,6 +25,10 @@ class OrderHistoryItemCollectionViewCell: UICollectionViewCell {
                         statusLabel.backgroundColor = .green
                         statusLabel.text = "Delivered: \(date.toString())"
                         returnProduct.setTitle("Return", for: .normal)
+                        if ApplicationDB.shared.hasReviewed(product: newValue!.product) != nil {
+                            addReview.setTitle("Edit Review", for: .normal)
+                            addReview.backgroundColor = .systemBlue.withAlphaComponent(0.5)
+                        }
                         buttonsView.addArrangedSubview(addReview)
                     } else {
                         statusLabel.text = "Expected: \(date.toString())"
@@ -187,6 +191,8 @@ class OrderHistoryItemCollectionViewCell: UICollectionViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         self.removeViews()
+        self.addReview.setTitle("Add Review", for: .normal)
+        self.addReview.backgroundColor = .blue.withAlphaComponent(0.5)
         self.imageView.image = UIImage(systemName: "photo.fill")
         cancellable?.cancel()
     }

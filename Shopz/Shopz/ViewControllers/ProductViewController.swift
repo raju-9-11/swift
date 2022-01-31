@@ -85,9 +85,9 @@ class ProductViewController: CustomViewController {
         cells = [
             ImagesViewElement(images: product.image_media),
             DescriptionElement(description: product.description, title: product.product_name, cost: product.price, rating: product.rating, seller: StorageDB.getSellerData(of: product.seller_id)),
-            ReviewElement(reviews: ApplicationDB.shared.getReviews(product: product))
+            ReviewElement(reviews: ApplicationDB.shared.getReviews(product: product), product: product)
         ]
-        if ApplicationDB.shared.userHasPurchased(product: product) {
+        if ApplicationDB.shared.userHasPurchased(product: product) && ApplicationDB.shared.hasReviewed(product: product) == nil {
             cells.insert(AddReviewElement(), at: 2)
         }
         collectionView.reloadData()
@@ -132,6 +132,7 @@ extension ProductViewController: UICollectionViewDelegate, UICollectionViewDeleg
         if let item = cells[indexPath.row] as? ReviewElement {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ReviewsCollectionViewCell.cellID, for: indexPath) as! ReviewsCollectionViewCell
             cell.reviewElementData = item
+            cell.delegate = self
             cell.cellFrame = CGSize(width: collectionView.frame.width, height: collectionView.frame.height)
             return cell
         }
@@ -146,7 +147,7 @@ extension ProductViewController: UICollectionViewDelegate, UICollectionViewDeleg
     }
 }
 
-extension ProductViewController: ReviewElementDelegate, ImagesViewDelegate, DescriptionCellDelegate, ImageSlideShowDelegate {
+extension ProductViewController: ReviewElementDelegate, ImagesViewDelegate, DescriptionCellDelegate, ImageSlideShowDelegate, ProductReviewsCellDelegate {
     
     func addReview(review: String, rating: Int) {
         if let productData = productData {
@@ -166,6 +167,67 @@ extension ProductViewController: ReviewElementDelegate, ImagesViewDelegate, Desc
         DispatchQueue.main.async { [weak self] in
             self?.collectionView.scrollToItem(at: IndexPath(row: 2, section: 0), at: .bottom, animated: true)
         }
+    }
+    
+    func reviewupDated() {
+        guard let productData = productData else { return }
+        self.loadData(with: productData)
+    }
+    
+    func editReviewBegan(frame: CGRect?) {
+        collectionView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: ((frame?.height ?? 0) - (self.tabBarController?.tabBar.frame.height ?? 0)), right: 0)
+        DispatchQueue.main.async { [weak self] in
+            self?.collectionView.scrollToItem(at: IndexPath(row: 2, section: 0), at: .top, animated: true)
+        }
+    }
+    
+    func editReviewEnd() {
+        collectionView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        DispatchQueue.main.async { [weak self] in
+            self?.collectionView.scrollToItem(at: IndexPath(row: 2, section: 0), at: .bottom, animated: true)
+        }
+    }
+    
+    func addImageClicked(sender: UIView, delegateSource: AddReviewCollectionViewCell) {
+        var imagePicker = UIImagePickerController()
+        let alert = UIAlertController(title: "Add Image", message: nil, preferredStyle: .actionSheet)
+        if UIImagePickerController.isSourceTypeAvailable(.camera) {
+            alert.addAction(UIAlertAction(title: "Camera", style: .default, handler: { _ in
+                imagePicker = UIImagePickerController()
+                imagePicker.allowsEditing = true
+                imagePicker.sourceType = .camera
+                imagePicker.modalPresentationStyle = .overFullScreen
+                imagePicker.delegate = delegateSource
+                self.present(imagePicker, animated: true)
+            }))
+        }
+        
+        alert.addAction(UIAlertAction(title: "Gallery", style: .default, handler: { _ in
+            imagePicker = UIImagePickerController()
+            imagePicker.allowsEditing = true
+            imagePicker.sourceType = .photoLibrary
+            imagePicker.modalPresentationStyle = .overFullScreen
+            imagePicker.delegate = delegateSource
+            self.present(imagePicker, animated: true)
+        }))
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            alert.popoverPresentationController?.sourceView = sender
+            alert.popoverPresentationController?.sourceRect = sender.bounds
+            alert.popoverPresentationController?.permittedArrowDirections = [.up, .down]
+        }
+        present(alert, animated: true, completion: nil)
+    }
+    
+    func imagesChanged(_ hasImages: Bool) {
+        if hasImages {
+            ADD_REVIEW_CELL_HEIGHT += 200
+        } else {
+            ADD_REVIEW_CELL_HEIGHT += 200
+        }
+        collectionView.collectionViewLayout.invalidateLayout()
     }
     
     func displaySeller(sellerData: Seller) {
@@ -211,6 +273,7 @@ extension ProductViewController: ReviewElementDelegate, ImagesViewDelegate, Desc
     }
 }
 
+
 class ProductDetailElement {
     var id = UUID()
 }
@@ -245,8 +308,10 @@ class AddReviewElement: ProductDetailElement {
 
 class ReviewElement: ProductDetailElement {
     var reviews: [Review] = []
+    var product: Product
     
-    init(reviews: [Review]) {
+    init(reviews: [Review], product: Product) {
         self.reviews = reviews
+        self.product = product
     }
 }

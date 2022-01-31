@@ -55,17 +55,17 @@ class ProfileTopViewCollectioViewCell: UICollectionViewCell {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Edit profile", for: .normal)
-        button.setTitleColor(UIColor(named: "text_color") , for: .normal)
+        button.setTitleColor(.white , for: .normal)
         if #available(iOS 15, *) {
             var config = UIButton.Configuration.filled()
             config.contentInsets = NSDirectionalEdgeInsets(top: 5, leading: 10, bottom: 5, trailing: 10)
             config.cornerStyle = .medium
-            config.baseBackgroundColor = UIColor(red: 0.917, green: 0.881, blue: 0.561, alpha: 1)
+            config.baseBackgroundColor = .systemBlue.withAlphaComponent(0.5)
             button.configuration = config
         } else {
             button.layer.cornerRadius = 6
             button.contentEdgeInsets = UIEdgeInsets(top: 5, left: 10, bottom: 5, right: 10)
-            button.backgroundColor = UIColor(red: 0.917, green: 0.881, blue: 0.561, alpha: 1)
+            button.backgroundColor = .systemBlue.withAlphaComponent(0.5)
         }
         return button
     }()
@@ -130,7 +130,7 @@ class ProfileTopViewCollectioViewCell: UICollectionViewCell {
     
     @objc
     func onEdit() {
-        
+        delegate?.editTapped()
     }
     
     override func prepareForReuse() {
@@ -152,5 +152,6 @@ class ProfileTopViewCollectioViewCell: UICollectionViewCell {
 protocol ProfileImagesViewDelegate: AnyObject {
     func displayImage(_ image: UIImage?)
     func pickProfilePic(_ sender: UIImageView)
+    func editTapped()
 }
 

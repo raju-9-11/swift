@@ -97,8 +97,8 @@ class ApplicationDB {
                 "name": "text"
             ]) && createTable(tableName: "review_items", with: [
                 "review_id": "integer primary key autoincrement",
-                "user_name": "text",
-                "product_id": "text",
+                "user_id": "Int",
+                "product_id": "Int",
                 "review": "text",
                 "rating": "Int"
             ])
@@ -169,6 +169,36 @@ class ApplicationDB {
         }
         closeDB()
         return true
+    }
+    
+    func getUserName(userID: Int) -> String {
+        var statement: OpaquePointer?
+        var name = "Unknown"
+        guard initDB() else { return name }
+        
+        if sqlite3_prepare(db, "select id ,firstname, lastname, email, ph, country, city, password, password_salt, about from users where id='\(userID)'", -1, &statement, nil) != SQLITE_OK {
+            print("Error \(String(cString: sqlite3_errmsg(db)))")
+            sqlite3_finalize(statement)
+            closeDB()
+            return name
+        }
+        
+        if sqlite3_step(statement) == SQLITE_ROW {
+            let user = User(
+                id: Int(sqlite3_column_int64(statement, 0)),
+                firstName: String(cString: sqlite3_column_text(statement, 1)),
+                lastName: String(cString: sqlite3_column_text(statement, 2)),
+                email: String(cString: sqlite3_column_text(statement, 3)),
+                ph: String(cString: sqlite3_column_text(statement, 4)),
+                country: String(cString: sqlite3_column_text(statement, 5)),
+                city: String(cString: sqlite3_column_text(statement, 6)),
+                about: String(cString: sqlite3_column_text(statement, 9))
+            )
+            name = user.firstName + " " + user.lastName
+        }
+        sqlite3_finalize(statement)
+        closeDB()
+        return name
     }
     
     func verifyUser(email: String, password: String) -> Result<User, UserFetchError> {
@@ -826,20 +856,106 @@ class ApplicationDB {
     
     // MARK: - Review functions
     
+    func editReview(review: String, rating: Int, product: Product) {
+        
+        guard let auth = Auth.auth else { return }
+        
+        guard initDB() else { return }
+        
+        if sqlite3_exec(db, "update review_items set review='\(review)', rating=\(rating) where product_id=\(product.product_id) and user_id=\(auth.user.id)", nil, nil, nil) != SQLITE_OK{
+            print("Error: \(String(cString: sqlite3_errmsg(db)))")
+            Toast.shared.showToast(message: "Unable to alter review")
+            closeDB()
+            return
+        }
+        Toast.shared.showToast(message: "Review Changed")
+        closeDB()
+    }
+    
     func addReview(review: String, rating: Int, productID: Int) {
         
         guard let auth = Auth.auth else { return }
         
         guard initDB() else { return }
         
-        if sqlite3_exec(db, "insert into review_items (user_name, product_id, review, rating) values ('\(auth.user.firstName)',\(productID), '\(review)' , \(rating))", nil, nil, nil) != SQLITE_OK {
+        if sqlite3_exec(db, "insert into review_items (user_id, product_id, review, rating) values (\(auth.user.id),\(productID), '\(review)' , \(rating))", nil, nil, nil) != SQLITE_OK {
             print("Error: \(String(cString: sqlite3_errmsg(db)))")
+            closeDB()
+            Toast.shared.showToast(message: "unable to add review", type: .error)
+            return
+        }
+        Toast.shared.showToast(message: "Review added", type: .success)
+        closeDB()
+        
+    }
+    
+    func deleteReview(review: Review) {
+        guard let auth = Auth.auth, review.userId == auth.user.id else { return }
+        
+        guard initDB() else { return }
+        
+        if sqlite3_exec(db, "delete from review_items where review_id=\(review.reviewId)", nil, nil, nil) != SQLITE_OK {
+            print("Error: \(String(cString: sqlite3_errmsg(db)))")
+            Toast.shared.showToast(message: "Unable to delete review", type: .error)
             closeDB()
             return
         }
         
+        Toast.shared.showToast(message: "Review deleted")
+        
+        closeDB()
+    }
+    
+    func getUserReviews() -> [Review] {
+        
+        guard let auth = Auth.auth else { return [] }
+        var reviews: [Review] = []
+        guard initDB() else { return [] }
+        var statement: OpaquePointer?
+        
+        if sqlite3_prepare(db, "select review_id, product_id, review, rating, user_id from review_items where user_id=\(auth.user.id)", -1, &statement, nil) != SQLITE_OK {
+            print("Error: \(String(cString: sqlite3_errmsg(db)))")
+            sqlite3_finalize(statement)
+            closeDB()
+        }
+        
+        while sqlite3_step(statement) == SQLITE_ROW {
+            let reviewId = Int(sqlite3_column_int(statement, 0))
+            let productId = Int(sqlite3_column_int(statement, 1))
+            let review = String(cString: sqlite3_column_text(statement, 2))
+            let rating = Int(sqlite3_column_int(statement, 3))
+            let userId = Int(sqlite3_column_int(statement, 4))
+            reviews.append(Review(reviewId: reviewId, userName: ApplicationDB.shared.getUserName(userID: userId), userId: userId, review: review, rating: rating, productId: productId))
+        }
+        sqlite3_finalize(statement)
         closeDB()
         
+        return reviews
+    }
+    
+    func hasReviewed(product: Product) -> Review? {
+        guard let auth = Auth.auth else { return nil }
+        guard initDB() else { return nil }
+        var statement: OpaquePointer?
+        
+        if sqlite3_prepare(db, "select review_id, product_id, review, rating from review_items where product_id=\(product.product_id) and user_id=\(auth.user.id)", -1, &statement, nil) != SQLITE_OK {
+            print("Error: \(String(cString: sqlite3_errmsg(db)))")
+            sqlite3_finalize(statement)
+            closeDB()
+        }
+        
+        if sqlite3_step(statement) == SQLITE_ROW {
+            let reviewId = Int(sqlite3_column_int(statement, 0))
+            let productId = Int(sqlite3_column_int(statement, 1))
+            let review = String(cString: sqlite3_column_text(statement, 2))
+            let rating = Int(sqlite3_column_int(statement, 3))
+            sqlite3_finalize(statement)
+            closeDB()
+            return Review(reviewId: reviewId, userName: "\(auth.user.firstName) \(auth.user.lastName)", userId: auth.user.id, review: review, rating: rating, productId: productId)
+        }
+        sqlite3_finalize(statement)
+        closeDB()
+        return nil
     }
     
     func getReviews(product: Product) -> [Review] {
@@ -848,7 +964,7 @@ class ApplicationDB {
         guard initDB() else { return [] }
         var statement: OpaquePointer?
         
-        if sqlite3_prepare(db, "select review_id, user_name, product_id, review, rating from review_items where product_id=\(product.product_id)", -1, &statement, nil) != SQLITE_OK {
+        if sqlite3_prepare(db, "select review_id, product_id, review, rating, user_id from review_items where product_id=\(product.product_id)", -1, &statement, nil) != SQLITE_OK {
             print("Error: \(String(cString: sqlite3_errmsg(db)))")
             sqlite3_finalize(statement)
             closeDB()
@@ -856,11 +972,11 @@ class ApplicationDB {
         
         while sqlite3_step(statement) == SQLITE_ROW {
             let reviewId = Int(sqlite3_column_int(statement, 0))
-            let userName = String(cString: sqlite3_column_text(statement, 1))
-            let productId = Int(sqlite3_column_int(statement, 2))
-            let review = String(cString: sqlite3_column_text(statement, 3))
-            let rating = Int(sqlite3_column_int(statement, 4))
-            reviews.append(Review(reviewId: reviewId, userName: userName, review: review, rating: rating, productId: productId))
+            let productId = Int(sqlite3_column_int(statement, 1))
+            let review = String(cString: sqlite3_column_text(statement, 2))
+            let rating = Int(sqlite3_column_int(statement, 3))
+            let userId = Int(sqlite3_column_int(statement, 4))
+            reviews.append(Review(reviewId: reviewId, userName: ApplicationDB.shared.getUserName(userID: userId), userId: userId, review: review, rating: rating, productId: productId))
         }
         sqlite3_finalize(statement)
         closeDB()

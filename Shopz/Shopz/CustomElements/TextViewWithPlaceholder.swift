@@ -85,6 +85,7 @@ class TextViewWithPlaceHolder: UIView, UITextViewDelegate {
             self.textField.text = newValue
             if newValue.isEmpty {
                 textField.text = placeholder
+                textField.resignFirstResponder()
                 textField.textColor = placeholderColor
             }
         }

@@ -43,6 +43,8 @@
 		9D894135278DBF32004DDDDF /* CategoryThumbnailCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D894134278DBF32004DDDDF /* CategoryThumbnailCollectionViewCell.swift */; };
 		9D984BE727A6E3CB00604A08 /* DropDown.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D984BE627A6E3CB00604A08 /* DropDown.swift */; };
 		9D984BE927A6E8DD00604A08 /* DropDownWithError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D984BE827A6E8DD00604A08 /* DropDownWithError.swift */; };
+		9D984BEB27A7D96500604A08 /* RatingElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D984BEA27A7D96500604A08 /* RatingElement.swift */; };
+		9D984BEF27A7E97B00604A08 /* ProfileReviewsViewCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D984BEE27A7E97B00604A08 /* ProfileReviewsViewCollectionViewCell.swift */; };
 		9D9B16C827685F8A00BE8456 /* Auth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D9B16C727685F8A00BE8456 /* Auth.swift */; };
 		9D9B16CC27689BE300BE8456 /* FormTextFieldCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D9B16CB27689BE300BE8456 /* FormTextFieldCollectionViewCell.swift */; };
 		9D9B16CE27689BF800BE8456 /* FormDatePickerCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D9B16CD27689BF800BE8456 /* FormDatePickerCollectionViewCell.swift */; };
@@ -129,6 +131,8 @@
 		9D894134278DBF32004DDDDF /* CategoryThumbnailCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryThumbnailCollectionViewCell.swift; sourceTree = "<group>"; };
 		9D984BE627A6E3CB00604A08 /* DropDown.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropDown.swift; sourceTree = "<group>"; };
 		9D984BE827A6E8DD00604A08 /* DropDownWithError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropDownWithError.swift; sourceTree = "<group>"; };
+		9D984BEA27A7D96500604A08 /* RatingElement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RatingElement.swift; sourceTree = "<group>"; };
+		9D984BEE27A7E97B00604A08 /* ProfileReviewsViewCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileReviewsViewCollectionViewCell.swift; sourceTree = "<group>"; };
 		9D9B16C727685F8A00BE8456 /* Auth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Auth.swift; sourceTree = "<group>"; };
 		9D9B16CB27689BE300BE8456 /* FormTextFieldCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormTextFieldCollectionViewCell.swift; sourceTree = "<group>"; };
 		9D9B16CD27689BF800BE8456 /* FormDatePickerCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormDatePickerCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -277,6 +281,7 @@
 				9D9C2FE727A5DBCB009D4FAE /* CustomViewController.swift */,
 				9D984BE627A6E3CB00604A08 /* DropDown.swift */,
 				9D984BE827A6E8DD00604A08 /* DropDownWithError.swift */,
+				9D984BEA27A7D96500604A08 /* RatingElement.swift */,
 			);
 			path = CustomElements;
 			sourceTree = "<group>";
@@ -436,6 +441,7 @@
 				9DBF3B74276A0E5A009EFB26 /* ShoppingListCollectionViewCell.swift */,
 				9DBF3B76276A17D9009EFB26 /* ShoppingListSubCollectionViewCell.swift */,
 				9D54542D27A2DA8300180C23 /* ProfileFooterViewCollectionViewCell.swift */,
+				9D984BEE27A7E97B00604A08 /* ProfileReviewsViewCollectionViewCell.swift */,
 			);
 			path = ProfileViews;
 			sourceTree = "<group>";
@@ -538,6 +544,7 @@
 				9DFB3CFB27A028F900A27215 /* ShoppingList.swift in Sources */,
 				9D280088278CB1F20079DC29 /* Product.swift in Sources */,
 				9D9B16CC27689BE300BE8456 /* FormTextFieldCollectionViewCell.swift in Sources */,
+				9D984BEF27A7E97B00604A08 /* ProfileReviewsViewCollectionViewCell.swift in Sources */,
 				9D1F09362770503E000BF602 /* DescriptionCollectionViewCell.swift in Sources */,
 				9DE006C22771BE390025840F /* OrderHistoryViewController.swift in Sources */,
 				9D894132278DBB04004DDDDF /* Category.swift in Sources */,
@@ -563,6 +570,7 @@
 				9D9D9D9A27675C4500FD1D54 /* ItemThumbNailCollectionViewCell.swift in Sources */,
 				9D9C2FE627A5CF0A009D4FAE /* ImageSlideShow.swift in Sources */,
 				9DA6942C27A1C62900947DA1 /* Review.swift in Sources */,
+				9D984BEB27A7D96500604A08 /* RatingElement.swift in Sources */,
 				9DA99A1127719C6F00B8053B /* AddAddressCollectionViewCell.swift in Sources */,
 				9D54542827A2BDD500180C23 /* SellerHomeTitleViewCell.swift in Sources */,
 				9D67187A27A6A317006A7963 /* DataConfig.swift in Sources */,
