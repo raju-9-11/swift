@@ -7,8 +7,6 @@
 
 import UIKit
 
-internal var ADD_REVIEW_CELL_HEIGHT: CGFloat = 200
-
 class AddReviewCollectionViewCell: UICollectionViewCell {
     
     static let cellID = "AddREVIEWSELEMENTCELL"
@@ -17,16 +15,57 @@ class AddReviewCollectionViewCell: UICollectionViewCell {
     
     var cellFrame: CGSize = CGSize(width: 100, height: 100)
     
+    var review: Review? {
+        willSet {
+            addReviewTextView.isEnabled = newValue == nil
+            rating.isEnabled = newValue == nil
+            if newValue != nil {
+                stackView.insertArrangedSubview(titleLabel, at: 0)
+                rating.currentUserRating = newValue?.rating ?? 1
+                addReviewTextView.text = newValue?.review ?? ""
+                addButtons.addArrangedSubview(editButton)
+                addButtons.addArrangedSubview(deleteButton)
+                DispatchQueue.main.async {
+                    if self.editButton.title(for: .normal) == "Save" {
+                        self.addReviewTextView.isEnabled = true
+                        self.rating.isEnabled = true
+                        self.addButtons.addArrangedSubview(self.addImageButton)
+                        self.addButtons.addArrangedSubview(self.cancelButton)
+                    }
+                }
+            } else {
+                addButtons.addArrangedSubview(addReviewButton)
+                addButtons.addArrangedSubview(addImageButton)
+                titleLabel.removeFromSuperview()
+            }
+            self.setupLayout()
+        }
+    }
+    
     var images: [UIImage] = [] {
         willSet {
             imagesView.isHidden = newValue.isEmpty
-            self.delegate?.imagesChanged(newValue.isEmpty)
+            if images.isEmpty != newValue.isEmpty {
+                self.delegate?.imagesChanged(newValue.isEmpty, images: newValue)
+            }
+            DispatchQueue.main.async {
+                self.imagesView.reloadData()
+            }
         }
     }
+    
+    let titleLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = UIColor(named: "text_color")
+        label.font = .systemFont(ofSize: 15, weight: .heavy)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = "Your Review"
+        return label
+    }()
 
     let addReviewView: UIView = {
         let view = UIView()
-        view.backgroundColor = .clear
+        view.backgroundColor = .blue
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -55,21 +94,53 @@ class AddReviewCollectionViewCell: UICollectionViewCell {
         return button
     }()
     
+    let cancelButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setImage(UIImage(systemName: "xmark.square"), for: .normal)
+        button.setTitle("Cancel", for: .normal)
+        button.tintColor = UIColor(named: "text_color")
+        button.setContentMode(mode: .scaleAspectFit)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    
     let imagesView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        cv.register(AddReviewImageCollectionViewCell.self, forCellWithReuseIdentifier: AddReviewImageCollectionViewCell.cellID)
         cv.translatesAutoresizingMaskIntoConstraints = false
-        cv.backgroundColor = .red
+        cv.backgroundColor = .clear
         cv.isHidden = true
         return cv
     }()
     
     let addImageButton: UIButton = {
-        let button = UIButton()
+        let button = UIButton(type: .system)
         button.setImage(UIImage(systemName: "photo.fill"), for: .normal)
         button.tintColor = UIColor(named: "text_color")
         button.setContentMode(mode: .scaleAspectFit)
         button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    
+    let editButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setImage(UIImage(systemName: "pencil.circle.fill"), for: .normal)
+        button.setTitle("Edit Review", for: .normal)
+        button.setContentMode(mode: .scaleAspectFit)
+        button.tintColor = UIColor(named: "text_color")
+        return button
+    }()
+    
+    let deleteButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setImage(UIImage(systemName: "delete.left"), for: .normal)
+        button.setTitle("Delete", for: .normal)
+        button.setContentMode(mode: .scaleAspectFit)
+        button.tintColor = UIColor(named: "text_color")
         return button
     }()
     
@@ -79,49 +150,49 @@ class AddReviewCollectionViewCell: UICollectionViewCell {
         return ratingElem
     }()
     
+    let stackView: UIStackView = {
+        let stack = UIStackView()
+        stack.axis = .vertical
+        stack.distribution = .equalSpacing
+        stack.spacing = 5
+        stack.contentMode = .center
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        return stack
+    }()
+    
+    lazy var addButtons: UIStackView = {
+        return getStack(views: [], axis: .horizontal, dist: .fillProportionally)
+    }()
     
     func setupLayout() {
         
-        addReviewView.addSubview(rating)
-        addReviewView.addSubview(addReviewTextView)
-        addReviewView.addSubview(addReviewButton)
-        addReviewView.addSubview(addImageButton)
-        
         addReviewButton.addTarget(self, action: #selector(onAddReview), for: .touchUpInside)
         addImageButton.addTarget(self, action: #selector(onAddImage), for: .touchUpInside)
-        
-        contentView.addSubview(imagesView)
-        contentView.addSubview(addReviewView)
+        editButton.addTarget(self, action: #selector(onEditClick), for: .touchUpInside)
+        cancelButton.addTarget(self, action: #selector(onCancelClick), for: .touchUpInside)
         
         contentView.backgroundColor = UIColor(named: "thumbnail_color")
         
         NotificationCenter.default.addObserver(self, selector: #selector(onKeyboardAppear), name: UIResponder.keyboardDidShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(onKeyboardDisappear), name: UIResponder.keyboardDidHideNotification, object: nil)
         
+        stackView.addArrangedSubview(addReviewTextView)
+        stackView.addArrangedSubview(rating)
+        stackView.addArrangedSubview(imagesView)
+        stackView.addArrangedSubview(addButtons)
+        
+        imagesView.delegate = self
+        imagesView.dataSource = self
+        
+        contentView.addSubview(stackView)
         NSLayoutConstraint.activate([
-            rating.topAnchor.constraint(equalTo: addReviewView.topAnchor),
-            rating.centerXAnchor.constraint(equalTo: addReviewTextView.centerXAnchor),
-            rating.widthAnchor.constraint(equalTo: addReviewTextView.widthAnchor, constant: -5),
+            stackView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            stackView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            addReviewTextView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.9),
+            addReviewTextView.heightAnchor.constraint(equalToConstant: 80),
             rating.heightAnchor.constraint(equalToConstant: RatingElement.defHeight),
-            addReviewTextView.topAnchor.constraint(equalTo: rating.bottomAnchor, constant: 10),
-            addReviewTextView.heightAnchor.constraint(equalTo: addReviewView.heightAnchor, multiplier: 0.5),
-            addReviewTextView.widthAnchor.constraint(equalTo: addReviewView.widthAnchor, multiplier: 0.9),
-            addReviewTextView.centerXAnchor.constraint(equalTo: addReviewView.centerXAnchor),
-            addReviewButton.widthAnchor.constraint(equalTo: addReviewView.widthAnchor, multiplier: 0.6),
-            addReviewButton.leftAnchor.constraint(equalTo: addReviewTextView.leftAnchor),
-            addImageButton.leftAnchor.constraint(equalTo: addReviewButton.rightAnchor, constant: 5),
-            addImageButton.centerYAnchor.constraint(equalTo: addReviewButton.centerYAnchor),
-            addReviewButton.topAnchor.constraint(equalTo: addReviewTextView.bottomAnchor, constant: 10),
-            addReviewView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
-            addReviewView.heightAnchor.constraint(equalTo: contentView.heightAnchor),
-            addReviewView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.9),
-            addReviewView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            imagesView.heightAnchor.constraint(equalToConstant: 100),
         ])
-    }
-    
-    @objc
-    func onAddImage() {
-        delegate?.addImageClicked(sender: addImageButton, delegateSource: self)
     }
     
     deinit {
@@ -131,6 +202,84 @@ class AddReviewCollectionViewCell: UICollectionViewCell {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesBegan(touches, with: event)
         self.contentView.endEditing(true)
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        self.removeViews()
+        self.addReviewTextView.text = ""
+        self.addReviewTextView.isEnabled = true
+        self.rating.isEnabled = true
+        addButtons.arrangedSubviews.forEach({ $0.removeFromSuperview()})
+    }
+    
+    override func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
+        let attr = layoutAttributes
+        layoutAttributes.frame.size = CGSize(width: cellFrame.width, height: stackView.frame.height)
+        return attr
+    }
+    
+    @objc
+    func onEditClick() {
+        if editButton.title(for: .normal) == "Edit Review" {
+            self.imagesView.reloadData()
+            editButton.setTitle("Save", for: .normal)
+            self.addReviewTextView.isEnabled = true
+            self.rating.isEnabled = true
+            self.addButtons.addArrangedSubview(addImageButton)
+            self.addButtons.addArrangedSubview(cancelButton)
+            addReviewTextView.makeFirstResponder()
+        } else {
+            if !addReviewTextView.text.isEmpty {
+                editButton.setTitle("Edit Review", for: .normal)
+                self.addReviewTextView.isEnabled = false
+                self.rating.isEnabled = false
+                addImageButton.removeFromSuperview()
+                cancelButton.removeFromSuperview()
+                guard let review = review else {
+                    return
+                }
+                delegate?.editReview(oldReview: review, rating: rating.currentUserRating, review: addReviewTextView.text)
+            } else {
+                Toast.shared.showToast(message: "Review Cannot be Empty")
+            }
+            //Reload images from Disk
+            self.imagesView.reloadData()
+        }
+    }
+    
+    @objc
+    func onCancelClick() {
+        addReviewTextView.text = review?.review ?? ""
+        editButton.setTitle("Edit Review", for: .normal)
+        self.addReviewTextView.isEnabled = false
+        self.rating.isEnabled = false
+        addImageButton.removeFromSuperview()
+        cancelButton.removeFromSuperview()
+        //Add reload images from disk
+        self.imagesView.reloadData()
+    }
+    
+    @objc
+    func onAddImage() {
+        delegate?.addImageClicked(sender: addImageButton, delegateSource: self)
+    }
+    
+    
+    func getStack(views: [UIView], axis: NSLayoutConstraint.Axis, dist: UIStackView.Distribution, spacing: CGFloat = 2) -> UIStackView {
+        let stack = UIStackView(arrangedSubviews: views)
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        stack.axis = axis
+        stack.distribution = dist
+        stack.spacing = spacing
+        return stack
+    }
+    
+    func deleteReview(review: Review?) {
+        guard let review = review else {
+            return
+        }
+        delegate?.deleteReview(review)
     }
     
     @objc
@@ -150,22 +299,48 @@ class AddReviewCollectionViewCell: UICollectionViewCell {
     
     @objc
     func onAddReview() {
-        delegate?.addReview(review: addReviewTextView.text, rating: rating.currentUserRating)
-        self.addReviewTextView.text = ""
+        if !addReviewTextView.text.isEmpty {
+            delegate?.addReview(review: addReviewTextView.text, rating: rating.currentUserRating)
+            self.addReviewTextView.text = ""
+        } else {
+            Toast.shared.showToast(message: "Review cannot be empty")
+        }
     }
     
-    
-    override func prepareForReuse() {
-        super.prepareForReuse()
-        self.removeViews()
+}
+
+extension AddReviewCollectionViewCell: UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return images.count
     }
     
-    override func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
-        let attr = layoutAttributes
-        layoutAttributes.frame.size = CGSize(width: cellFrame.width, height: ADD_REVIEW_CELL_HEIGHT)
-        return attr
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: AddReviewImageCollectionViewCell.cellID, for: indexPath) as! AddReviewImageCollectionViewCell
+        cell.delegate = self
+        cell.isEnabled = (review == nil) ? true : editButton.title(for: .normal) == "Save" ? true : false
+        cell.image = images[indexPath.row]
+        cell.indexPath = indexPath
+        return cell
     }
     
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: collectionView.frame.height, height: collectionView.frame.height)
+    }
+}
+
+extension AddReviewCollectionViewCell: AddReviewImageDelegate {
+    func deleteImage(at index: IndexPath) {
+        print(index.row)
+        guard index.row < images.count else { return }
+        imagesView.performBatchUpdates({
+            self.images.remove(at: index.row)
+            self.imagesView.deleteItems(at: [index])
+        }, completion: {
+            _ in
+            self.imagesView.reloadData()
+        })
+        
+    }
 }
 
 extension AddReviewCollectionViewCell: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
@@ -190,6 +365,7 @@ extension AddReviewCollectionViewCell: UIImagePickerControllerDelegate, UINaviga
     private func convertFromUIImagePickerControllerInfoKey(_ input: UIImagePickerController.InfoKey) -> String {
         return input.rawValue
     }
+    
 }
 
 
@@ -197,7 +373,9 @@ protocol ReviewElementDelegate: AnyObject {
     func addReview(review: String, rating: Int)
     func reviewBeginEditing(frame: CGRect?)
     func reviewDidEndEditing()
+    func editReview(oldReview: Review, rating: Int, review: String)
+    func deleteReview(_ review: Review)
     func addImageClicked(sender: UIView, delegateSource: AddReviewCollectionViewCell)
-    func imagesChanged(_ hasImages: Bool)
+    func imagesChanged(_ hasImages: Bool, images: [UIImage])
 }
 

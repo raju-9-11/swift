@@ -28,6 +28,12 @@ class ProductViewController: CustomViewController {
         return cv
     }()
     
+    var myReview: Review? {
+        willSet {
+            
+        }
+    }
+    
     var sellerVC: SellerHomeViewController?
     
     var productData: Product? {
@@ -38,20 +44,21 @@ class ProductViewController: CustomViewController {
         }
     }
     
-    var cells: [ProductDetailElement] = []
+    var cells: [ProductDetailElement] = [] {
+        willSet {
+            DispatchQueue.main.async {
+                self.collectionView.reloadData()
+                self.collectionView.layoutIfNeeded()
+            }
+        }
+    }
+    var reviewImages: [UIImage] = []
     
     var cvc: CheckoutViewController?
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    override func loadView() {
+        super.loadView()
         self.setupLayout()
-    }
-    
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        collectionView.reloadData()
-        collectionView.layoutSubviews()
     }
     
     
@@ -81,16 +88,19 @@ class ProductViewController: CustomViewController {
         bottomConstraint?.isActive = true
     }
     
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        collectionView.layoutIfNeeded()
+    }
+    
     func loadData(with product: Product) {
+        myReview = ApplicationDB.shared.hasReviewed(product: product)
         cells = [
             ImagesViewElement(images: product.image_media),
             DescriptionElement(description: product.description, title: product.product_name, cost: product.price, rating: product.rating, seller: StorageDB.getSellerData(of: product.seller_id)),
-            ReviewElement(reviews: ApplicationDB.shared.getReviews(product: product), product: product)
+            AddReviewElement(isEnabled: myReview == nil),
+            ReviewElement(reviews: ApplicationDB.shared.getReviews(product: product))
         ]
-        if ApplicationDB.shared.userHasPurchased(product: product) && ApplicationDB.shared.hasReviewed(product: product) == nil {
-            cells.insert(AddReviewElement(), at: 2)
-        }
-        collectionView.reloadData()
     }
     
 
@@ -113,18 +123,19 @@ extension ProductViewController: UICollectionViewDelegate, UICollectionViewDeleg
         }
         if let item = cells[indexPath.row] as? DescriptionElement {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: DescriptionCollectionViewCell.cellID, for: indexPath) as! DescriptionCollectionViewCell
-            cell.data = item
             cell.delegate = self
-            cell.cellFrame = CGSize(width: collectionView.frame.width, height: 100)
-            cell.layoutIfNeeded()
-            collectionView.layoutSubviews()
+            cell.data = item
+            let textviewHeight = item.title.height(withConstrainedWidth: view.frame.width*0.7, font: .italicSystemFont(ofSize: 13))
+            let titleLabelHeight = item.description.height(withConstrainedWidth: view.frame.width*0.7, font: .systemFont(ofSize: 15, weight: .semibold))
+            let frameHeight = textviewHeight + titleLabelHeight + 150
+            cell.cellFrame = CGSize(width: collectionView.frame.width, height: max(200, frameHeight))
             return cell
         }
         
         if let _ = cells[indexPath.row] as? AddReviewElement {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: AddReviewCollectionViewCell.cellID, for: indexPath) as! AddReviewCollectionViewCell
             cell.delegate = self
-            cell.setupLayout()
+            cell.review = myReview
             cell.cellFrame = CGSize(width: collectionView.frame.width, height: 100)
             return cell
         }
@@ -132,7 +143,6 @@ extension ProductViewController: UICollectionViewDelegate, UICollectionViewDeleg
         if let item = cells[indexPath.row] as? ReviewElement {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ReviewsCollectionViewCell.cellID, for: indexPath) as! ReviewsCollectionViewCell
             cell.reviewElementData = item
-            cell.delegate = self
             cell.cellFrame = CGSize(width: collectionView.frame.width, height: collectionView.frame.height)
             return cell
         }
@@ -147,13 +157,21 @@ extension ProductViewController: UICollectionViewDelegate, UICollectionViewDeleg
     }
 }
 
-extension ProductViewController: ReviewElementDelegate, ImagesViewDelegate, DescriptionCellDelegate, ImageSlideShowDelegate, ProductReviewsCellDelegate {
+extension ProductViewController: ReviewElementDelegate, ImagesViewDelegate, DescriptionCellDelegate, ImageSlideShowDelegate {
     
     func addReview(review: String, rating: Int) {
         if let productData = productData {
             ApplicationDB.shared.addReview(review: review, rating: rating, productID: productData.product_id)
             self.loadData(with: productData)
         }
+    }
+    
+    func editReview(oldReview: Review, rating: Int, review: String) {
+        ApplicationDB.shared.editReview(oldReview: oldReview, rating: rating, review: review)
+    }
+    
+    func deleteReview(_ review: Review) {
+        ApplicationDB.shared.deleteReview(review: review)
     }
     
     func reviewBeginEditing(frame: CGRect?) {
@@ -164,25 +182,6 @@ extension ProductViewController: ReviewElementDelegate, ImagesViewDelegate, Desc
     }
     func reviewDidEndEditing() {
         bottomConstraint?.constant = 0
-        DispatchQueue.main.async { [weak self] in
-            self?.collectionView.scrollToItem(at: IndexPath(row: 2, section: 0), at: .bottom, animated: true)
-        }
-    }
-    
-    func reviewupDated() {
-        guard let productData = productData else { return }
-        self.loadData(with: productData)
-    }
-    
-    func editReviewBegan(frame: CGRect?) {
-        collectionView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: ((frame?.height ?? 0) - (self.tabBarController?.tabBar.frame.height ?? 0)), right: 0)
-        DispatchQueue.main.async { [weak self] in
-            self?.collectionView.scrollToItem(at: IndexPath(row: 2, section: 0), at: .top, animated: true)
-        }
-    }
-    
-    func editReviewEnd() {
-        collectionView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         DispatchQueue.main.async { [weak self] in
             self?.collectionView.scrollToItem(at: IndexPath(row: 2, section: 0), at: .bottom, animated: true)
         }
@@ -211,6 +210,18 @@ extension ProductViewController: ReviewElementDelegate, ImagesViewDelegate, Desc
             self.present(imagePicker, animated: true)
         }))
         
+        alert.addAction(UIAlertAction(title: "Video", style: .default, handler: { _ in
+            imagePicker = UIImagePickerController()
+            imagePicker.allowsEditing = true
+            imagePicker.sourceType = .photoLibrary
+            imagePicker.mediaTypes = ["public.movie"]
+            imagePicker.modalPresentationStyle = .overFullScreen
+            imagePicker.delegate = delegateSource
+            self.present(imagePicker, animated: true)
+        }))
+        
+        
+        
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         
         if UIDevice.current.userInterfaceIdiom == .pad {
@@ -221,13 +232,11 @@ extension ProductViewController: ReviewElementDelegate, ImagesViewDelegate, Desc
         present(alert, animated: true, completion: nil)
     }
     
-    func imagesChanged(_ hasImages: Bool) {
-        if hasImages {
-            ADD_REVIEW_CELL_HEIGHT += 200
-        } else {
-            ADD_REVIEW_CELL_HEIGHT += 200
-        }
+    func imagesChanged(_ hasImages: Bool, images: [UIImage]) {
         collectionView.collectionViewLayout.invalidateLayout()
+        DispatchQueue.main.async {
+            self.collectionView.scrollToItem(at: IndexPath(row: 2, section: 0), at: .top, animated: true)
+        }
     }
     
     func displaySeller(sellerData: Seller) {
@@ -303,15 +312,16 @@ class DescriptionElement: ProductDetailElement {
 }
 
 class AddReviewElement: ProductDetailElement {
-    
+    var isEditing: Bool
+    init(isEnabled: Bool) {
+        self.isEditing = isEnabled
+    }
 }
 
 class ReviewElement: ProductDetailElement {
     var reviews: [Review] = []
-    var product: Product
     
-    init(reviews: [Review], product: Product) {
+    init(reviews: [Review]) {
         self.reviews = reviews
-        self.product = product
     }
 }

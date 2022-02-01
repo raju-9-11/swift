@@ -11,6 +11,19 @@ class TextViewWithPlaceHolder: UIView, UITextViewDelegate {
     
     var isEditing: Bool = false
     
+    var isEnabled: Bool = true {
+        willSet {
+            if newValue {
+                textField.layer.borderWidth = 1
+            } else {
+                textField.layer.borderWidth = 0
+            }
+            textField.isSelectable = newValue
+            textField.isScrollEnabled = newValue
+            textField.isEditable = newValue
+        }
+    }
+    
     var customBackgroundColor: UIColor? {
         get {
             return self.textField.backgroundColor
@@ -78,15 +91,15 @@ class TextViewWithPlaceHolder: UIView, UITextViewDelegate {
             if textField.textColor == textViewTextColor {
                 return textField.text
             }
-            
             return ""
         }
         set {
             self.textField.text = newValue
             if newValue.isEmpty {
                 textField.text = placeholder
-                textField.resignFirstResponder()
                 textField.textColor = placeholderColor
+            } else {
+                textField.textColor = textViewTextColor
             }
         }
     }
@@ -103,7 +116,7 @@ class TextViewWithPlaceHolder: UIView, UITextViewDelegate {
     private let textField: UITextView = {
         let textview = UITextView()
         textview.layer.cornerRadius = 6
-        textview.textColor = UIColor(named: "subtitle_text")
+        textview.textColor =  UIColor(named: "text_color")
         textview.layer.borderColor = UIColor.darkGray.cgColor
         textview.layer.borderWidth = 1
         textview.translatesAutoresizingMaskIntoConstraints = false
@@ -141,6 +154,10 @@ class TextViewWithPlaceHolder: UIView, UITextViewDelegate {
             textField.widthAnchor.constraint(equalTo: self.widthAnchor),
             textField.centerXAnchor.constraint(equalTo: self.centerXAnchor),
         ])
+    }
+    
+    func makeFirstResponder() {
+        textField.becomeFirstResponder()
     }
     
     func textViewDidBeginEditing(_ textView: UITextView) {

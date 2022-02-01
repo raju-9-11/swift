@@ -128,7 +128,6 @@ class OrderHistoryItemCollectionViewCell: UICollectionViewCell {
         stackView.axis = .horizontal
         stackView.spacing = 3
         stackView.distribution = .fillProportionally
-        stackView.contentMode = .scaleAspectFit
         return stackView
     }()
 

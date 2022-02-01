@@ -204,6 +204,7 @@ extension ProfileViewController: UICollectionViewDataSource, UICollectionViewDel
         if let reviewsData = item as? ProfileReviewListElemrnt {
             let cell = containerView.dequeueReusableCell(withReuseIdentifier: ProfileReviewsViewCollectionViewCell.cellID, for: indexPath) as! ProfileReviewsViewCollectionViewCell
             cell.cellFrame = collectionView.frame
+            cell.delegate = self
             cell.reviewElementData = reviewsData
             return cell
         }
@@ -291,7 +292,10 @@ extension ProfileViewController: ShoppingListCellDelegate, ProfileImagesViewDele
     }
     
     func editTapped() {
-        //
+        let profileEditVC = ProfileEditViewController()
+        profileEditVC.modalTransitionStyle = .crossDissolve
+        profileEditVC.modalPresentationStyle = .overFullScreen
+        self.present(profileEditVC, animated: true, completion: nil)
     }
     
     func reviewSelect(review: Review, product: Product) {

@@ -856,13 +856,13 @@ class ApplicationDB {
     
     // MARK: - Review functions
     
-    func editReview(review: String, rating: Int, product: Product) {
+    func editReview(oldReview: Review, rating: Int, review: String) {
         
         guard let auth = Auth.auth else { return }
         
         guard initDB() else { return }
         
-        if sqlite3_exec(db, "update review_items set review='\(review)', rating=\(rating) where product_id=\(product.product_id) and user_id=\(auth.user.id)", nil, nil, nil) != SQLITE_OK{
+        if sqlite3_exec(db, "update review_items set review='\(review)', rating=\(rating) where product_id=\(oldReview.productId) and user_id=\(auth.user.id)", nil, nil, nil) != SQLITE_OK{
             print("Error: \(String(cString: sqlite3_errmsg(db)))")
             Toast.shared.showToast(message: "Unable to alter review")
             closeDB()

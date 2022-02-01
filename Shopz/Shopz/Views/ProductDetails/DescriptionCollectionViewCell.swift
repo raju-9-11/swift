@@ -39,9 +39,16 @@ class DescriptionCollectionViewCell: UICollectionViewCell, UIContextMenuInteract
         return label
     }()
     
+    let rating: RatingElement = {
+        let rating = RatingElement()
+        rating.translatesAutoresizingMaskIntoConstraints = false
+        rating.isEnabled = false
+        return rating
+    }()
+    
     let ratingsLabel: UILabel = {
         let label = UILabel()
-        label.text = "4.4/5"
+        label.text = "Rating:"
         label.textColor = UIColor(named: "subtitle_text")
         label.contentMode = .left
         label.translatesAutoresizingMaskIntoConstraints = false 
@@ -53,7 +60,7 @@ class DescriptionCollectionViewCell: UICollectionViewCell, UIContextMenuInteract
         let textView = UITextView()
         textView.translatesAutoresizingMaskIntoConstraints = false
         textView.textColor = UIColor(named: "subtitle_text")
-        textView.text = "PLACEHOLDER"
+        textView.text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed semper ex nec ultrices efficitur. Cras maximus pulvinar mi, ullamcorper bibendum arcu bibendum id. Proin interdum accumsan turpis. Quisque aliquam magna a consequat auctor. Maecenas semper tortor laoreet ipsum tincidunt, non tristique ligula molestie. Phasellus mattis nisl eget congue faucibus. Fusce diam urna, pulvinar congue vehicula in, cursus at felis."
         textView.isEditable = false
         textView.isSelectable = false
         textView.isUserInteractionEnabled = false
@@ -124,11 +131,9 @@ class DescriptionCollectionViewCell: UICollectionViewCell, UIContextMenuInteract
         return button
     }()
     
-    let costRatings: UIStackView = {
-        let view = UIStackView()
-        view.distribution = .equalSpacing
-        view.axis = .horizontal
-        view.contentMode = .center
+    let costRatings: UIView = {
+        let view = UIView()
+        view.backgroundColor = .clear
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -153,26 +158,36 @@ class DescriptionCollectionViewCell: UICollectionViewCell, UIContextMenuInteract
         return view
     }()
     
+    let stackView: UIStackView = {
+        let stack = UIStackView()
+        stack.axis = .vertical
+        stack.distribution = .equalSpacing
+        stack.spacing = 5
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        return stack
+    }()
+    
     var data: DescriptionElement? {
         willSet {
             if newValue != nil {
                 titleLabel.text = newValue!.title
                 textView.text = newValue!.description
-                ratingsLabel.text = "\(newValue!.rating)/5.0"
+                rating.currentUserRating = Int(truncating: NSDecimalNumber(decimal: newValue!.rating))
                 costlabel.text = "$ \(newValue!.cost)"
                 if newValue?.seller != nil {
                     sellerButton.setTitle(newValue!.seller!.seller_name, for: .normal)
                 }
             }
             self.setupLayout()
+            
         }
     }
     
     
     func setupLayout() {
         sellerButton.addTarget(self, action: #selector(onSellerClick), for: .touchUpInside)
-        costRatings.addArrangedSubview(costlabel)
-        costRatings.addArrangedSubview(ratingsLabel)
+        costRatings.addSubview(costlabel)
+        costRatings.addSubview(rating)
         contentView.backgroundColor = .clear
         
         let contextMenuInteraction = UIContextMenuInteraction(delegate: self)
@@ -194,6 +209,7 @@ class DescriptionCollectionViewCell: UICollectionViewCell, UIContextMenuInteract
         contentView.addSubview(sellerView)
         contentView.addSubview(buttonsView)
         contentView.addSubview(textView)
+  
         NSLayoutConstraint.activate([
             titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor),
             titleLabel.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.9),
@@ -201,6 +217,13 @@ class DescriptionCollectionViewCell: UICollectionViewCell, UIContextMenuInteract
             costRatings.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 10),
             costRatings.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.8),
             costRatings.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            costRatings.heightAnchor.constraint(equalToConstant: 30),
+            costlabel.centerYAnchor.constraint(equalTo: costRatings.centerYAnchor),
+            costlabel.leftAnchor.constraint(equalTo: costRatings.leftAnchor),
+            rating.rightAnchor.constraint(equalTo: costRatings.rightAnchor),
+            rating.centerYAnchor.constraint(equalTo: costRatings.centerYAnchor),
+            rating.heightAnchor.constraint(equalToConstant: 20),
+            rating.widthAnchor.constraint(equalTo: costRatings.widthAnchor, multiplier: 0.5),
             buttonsView.topAnchor.constraint(equalTo: costRatings.bottomAnchor, constant: 10),
             buttonsView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             sellerView.topAnchor.constraint(equalTo: buttonsView.bottomAnchor, constant: 10),
@@ -209,7 +232,19 @@ class DescriptionCollectionViewCell: UICollectionViewCell, UIContextMenuInteract
             textView.topAnchor.constraint(equalTo: sellerButton.bottomAnchor),
             textView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
         ])
-        self.layoutIfNeeded()
+        
+        
+//        stackView.addArrangedSubview(titleLabel)
+//        stackView.addArrangedSubview(costRatings)
+//        stackView.addArrangedSubview(sellerView)
+//        stackView.addArrangedSubview(buttonsView)
+//        stackView.addArrangedSubview(textView)
+//        contentView.addSubview(stackView)
+//        NSLayoutConstraint.activate([
+//            stackView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+//            stackView.topAnchor.constraint(equalTo: contentView.topAnchor),
+//            stackView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.9)
+//        ])
     }
     
     func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
@@ -263,8 +298,7 @@ class DescriptionCollectionViewCell: UICollectionViewCell, UIContextMenuInteract
     
     override func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
         let attr = layoutAttributes
-        let frameHeight = textView.frame.height + titleLabel.frame.height + buttonsView.frame.height + 100
-        attr.size = CGSize(width: cellFrame.width, height: frameHeight)
+        attr.size = cellFrame
         return attr
     }
    
@@ -275,4 +309,13 @@ protocol DescriptionCellDelegate {
     func buyClicked()
     func addToCartClicked()
     func addToShoppingList(list: ShoppingList)
+}
+
+extension String {
+    func height(withConstrainedWidth width: CGFloat, font: UIFont) -> CGFloat {
+        let constraintRect = CGSize(width: width, height: .greatestFiniteMagnitude)
+        let boundingBox = self.boundingRect(with: constraintRect, options: .usesLineFragmentOrigin, attributes: [NSAttributedString.Key.font: font], context: nil)
+    
+        return ceil(boundingBox.height)
+    }
 }

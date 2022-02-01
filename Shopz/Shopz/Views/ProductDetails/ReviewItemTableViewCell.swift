@@ -46,11 +46,20 @@ class ReviewItemTableViewCell: UITableViewCell {
         return textview
     }()
     
+    
+    let rating: RatingElement = {
+        let rating = RatingElement()
+        rating.isEnabled = false
+        rating.translatesAutoresizingMaskIntoConstraints = false
+        return rating
+    }()
+    
     var review: Review? {
         willSet {
             if newValue != nil {
                 reviewView.text = newValue?.review
                 nameLabel.text = newValue?.userName
+                rating.currentUserRating = newValue!.rating
             }
             self.setupLayout()
         }
@@ -63,7 +72,6 @@ class ReviewItemTableViewCell: UITableViewCell {
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-
         // Configure the view for the selected state
     }
     
@@ -72,6 +80,7 @@ class ReviewItemTableViewCell: UITableViewCell {
         contentView.addSubview(profilePic)
         containerView.addSubview(nameLabel)
         containerView.addSubview(reviewView)
+        containerView.addSubview(rating)
         contentView.addSubview(containerView)
         NSLayoutConstraint.activate([
             containerView.rightAnchor.constraint(equalTo: contentView.rightAnchor),
@@ -87,7 +96,11 @@ class ReviewItemTableViewCell: UITableViewCell {
             reviewView.topAnchor.constraint(equalTo: nameLabel.bottomAnchor),
             reviewView.leftAnchor.constraint(equalTo: containerView.leftAnchor),
             reviewView.rightAnchor.constraint(equalTo: containerView.rightAnchor),
-            reviewView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor),
+            reviewView.bottomAnchor.constraint(equalTo: rating.topAnchor),
+            rating.bottomAnchor.constraint(equalTo: containerView.bottomAnchor),
+            rating.leftAnchor.constraint(equalTo: containerView.leftAnchor),
+            rating.widthAnchor.constraint(equalTo: containerView.widthAnchor, multiplier: 0.6),
+            rating.heightAnchor.constraint(equalToConstant: 20),
         ])
     }
     
