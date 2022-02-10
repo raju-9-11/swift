@@ -59,12 +59,39 @@ class TextFieldWithError: UIView, UITextFieldDelegate {
     var isSecureTextEntry: Bool = false {
         willSet {
             textField.isSecureTextEntry = newValue
+            eyeIcon.isHidden = !newValue
         }
     }
     
+    private let eyeIcon: UIButton = {
+        let button = UIButton(type: .system)
+        button.setImage(UIImage(systemName: "eye")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.tintColor = UIColor(named: "text_color")
+        button.setContentMode(mode: .scaleAspectFit)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.isHidden = true
+        return button
+    }()
+    
     var placeholder: String = "" {
         willSet {
-            textField.placeholder = newValue
+            textField.attributedPlaceholder = NSAttributedString(
+                string: newValue,
+                attributes: [
+                    NSAttributedString.Key.foregroundColor: placeholderColor
+                ]
+            )
+        }
+    }
+    
+    var placeholderColor: UIColor = .darkGray {
+        willSet {
+            textField.attributedPlaceholder = NSAttributedString(
+                string: textField.placeholder ?? "",
+                attributes: [
+                    NSAttributedString.Key.foregroundColor: newValue
+                ]
+            )
         }
     }
     
@@ -126,10 +153,16 @@ class TextFieldWithError: UIView, UITextFieldDelegate {
     
     func setupLayout() {
         self.addSubview(textField)
+        self.addSubview(eyeIcon)
         textField.delegate = self
         textField.addTarget(self, action: #selector(onChange), for: .editingChanged)
+        eyeIcon.addTarget(self, action: #selector(onEyeClick), for: .touchUpInside)
         self.addSubview(errorLabel)
         NSLayoutConstraint.activate([
+            eyeIcon.centerYAnchor.constraint(equalTo: textField.centerYAnchor),
+            eyeIcon.rightAnchor.constraint(equalTo: textField.rightAnchor, constant: -5),
+            eyeIcon.heightAnchor.constraint(equalTo: self.heightAnchor, multiplier: 0.6),
+            eyeIcon.widthAnchor.constraint(equalTo: self.heightAnchor, multiplier: 0.6),
             textField.leftAnchor.constraint(equalTo: self.leftAnchor),
             textField.rightAnchor.constraint(equalTo: self.rightAnchor),
             textField.topAnchor.constraint(equalTo: self.topAnchor),
@@ -137,6 +170,16 @@ class TextFieldWithError: UIView, UITextFieldDelegate {
             errorLabel.topAnchor.constraint(equalTo: textField.bottomAnchor),
             errorLabel.leftAnchor.constraint(equalTo: textField.leftAnchor, constant: 5),
         ])
+    }
+    
+    func addTarget(_ target: Any?, action: Selector, for controlEvents: UIControl.Event) {
+        self.textField.addTarget(target, action: action, for: controlEvents)
+    }
+    
+    @objc
+    func onEyeClick() {
+        textField.isSecureTextEntry.toggle()
+        eyeIcon.setImage(!textField.isSecureTextEntry ? UIImage(systemName: "eye.slash")?.withRenderingMode(.alwaysTemplate) : UIImage(systemName: "eye")?.withRenderingMode(.alwaysTemplate), for: .normal)
     }
     
     @objc

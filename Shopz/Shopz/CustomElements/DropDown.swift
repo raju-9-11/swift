@@ -6,7 +6,7 @@
 //
 import UIKit
 
-open class DropDown : UITextField{
+open class DropDown : UITextField {
 
     var arrow : Arrow!
     var table : UITableView!
@@ -429,19 +429,18 @@ extension DropDown: UITableViewDataSource {
 //MARK: UITableViewDelegate
 extension DropDown: UITableViewDelegate {
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        customDelegate?.dropDown(self, didSelectItemAt: indexPath.row)
         selectedIndex = (indexPath as NSIndexPath).row
         let selectedText = self.dataArray[self.selectedIndex!]
         tableView.cellForRow(at: indexPath)?.alpha = 0
         UIView.animate(withDuration: 0.5,
                        animations: { () -> Void in
-                        tableView.cellForRow(at: indexPath)?.alpha = 1.0
-                        tableView.cellForRow(at: indexPath)?.backgroundColor = self.selectedRowColor
+            tableView.cellForRow(at: indexPath)?.alpha = 1.0
+            tableView.cellForRow(at: indexPath)?.backgroundColor = self.selectedRowColor
         } ,
                        completion: { (didFinish) -> Void in
-                        self.text = "\(selectedText)"
-
-                        tableView.reloadData()
+            self.text = "\(selectedText)"
+            tableView.reloadData()
+            self.customDelegate?.dropDown(self)
         })
         if hideOptionsWhenSelect {
             touchAction()
@@ -569,5 +568,5 @@ protocol DropDownDelegate: AnyObject {
     func endEditing(_ dropDown: DropDown)
     func beginEditing(_ dropDown: DropDown)
     func dropDown(_ dropDown: DropDown, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool
-    func dropDown(_ dropDown: DropDown, didSelectItemAt item: Int)
+    func dropDown(_ dropDown: DropDown)
 }

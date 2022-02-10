@@ -8,6 +8,8 @@
 import Foundation
 import SQLite3
 import CryptoKit
+import Photos
+import UIKit
 
 internal let SQLITE_STATIC = unsafeBitCast(0, to: sqlite3_destructor_type.self)
 internal let SQLITE_TRANSIENT = unsafeBitCast(-1, to: sqlite3_destructor_type.self)
@@ -16,6 +18,8 @@ class ApplicationDB {
     
     var name: String
     var db: OpaquePointer?
+    private let reviewMediaFolderName = "Review Media"
+    private let profileMediaFolderName = "Profile Images"
     
     static let shared: ApplicationDB = ApplicationDB(name: "Shopz")
     
@@ -97,10 +101,23 @@ class ApplicationDB {
                 "name": "text"
             ]) && createTable(tableName: "review_items", with: [
                 "review_id": "integer primary key autoincrement",
-                "user_id": "Int",
-                "product_id": "Int",
+                "user_id": "integer",
+                "product_id": "integer",
                 "review": "text",
-                "rating": "Int"
+                "rating": "integer"
+            ]) && createTable(tableName: "review_media", with: [
+                "id": "integer primary key autoincrement",
+                "review_id": "integer",
+                "media_name": "text",
+                "type": "text"
+            ]) && createTable(tableName: "profile_images", with: [
+                "user_id": "integer primary key",
+                "media_name": "text",
+            ]) && createTable(tableName: "gift_cards", with: [
+                "id": "integer primary key autoincrement",
+                "validity_date": "date",
+                "amount": "double",
+                "user_id": "integer",
             ])
         }
         return false
@@ -125,6 +142,49 @@ class ApplicationDB {
     }
     
     // MARK: - User and session functions
+    
+    func editUser(firstName: String, lastName: String, email: String, ph: String, country: String, city: String, about: String) -> Bool {
+        
+        guard let auth = Auth.auth else { return false }
+        guard initDB() else { return false }
+        
+        if sqlite3_exec(db, "update users set firstname='\(firstName)', lastname='\(lastName)', email='\(email)', ph='\(ph)', country='\(country)', city='\(city)', about='\(about)' where id=\(auth.user.id)", nil, nil, nil) != SQLITE_OK {
+            print("Error: \(String(cString: sqlite3_errmsg(db)))")
+            closeDB()
+            return false
+        }
+        ApplicationDB.shared.updateSession()
+        ApplicationDB.shared.getCurrentUser()
+        closeDB()
+        return true
+        
+        
+    }
+    
+    func userExists(email: String) -> Int? {
+        
+        var statement: OpaquePointer?
+        let email = email.lowercased()
+        
+        guard initDB() else { return nil }
+        
+        if sqlite3_prepare(db, "select id from users where email='\(email)'", -1, &statement, nil) != SQLITE_OK {
+            print("Error: \(String(cString: sqlite3_errmsg(db)))")
+            sqlite3_finalize(statement)
+            closeDB()
+            return nil
+        }
+        
+        if sqlite3_step(statement) == SQLITE_ROW {
+            let userId = Int(sqlite3_column_int(statement, 0))
+            sqlite3_finalize(statement)
+            closeDB()
+            return userId
+        }
+        sqlite3_finalize(statement)
+        closeDB()
+        return nil
+    }
     
     func addUser(firstName: String, lastName: String, email: String, ph: String, country: String, city: String, password: String, about: String = "") -> Bool {
         
@@ -171,20 +231,20 @@ class ApplicationDB {
         return true
     }
     
-    func getUserName(userID: Int) -> String {
+    func getUser(userID: Int) -> User? {
         var statement: OpaquePointer?
-        var name = "Unknown"
-        guard initDB() else { return name }
+        var user: User?
+        guard initDB() else { return user }
         
         if sqlite3_prepare(db, "select id ,firstname, lastname, email, ph, country, city, password, password_salt, about from users where id='\(userID)'", -1, &statement, nil) != SQLITE_OK {
             print("Error \(String(cString: sqlite3_errmsg(db)))")
             sqlite3_finalize(statement)
             closeDB()
-            return name
+            return user
         }
         
         if sqlite3_step(statement) == SQLITE_ROW {
-            let user = User(
+            user = User(
                 id: Int(sqlite3_column_int64(statement, 0)),
                 firstName: String(cString: sqlite3_column_text(statement, 1)),
                 lastName: String(cString: sqlite3_column_text(statement, 2)),
@@ -194,11 +254,10 @@ class ApplicationDB {
                 city: String(cString: sqlite3_column_text(statement, 6)),
                 about: String(cString: sqlite3_column_text(statement, 9))
             )
-            name = user.firstName + " " + user.lastName
         }
         sqlite3_finalize(statement)
         closeDB()
-        return name
+        return user
     }
     
     func verifyUser(email: String, password: String) -> Result<User, UserFetchError> {
@@ -245,7 +304,7 @@ class ApplicationDB {
         
         guard initDB() else { return }
         
-        if sqlite3_prepare(db, "select user_id ,firstname, lastname, email, ph, country, city, about, id from session", -1, &statement, nil) != SQLITE_OK {
+        if sqlite3_prepare(db, "select user_id, id from session", -1, &statement, nil) != SQLITE_OK {
             print("Error \(String(cString: sqlite3_errmsg(db)))")
             sqlite3_finalize(statement)
             closeDB()
@@ -253,17 +312,8 @@ class ApplicationDB {
         }
         
         if sqlite3_step(statement) == SQLITE_ROW {
-            let user = User(
-                id: Int(sqlite3_column_int64(statement, 0)),
-                firstName: String(cString: sqlite3_column_text(statement, 1)),
-                lastName: String(cString: sqlite3_column_text(statement, 2)),
-                email: String(cString: sqlite3_column_text(statement, 3)),
-                ph: String(cString: sqlite3_column_text(statement, 4)),
-                country: String(cString: sqlite3_column_text(statement, 5)),
-                city: String(cString: sqlite3_column_text(statement, 6)),
-                about: String(cString: sqlite3_column_text(statement, 7))
-            )
-            Auth.auth = Auth(authToken: String(cString: sqlite3_column_text(statement, 8)), user: user)
+            guard let user = getUser(userID: Int(sqlite3_column_int(statement, 0))) else { sqlite3_finalize(statement); closeDB(); return }
+            Auth.auth = Auth(authToken: String(cString: sqlite3_column_text(statement, 1)), user: user)
         }
         sqlite3_finalize(statement)
         closeDB()
@@ -298,6 +348,12 @@ class ApplicationDB {
         return authToken
     }
     
+    func updateSession() {
+        if let userID = Auth.auth?.user.id, let user = getUser(userID: userID), self.clearDB(tableName: "session") {
+            _ = createSession(user: user)
+        }
+    }
+    
     func deleteSession(token: String) {
         if self.clearDB(tableName: "session") {
             Auth.auth = nil
@@ -305,6 +361,85 @@ class ApplicationDB {
         } else {
             print("Error Occured")
         }
+    }
+    
+    // MARK: - Gift card functions
+    
+    func getGiftCards() -> [GiftCardData] {
+        guard let user = Auth.auth?.user else { return [] }
+        var cards: [GiftCardData] = []
+        guard initDB() else { return [] }
+        
+        var statement: OpaquePointer?
+        
+        if sqlite3_prepare(db, "select id, validity_date, amount from gift_cards where user_id=\(user.id)", -1, &statement, nil) != SQLITE_OK {
+            print("Error: \(String(cString: sqlite3_errmsg(db)))")
+            sqlite3_finalize(statement)
+            closeDB()
+            return []
+        }
+        
+        
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "dd/MM/yy"
+        dateFormatter.locale = .current
+        
+        while sqlite3_step(statement) == SQLITE_ROW {
+            let id = Int(sqlite3_column_int(statement, 0))
+            let validityDate = String(cString: sqlite3_column_text(statement, 1))
+            let amount = sqlite3_column_double(statement, 2)
+            guard let validityDate = dateFormatter.date(from: validityDate) else { continue }
+            cards.append(GiftCardData(id: id, amount: amount, validityDate: validityDate))
+        }
+        sqlite3_finalize(statement)
+        closeDB()
+        return cards
+    }
+    
+    func addGiftCard(card: GiftCardData, to userID: Int) {
+        guard Auth.auth != nil else { return }
+        guard initDB() else { return }
+        
+        if sqlite3_exec(db, "insert into gift_cards (user_id, amount, validity_date) values (\(userID), \(card.amount), '\(card.validityDate.toString())')", nil, nil, nil) != SQLITE_OK {
+            print("Error: \(String(cString: sqlite3_errmsg(db)))")
+            Toast.shared.showToast(message: "Unable to add card")
+            closeDB()
+            return
+        }
+        Toast.shared.showToast(message: "Card Added to user")
+        closeDB()
+        return
+    }
+    
+    func deductAmount(amount: Double, card: GiftCardData) {
+        guard Auth.auth != nil else { return }
+        guard initDB() else { return }
+        
+        let deductedAmount = card.amount - amount
+        if deductedAmount > 0 {
+            if sqlite3_exec(db, "update gift_cards set amount=\(deductedAmount) where id=\(card.id)", nil, nil, nil) != SQLITE_OK {
+                print("Error: \(String(cString: sqlite3_errmsg(db)))")
+                closeDB()
+                return
+            }
+        } else {
+            closeDB()
+            deleteGiftCard(card: card)
+            return
+        }
+        
+        closeDB()
+    }
+    
+    func deleteGiftCard(card: GiftCardData) {
+        guard Auth.auth != nil else { return }
+        guard initDB() else { return }
+        
+        if sqlite3_exec(db, "delete from gift_cards where id=\(card.id)", nil, nil, nil) != SQLITE_OK {
+            print("Error: \(String(cString: sqlite3_errmsg(db)))")
+        }
+        
+        closeDB()
     }
     
     // MARK: - Cart functions
@@ -833,7 +968,8 @@ class ApplicationDB {
         return
     }
     
-    func checkoutCart(deliveryDate: Date) {
+    // - Card Payment
+    func checkoutCart(deliveryDate: Date, withCard card: CardData) {
         guard Auth.auth != nil else { return }
         
         let cart = ApplicationDB.shared.getCart()
@@ -841,12 +977,12 @@ class ApplicationDB {
         ApplicationDB.shared.clearCart()
     }
     
-    func checkoutProduct(product: Product, deliveryDate: Date) {
+    func checkoutProduct(product: Product, deliveryDate: Date, withCard card: CardData) {
         guard Auth.auth != nil else { return }
         ApplicationDB.shared.addToOrderHistory(list: [CartItem(product: product, itemId: 0)], deliveryDate: deliveryDate)
     }
     
-    func checkoutShoppingList(list: ShoppingList, deliveryDate: Date) {
+    func checkoutShoppingList(list: ShoppingList, deliveryDate: Date, withCard card: CardData) {
         guard Auth.auth != nil else { return }
         
         let cart = ApplicationDB.shared.getShoppingList(with: list.id)
@@ -854,9 +990,41 @@ class ApplicationDB {
         ApplicationDB.shared.clearShoppingList(list: list)
     }
     
+    // - GiftCard
+    
+    func checkoutProduct(product: Product, deliveryDate: Date, withGiftCard giftCard: GiftCardData) {
+        guard Auth.auth != nil else { return }
+        ApplicationDB.shared.deductAmount(amount: Double(truncating: (product.shipping_cost + product.price) as NSDecimalNumber).roundOff(), card: giftCard)
+        ApplicationDB.shared.addToOrderHistory(list: [CartItem(product: product, itemId: 0)], deliveryDate: deliveryDate)
+    }
+    
+    func checkoutShoppingList(list: ShoppingList, deliveryDate: Date, withGiftCard giftCard: GiftCardData) {
+        guard Auth.auth != nil else { return }
+        
+        let cart = ApplicationDB.shared.getShoppingList(with: list.id)
+        ApplicationDB.shared.deductAmount(amount: cart.map({ item in
+            return Double(truncating: (item.product.shipping_cost + item.product.price) as NSDecimalNumber)
+        }).reduce(0, +).roundOff(), card: giftCard)
+        ApplicationDB.shared.addToOrderHistory(list: cart, deliveryDate: deliveryDate)
+        ApplicationDB.shared.clearShoppingList(list: list)
+    }
+    
+    func checkoutCart(deliveryDate: Date, withGiftCard giftCard: GiftCardData) {
+        guard Auth.auth != nil else { return }
+
+        let cart = ApplicationDB.shared.getCart()
+        ApplicationDB.shared.deductAmount(amount: cart.map({ item in
+            return Double(truncating: (item.product.shipping_cost + item.product.price) as NSDecimalNumber)
+        }).reduce(0, +).roundOff(), card: giftCard)
+        ApplicationDB.shared.addToOrderHistory(list: cart, deliveryDate: deliveryDate)
+        ApplicationDB.shared.clearCart()
+    }
+    
+    
+    
     // MARK: - Review functions
     
-    func editReview(oldReview: Review, rating: Int, review: String) {
+    func editReview(oldReview: Review, rating: Int, review: String, media: [ReviewMedia]) {
         
         guard let auth = Auth.auth else { return }
         
@@ -870,9 +1038,24 @@ class ApplicationDB {
         }
         Toast.shared.showToast(message: "Review Changed")
         closeDB()
+        let data: [(data: Data?, type: MediaType)] = media.map({ medium in
+            var datum: (data: Data?, type: MediaType) = (nil, medium.type)
+            do {
+                datum.data = try Data(contentsOf: medium.mediaUrl)
+            }
+            catch {
+                print("Error: \(error)")
+            }
+            return datum
+        })
+        self.deleteMedia(review: oldReview)
+        data.forEach({
+            datum, type in
+            self.addReviewMedia(review: oldReview, mediaData: datum, type: type)
+        })
     }
     
-    func addReview(review: String, rating: Int, productID: Int) {
+    func addReview(review: String, rating: Int, productID: Int, media: [ReviewMedia]) {
         
         guard let auth = Auth.auth else { return }
         
@@ -886,6 +1069,130 @@ class ApplicationDB {
         }
         Toast.shared.showToast(message: "Review added", type: .success)
         closeDB()
+        guard let product = StorageDB.getProduct(with: productID), let review = self.hasReviewed(product: product) else { return }
+        for medium in media {
+            do {
+                try self.addReviewMedia(review: review, mediaData: Data(contentsOf: medium.mediaUrl), type: medium.type)
+            }
+            catch {
+                print(error)
+                Toast.shared.showToast(message: "Unable to add image")
+            }
+        }
+        
+    }
+    
+    func addReviewMedia(review: Review, mediaData: Data?, type: MediaType) {
+        let folderURL = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true).appendingPathComponent(reviewMediaFolderName, isDirectory: true)
+        try! FileManager.default.createDirectory(at: folderURL, withIntermediateDirectories: true, attributes: nil)
+        var fileName = UUID().uuidString
+        
+        guard let mediaData = mediaData else {
+            return
+        }
+
+        switch type {
+        case .image:
+            fileName.append(contentsOf: ".png")
+        case .video:
+            fileName.append(".MOV")
+        }
+        do {
+            try mediaData.write(to: folderURL.appendingPathComponent(fileName))
+        }
+        catch {
+            print(error)
+        }
+        
+        guard Auth.auth != nil else { return }
+        guard initDB() else { return }
+        if sqlite3_exec(db, "insert into review_media (review_id, media_name, type) values (\(review.reviewId), '\(fileName)', '\(type.rawValue)' )", nil, nil, nil) != SQLITE_OK {
+            print("Error: \(String(cString: sqlite3_errmsg(db)))")
+            Toast.shared.showToast(message: "Unable to save image")
+            closeDB()
+            return
+        }
+        closeDB()
+    }
+    
+    func getReviewMediaList(review: Review) -> [ReviewMedia] {
+        guard initDB() else { return [] }
+        var statement: OpaquePointer?
+        var result: [ReviewMedia] = []
+        
+        if sqlite3_prepare(db, "select media_name, type, id, review_id from review_media where review_id=\(review.reviewId)", -1, &statement, nil) != SQLITE_OK {
+            print("Error: \(String(cString: sqlite3_errmsg(db)))")
+            sqlite3_finalize(statement)
+            closeDB()
+            return []
+        }
+        
+        let folderURL = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true).appendingPathComponent(reviewMediaFolderName, isDirectory: true)
+        
+        while(sqlite3_step(statement) == SQLITE_ROW) {
+            if let name = sqlite3_column_text(statement, 0), let type = sqlite3_column_text(statement, 1), let mediaType = getMediaType(from: String(cString: type)) {
+                let mediaId = sqlite3_column_int(statement, 2)
+                let reviewId = sqlite3_column_int(statement, 3)
+                let fileURL = folderURL.appendingPathComponent(String(cString: name))
+                result.append(ReviewMedia(mediaUrl: fileURL, mediaId: Int(mediaId), reviewId: Int(reviewId), type: mediaType))
+                
+            }
+        }
+        sqlite3_finalize(statement)
+        closeDB()
+        return result
+    }
+    
+    func deleteMedia(review: Review) {
+        let reviewMedia = self.getReviewMediaList(review: review)
+
+        guard Auth.auth != nil else { return }
+        guard initDB() else { return }
+        
+        if sqlite3_exec(db, "delete from review_media where review_id=\(review.reviewId)", nil, nil, nil) != SQLITE_OK {
+            print("Error: \(String(cString: sqlite3_errmsg(db)))")
+            closeDB()
+            return
+        }
+        closeDB()
+        reviewMedia.forEach({
+            medium in
+            do {
+                try FileManager.default.removeItem(at: medium.mediaUrl)
+            }
+            catch {
+                print(error)
+            }
+            
+            
+        })
+    }
+    
+    func getMediaType(from: String) -> MediaType? {
+        if from == MediaType.image.rawValue {
+            return .image
+        }
+        if from == MediaType.video.rawValue {
+            return .video
+        }
+        return nil
+    }
+    
+    func getReviewImage(fileName: String) -> UIImage?  {
+        let fileManager = FileManager.default
+        
+        let folderURL = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true).appendingPathComponent(reviewMediaFolderName, isDirectory: true)
+                
+        let imagePath = folderURL.appendingPathComponent(fileName)
+
+        let urlString: String = imagePath.absoluteString
+
+        if fileManager.fileExists(atPath: urlString) {
+            return UIImage(contentsOfFile: urlString)
+        } else {
+          print("\(fileName) Image not Found")
+        }
+        return nil
         
     }
     
@@ -904,6 +1211,7 @@ class ApplicationDB {
         Toast.shared.showToast(message: "Review deleted")
         
         closeDB()
+        self.deleteMedia(review: review)
     }
     
     func getUserReviews() -> [Review] {
@@ -925,7 +1233,8 @@ class ApplicationDB {
             let review = String(cString: sqlite3_column_text(statement, 2))
             let rating = Int(sqlite3_column_int(statement, 3))
             let userId = Int(sqlite3_column_int(statement, 4))
-            reviews.append(Review(reviewId: reviewId, userName: ApplicationDB.shared.getUserName(userID: userId), userId: userId, review: review, rating: rating, productId: productId))
+            guard let user = getUser(userID: userId) else { continue }
+            reviews.append(Review(reviewId: reviewId, userName: "\(user.firstName) \(user.lastName)" , userId: userId, review: review, rating: rating, productId: productId))
         }
         sqlite3_finalize(statement)
         closeDB()
@@ -976,7 +1285,8 @@ class ApplicationDB {
             let review = String(cString: sqlite3_column_text(statement, 2))
             let rating = Int(sqlite3_column_int(statement, 3))
             let userId = Int(sqlite3_column_int(statement, 4))
-            reviews.append(Review(reviewId: reviewId, userName: ApplicationDB.shared.getUserName(userID: userId), userId: userId, review: review, rating: rating, productId: productId))
+            guard let user = getUser(userID: userId) else { continue }
+                    reviews.append(Review(reviewId: reviewId, userName: "\(user.firstName) \(user.lastName)", userId: userId, review: review, rating: rating, productId: productId))
         }
         sqlite3_finalize(statement)
         closeDB()
@@ -987,23 +1297,79 @@ class ApplicationDB {
     
     // MARK: - Profile functions
     
+    func setProfileMedia(mediaData: Data?) {
+        let folderURL = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true).appendingPathComponent(profileMediaFolderName, isDirectory: true)
+        try! FileManager.default.createDirectory(at: folderURL, withIntermediateDirectories: true, attributes: nil)
+        var fileName = UUID().uuidString
+        
+        guard let mediaData = mediaData else {
+            return
+        }
+        
+        fileName.append(contentsOf: ".png")
+        
+        do {
+            try mediaData.write(to: folderURL.appendingPathComponent(fileName))
+        }
+        catch {
+            print(error)
+        }
+        
+        guard let user = Auth.auth?.user else { return }
+        if let fileUrl = getProfileMedia(userId: user.id) {
+            do {
+                try FileManager.default.removeItem(at: fileUrl)
+            }
+            catch {
+                print(error)
+                Toast.shared.showToast(message: "Unable to save profile image")
+                return
+            }
+            guard initDB() else { return }
+            if sqlite3_exec(db, "update profile_images set media_name='\(fileName)' where user_id=\(user.id)", nil, nil, nil) != SQLITE_OK {
+                print("Error: \(String(cString: sqlite3_errmsg(db)))")
+                Toast.shared.showToast(message: "Unable to save profile image")
+                closeDB()
+                return
+            }
+            closeDB()
+        } else {
+            guard initDB() else { return }
+            if sqlite3_exec(db, "insert into profile_images (user_id, media_name) values (\(user.id), '\(fileName)' )", nil, nil, nil) != SQLITE_OK {
+                print("Error: \(String(cString: sqlite3_errmsg(db)))")
+                Toast.shared.showToast(message: "Unable to save image")
+                closeDB()
+                return
+            }
+            closeDB()
+        }
+    }
     
-//    func setProfileImage(image: Data) {
-//
-//        var statement: OpaquePointer?
-//        guard image.withUnsafeBytes({ bufferPointer -> Int32 in
-//                sqlite3_bind_blob(statement, 5, bufferPointer.baseAddress, Int32(image.count), SQLITE_TRANSIENT)
-//            }) == SQLITE_OK else {
-//                print("Error\(sqlite3_errmsg(db))")
-//                return
-//            }
-//    }
-    
-//    func getProfileImage() -> Data? {
-//
-//        return nil
-//    }
-    
+    func getProfileMedia(userId: Int) -> URL? {
+        guard initDB() else { return nil }
+        var statement: OpaquePointer?
+        
+        if sqlite3_prepare(db, "select media_name from profile_images where user_id=\(userId)", -1, &statement, nil) != SQLITE_OK {
+            print("Error: \(String(cString: sqlite3_errmsg(db)))")
+            sqlite3_finalize(statement)
+            closeDB()
+            return nil
+        }
+        
+        let folderURL = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true).appendingPathComponent(profileMediaFolderName, isDirectory: true)
+        
+        if(sqlite3_step(statement) == SQLITE_ROW) {
+            if let name = sqlite3_column_text(statement, 0) {
+                let fileURL = folderURL.appendingPathComponent(String(cString: name))
+                sqlite3_finalize(statement)
+                closeDB()
+                return fileURL
+            }
+        }
+        sqlite3_finalize(statement)
+        closeDB()
+        return nil
+    }
     
     // MARK: - Clear table
     
@@ -1023,4 +1389,23 @@ class ApplicationDB {
         case invalidPassword, userNotFound, dataNotFound
     }
     
+    enum MediaType: String {
+        case image = "image"
+        case video = "video"
+    }
+    
+    struct ReviewMedia {
+        var mediaUrl: URL
+        var mediaId: Int
+        var reviewId: Int
+        var type: MediaType
+    }
+    
+}
+
+extension Double {
+    func roundOff(toPlaces places:Int = 3) -> Double {
+            let divisor = pow(10.0, Double(places))
+            return (self * divisor).rounded() / divisor
+        }
 }

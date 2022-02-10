@@ -1,30 +1,29 @@
 //
-//  CardItemCollectionViewCell.swift
+//  GiftCardCollectionViewCell.swift
 //  Shopz
 //
-//  Created by Rajkumar S on 21/12/21.
+//  Created by Rajkumar S on 09/02/22.
 //
 
 import UIKit
 
-class CardItemCollectionViewCell: UICollectionViewCell {
+class GiftCardCollectionViewCell: UICollectionViewCell {
     
-    static let cellID = "CardItemCELL"
+    static let cellID = "GiftcardCardItemCELL"
     
     var selectState: Bool = false {
         willSet {
-            containerView.backgroundColor = newValue ? .black.withAlphaComponent(0.5) : .red.withAlphaComponent(0.5)
+            containerView.backgroundColor = newValue ? .black.withAlphaComponent(0.5) : .systemBlue
             imageView.image = newValue ? UIImage(systemName: "creditcard.fill") : UIImage(systemName: "circle.fill")
-            imageView.tintColor = newValue ? .white : .red
+            imageView.tintColor = newValue ? .white : .systemYellow
         }
     }
     
-    var cardData: CardData? {
+    var cardData: GiftCardData? {
         willSet {
             guard let newValue = newValue else { self.setupLayout() ; return }
             dateLabel.text = "Valid until: \(newValue.validityDate.toString(with: "MM/yy"))"
-            nameLabel.text = newValue.name
-            numberLabel.text = newValue.toCardFormat()
+            costLabel.text = "Amount: $ \(newValue.amount)"
             self.setupLayout()
         }
     }
@@ -35,14 +34,14 @@ class CardItemCollectionViewCell: UICollectionViewCell {
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
         imageView.image = UIImage(systemName: "circle.fill")?.withRenderingMode(.alwaysTemplate)
-        imageView.tintColor = .red
+        imageView.tintColor = .systemYellow
         return imageView
     }()
     
     let containerView: UIView = {
         let view = UIView()
         view.layer.cornerRadius = 7
-        view.backgroundColor = .red.withAlphaComponent(0.5)
+        view.backgroundColor = .systemBlue
         view.clipsToBounds = true
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
@@ -52,11 +51,7 @@ class CardItemCollectionViewCell: UICollectionViewCell {
         return defaultLabel("")
     }()
     
-    lazy var numberLabel: UILabel = {
-        return defaultLabel("")
-    }()
-    
-    lazy var nameLabel: UILabel = {
+    lazy var costLabel: UILabel = {
         return defaultLabel("")
     }()
     
@@ -64,8 +59,7 @@ class CardItemCollectionViewCell: UICollectionViewCell {
         contentView.addSubview(containerView)
         containerView.addSubview(imageView)
         containerView.addSubview(dateLabel)
-        containerView.addSubview(numberLabel)
-        containerView.addSubview(nameLabel)
+        containerView.addSubview(costLabel)
         NSLayoutConstraint.activate([
             containerView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.95),
             containerView.heightAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 0.9),
@@ -75,12 +69,10 @@ class CardItemCollectionViewCell: UICollectionViewCell {
             imageView.rightAnchor.constraint(equalTo: containerView.rightAnchor, constant: -5),
             imageView.heightAnchor.constraint(equalTo: containerView.heightAnchor, multiplier: 0.2),
             imageView.widthAnchor.constraint(equalTo: containerView.heightAnchor, multiplier: 0.2),
-            numberLabel.topAnchor.constraint(equalTo: dateLabel.bottomAnchor, constant: 5),
-            numberLabel.leftAnchor.constraint(equalTo: containerView.leftAnchor, constant: 10),
+            costLabel.topAnchor.constraint(equalTo: dateLabel.bottomAnchor, constant: 5),
+            costLabel.leftAnchor.constraint(equalTo: containerView.leftAnchor, constant: 10),
             dateLabel.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 5),
             dateLabel.leftAnchor.constraint(equalTo: containerView.leftAnchor, constant: 10),
-            nameLabel.topAnchor.constraint(equalTo: numberLabel.bottomAnchor, constant: 5),
-            nameLabel.leftAnchor.constraint(equalTo: containerView.leftAnchor, constant: 10),
         ])
     }
     
@@ -98,6 +90,4 @@ class CardItemCollectionViewCell: UICollectionViewCell {
         label.textColor = .white
         return label
     }
-    
 }
-

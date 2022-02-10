@@ -26,6 +26,7 @@ class AddReviewCollectionViewCell: UICollectionViewCell {
                 addButtons.addArrangedSubview(editButton)
                 addButtons.addArrangedSubview(deleteButton)
                 DispatchQueue.main.async {
+                    self.reviewMedia = ApplicationDB.shared.getReviewMediaList(review: newValue!)
                     if self.editButton.title(for: .normal) == "Save" {
                         self.addReviewTextView.isEnabled = true
                         self.rating.isEnabled = true
@@ -42,11 +43,13 @@ class AddReviewCollectionViewCell: UICollectionViewCell {
         }
     }
     
-    var images: [UIImage] = [] {
+    var reviewMedia: [ApplicationDB.ReviewMedia] = [] {
         willSet {
-            imagesView.isHidden = newValue.isEmpty
-            if images.isEmpty != newValue.isEmpty {
-                self.delegate?.imagesChanged(newValue.isEmpty, images: newValue)
+            self.imagesView.isHidden = newValue.isEmpty
+            if self.reviewMedia.isEmpty != newValue.isEmpty && (addReviewView.superview != nil || editButton.title(for: .normal) == "Save") {
+                self.layoutSubviews()
+                self.layoutIfNeeded()
+                self.delegate?.imagesChanged(newValue.isEmpty)
             }
             DispatchQueue.main.async {
                 self.imagesView.reloadData()
@@ -169,6 +172,7 @@ class AddReviewCollectionViewCell: UICollectionViewCell {
         addReviewButton.addTarget(self, action: #selector(onAddReview), for: .touchUpInside)
         addImageButton.addTarget(self, action: #selector(onAddImage), for: .touchUpInside)
         editButton.addTarget(self, action: #selector(onEditClick), for: .touchUpInside)
+        deleteButton.addTarget(self, action: #selector(deleteReview), for: .touchUpInside)
         cancelButton.addTarget(self, action: #selector(onCancelClick), for: .touchUpInside)
         
         contentView.backgroundColor = UIColor(named: "thumbnail_color")
@@ -187,7 +191,7 @@ class AddReviewCollectionViewCell: UICollectionViewCell {
         contentView.addSubview(stackView)
         NSLayoutConstraint.activate([
             stackView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            stackView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            stackView.topAnchor.constraint(equalTo: contentView.topAnchor),
             addReviewTextView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.9),
             addReviewTextView.heightAnchor.constraint(equalToConstant: 80),
             rating.heightAnchor.constraint(equalToConstant: RatingElement.defHeight),
@@ -239,11 +243,11 @@ class AddReviewCollectionViewCell: UICollectionViewCell {
                 guard let review = review else {
                     return
                 }
-                delegate?.editReview(oldReview: review, rating: rating.currentUserRating, review: addReviewTextView.text)
+                delegate?.editReview(oldReview: review, rating: rating.currentUserRating, review: addReviewTextView.text, media: reviewMedia)
             } else {
                 Toast.shared.showToast(message: "Review Cannot be Empty")
             }
-            //Reload images from Disk
+            
             self.imagesView.reloadData()
         }
     }
@@ -256,7 +260,10 @@ class AddReviewCollectionViewCell: UICollectionViewCell {
         self.rating.isEnabled = false
         addImageButton.removeFromSuperview()
         cancelButton.removeFromSuperview()
-        //Add reload images from disk
+        guard let review = review else {
+            return
+        }
+        self.reviewMedia = ApplicationDB.shared.getReviewMediaList(review: review)
         self.imagesView.reloadData()
     }
     
@@ -275,10 +282,12 @@ class AddReviewCollectionViewCell: UICollectionViewCell {
         return stack
     }
     
-    func deleteReview(review: Review?) {
+    @objc
+    func deleteReview() {
         guard let review = review else {
             return
         }
+        reviewMedia = []
         delegate?.deleteReview(review)
     }
     
@@ -300,8 +309,9 @@ class AddReviewCollectionViewCell: UICollectionViewCell {
     @objc
     func onAddReview() {
         if !addReviewTextView.text.isEmpty {
-            delegate?.addReview(review: addReviewTextView.text, rating: rating.currentUserRating)
+            delegate?.addReview(review: addReviewTextView.text, rating: rating.currentUserRating, media: reviewMedia)
             self.addReviewTextView.text = ""
+            imagesView.reloadData()
         } else {
             Toast.shared.showToast(message: "Review cannot be empty")
         }
@@ -311,14 +321,14 @@ class AddReviewCollectionViewCell: UICollectionViewCell {
 
 extension AddReviewCollectionViewCell: UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return images.count
+        return reviewMedia.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: AddReviewImageCollectionViewCell.cellID, for: indexPath) as! AddReviewImageCollectionViewCell
         cell.delegate = self
         cell.isEnabled = (review == nil) ? true : editButton.title(for: .normal) == "Save" ? true : false
-        cell.image = images[indexPath.row]
+        cell.media = reviewMedia[indexPath.row]
         cell.indexPath = indexPath
         return cell
     }
@@ -330,10 +340,9 @@ extension AddReviewCollectionViewCell: UICollectionViewDelegate, UICollectionVie
 
 extension AddReviewCollectionViewCell: AddReviewImageDelegate {
     func deleteImage(at index: IndexPath) {
-        print(index.row)
-        guard index.row < images.count else { return }
+        guard index.row < reviewMedia.count else { return }
         imagesView.performBatchUpdates({
-            self.images.remove(at: index.row)
+            self.reviewMedia.remove(at: index.row)
             self.imagesView.deleteItems(at: [index])
         }, completion: {
             _ in
@@ -347,9 +356,14 @@ extension AddReviewCollectionViewCell: UIImagePickerControllerDelegate, UINaviga
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         
         let info = convertFromUIImagePickerControllerInfoKeyDictionary(info)
+        if picker.mediaTypes.contains("public.movie"), let fileURL = info[convertFromUIImagePickerControllerInfoKey(UIImagePickerController.InfoKey.mediaURL)] as? NSURL {
+            reviewMedia.append(ApplicationDB.ReviewMedia(mediaUrl: fileURL as URL, mediaId: -1, reviewId: -1, type: .video))
+            picker.dismiss(animated: true, completion: nil)
+            return
+        }
         
-        guard let image = info[convertFromUIImagePickerControllerInfoKey(UIImagePickerController.InfoKey.originalImage)] as? UIImage else { return }
-        images.append(image)
+        guard let _ = info[convertFromUIImagePickerControllerInfoKey(UIImagePickerController.InfoKey.originalImage)] as? UIImage, let fileURL = info[convertFromUIImagePickerControllerInfoKey(UIImagePickerController.InfoKey.imageURL)] as? NSURL else { picker.dismiss(animated: true, completion: nil); return }
+        reviewMedia.append(ApplicationDB.ReviewMedia(mediaUrl: fileURL as URL, mediaId: -1, reviewId: -1, type: .image))
         picker.dismiss(animated: true, completion: nil)
     }
     
@@ -370,12 +384,12 @@ extension AddReviewCollectionViewCell: UIImagePickerControllerDelegate, UINaviga
 
 
 protocol ReviewElementDelegate: AnyObject {
-    func addReview(review: String, rating: Int)
+    func addReview(review: String, rating: Int, media: [ApplicationDB.ReviewMedia])
     func reviewBeginEditing(frame: CGRect?)
     func reviewDidEndEditing()
-    func editReview(oldReview: Review, rating: Int, review: String)
+    func editReview(oldReview: Review, rating: Int, review: String, media: [ApplicationDB.ReviewMedia])
     func deleteReview(_ review: Review)
     func addImageClicked(sender: UIView, delegateSource: AddReviewCollectionViewCell)
-    func imagesChanged(_ hasImages: Bool, images: [UIImage])
+    func imagesChanged(_ hasImages: Bool)
 }
 

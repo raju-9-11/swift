@@ -82,8 +82,9 @@ extension ProfileReviewsViewCollectionViewCell: UITableViewDataSource, UITableVi
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: ReviewItemTableViewCell.cellID) as! ReviewItemTableViewCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: ReviewItemTableViewCell.cellID, for: indexPath) as! ReviewItemTableViewCell
         cell.review = reviewElementData?.reviews[indexPath.row]
+        cell.isPreview = true
         return cell
     }
     

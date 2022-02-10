@@ -39,7 +39,6 @@ class RatingElement: UIView {
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Set Rating", for: .normal)
         button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = .blue.withAlphaComponent(0.8)
         if #available(iOS 15, *) {
             var config = UIButton.Configuration.filled()
             config.cornerStyle = .medium
@@ -49,6 +48,7 @@ class RatingElement: UIView {
         } else {
             button.contentEdgeInsets = UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5)
             button.layer.cornerRadius = 6
+            button.backgroundColor = .blue.withAlphaComponent(0.8)
         }
         return button
     }()

@@ -57,10 +57,7 @@ class ProfileViewController: CustomViewController, UIImagePickerControllerDelega
     func displayImage(_ image: UIImage?) {
         let imageView = ImageSlideShow()
         imageView.image = image
-        imageView.delegate = self
-        self.view.addSubview(imageView)
-        self.navigationController?.isNavigationBarHidden = true
-        self.tabBarController?.tabBar.isHidden = true
+        present(imageView, animated: true, completion: nil)
     }
     
     func pickProfilePic(_ sender: UIImageView) {
@@ -148,13 +145,35 @@ class ProfileViewController: CustomViewController, UIImagePickerControllerDelega
     }
     
     func loadData() {
+        guard let user = Auth.auth?.user else { return }
         elements = [
-            ProfileData(bgImageMedia: UIImage(systemName: "photo.fill")?.pngData(), profileImageMedia: UIImage(systemName: "person.circle.fill")?.pngData()),
             AboutData(),
             ShoppingListData(shoppingLists: ApplicationDB.shared.getShoppingLists()),
-            ProfileReviewListElemrnt(reviews: ApplicationDB.shared.getUserReviews()),
             ProfileFooterElement()
         ]
+        if let profileImageURL = ApplicationDB.shared.getProfileMedia(userId: user.id) {
+            do {
+                try elements.insert(ProfileData(
+                    bgImageMedia: Data(contentsOf: profileImageURL),
+                    profileImageMedia: Data(contentsOf: profileImageURL)), at: 0)
+            }
+            catch {
+                elements.insert(ProfileData(
+                    bgImageMedia: UIImage(systemName: "photo.fill")?.pngData(),
+                    profileImageMedia: UIImage(systemName: "person.circle.fill")?.pngData()), at: 0)
+                print(error)
+            }
+        } else {
+            elements.insert(ProfileData(
+                bgImageMedia: UIImage(systemName: "photo.fill")?.pngData(),
+                profileImageMedia: UIImage(systemName: "person.circle.fill")?.pngData()), at: 0)
+        }
+            
+        
+        let reviews = ApplicationDB.shared.getUserReviews()
+        if !reviews.isEmpty {
+            elements.insert(ProfileReviewListElemrnt(reviews: reviews), at: 3)
+        }
         containerView.reloadData()
     }
     
@@ -292,7 +311,9 @@ extension ProfileViewController: ShoppingListCellDelegate, ProfileImagesViewDele
     }
     
     func editTapped() {
+        guard let user = Auth.auth?.user else { return }
         let profileEditVC = ProfileEditViewController()
+        profileEditVC.profileURL = ApplicationDB.shared.getProfileMedia(userId: user.id)
         profileEditVC.modalTransitionStyle = .crossDissolve
         profileEditVC.modalPresentationStyle = .overFullScreen
         self.present(profileEditVC, animated: true, completion: nil)
@@ -300,13 +321,6 @@ extension ProfileViewController: ShoppingListCellDelegate, ProfileImagesViewDele
     
     func reviewSelect(review: Review, product: Product) {
         self.displayProduct(product: product)
-    }
-}
-
-extension ProfileViewController: ImageSlideShowDelegate {
-    func onHide(_ imageSlideShow: ImageSlideShow) {
-        self.navigationController?.isNavigationBarHidden = false
-        self.tabBarController?.tabBar.isHidden = false
     }
 }
 

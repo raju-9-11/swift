@@ -73,10 +73,19 @@ class DropDownWithError: UIView {
             textField.layer.borderColor = newValue ? UIColor.red.cgColor : UIColor.systemGray.cgColor
         }
     }
+    
+    var delegate: DropDownWithErrorDelegate?
 
     private let textField: DropDown = {
         let textField = DropDown()
         textField.translatesAutoresizingMaskIntoConstraints = false
+        textField.borderStyle = .roundedRect
+        textField.layer.borderColor = UIColor.gray.cgColor
+        textField.layer.borderWidth = 1
+        textField.layer.cornerRadius = 5
+        textField.tintColor = UIColor(named: "subtitle_text")
+        textField.textColor = UIColor(named: "text_color")
+        textField.backgroundColor = .clear
         return textField
     }()
     
@@ -129,27 +138,44 @@ class DropDownWithError: UIView {
 }
 
 extension DropDownWithError: DropDownDelegate {
+    
     func dropDownShouldReturn(_ dropDown: DropDown) {
         dropDown.resignFirstResponder()
-        dropDown.hideList()
+        delegate?.shouldReturn(self)
+//        dropDown.hideList()
     }
     
     func endEditing(_ dropDown: DropDown) {
         self.errorState = dropDown.selectedIndex == nil
-        dropDown.hideList()
+        delegate?.valueChanged(self, value: errorState ? "" : dropDown.text ?? "")
+//        dropDown.hideList()
     }
     
     func beginEditing(_ dropDown: DropDown) {
-        dropDown.showList()
+//        dropDown.showList()
+    }
+    
+    func hideList() {
+        textField.hideList()
+    }
+    
+    func showList() {
+        textField.showList()
     }
     
     func dropDown(_ dropDown: DropDown, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         return true
     }
     
-    func dropDown(_ dropDown: DropDown, didSelectItemAt item: Int) {
+    func dropDown(_ dropDown: DropDown) {
         self.errorState = false
+        delegate?.valueChanged(self, value: dropDown.text ?? "")
     }
     
     
+}
+
+protocol DropDownWithErrorDelegate: AnyObject {
+    func shouldReturn(_ dropDown: DropDownWithError)
+    func valueChanged(_ dropDown: DropDownWithError, value: String)
 }

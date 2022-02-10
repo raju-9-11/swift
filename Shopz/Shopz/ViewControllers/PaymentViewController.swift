@@ -7,7 +7,7 @@
 
 import UIKit
 
-class PaymentViewController: CustomViewController, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
+class PaymentViewController: UIViewController {
     
     var product: Product? {
         willSet{
@@ -25,7 +25,9 @@ class PaymentViewController: CustomViewController, UICollectionViewDelegate, UIC
     
     var shoppingListData: ShoppingList?
     
-    var selectedCard: Int? = 0
+    var selectedCard: CardData?
+    
+    var selectedGiftCard: GiftCardData?
     
     lazy var cartDetails: UILabel = {
         return titleLabel(text: "Cart Details")
@@ -112,16 +114,16 @@ class PaymentViewController: CustomViewController, UICollectionViewDelegate, UIC
         return defaultButton(title: "Cancel Payment", color: UIColor.red)
     }()
     
-    var cards : [CardData] = {
-        return ApplicationDB.shared.getCards()
-    }() {
-        willSet {
-            if newValue.isEmpty {
-                paymentCardsCollectionView.isHidden = true
-            } else {
-                
-            }
-        }
+    var cards : [CardData] = []
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+    }
+    
+    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+        self.modalPresentationStyle = .fullScreen
+        self.modalTransitionStyle = .coverVertical
     }
 
     override func viewDidLoad() {
@@ -129,45 +131,7 @@ class PaymentViewController: CustomViewController, UICollectionViewDelegate, UIC
         self.setupLayout()
     }
     
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return cards.count
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CardItemCollectionViewCell.cellID, for: indexPath) as! CardItemCollectionViewCell
-        cell.selectState = selectedCard == indexPath.row
-        cell.cardData = cards[indexPath.row]
-        return cell
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
-        if indexPath.row == selectedCard {
-            return UIContextMenuConfiguration()
-        }
-        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil, actionProvider: {
-            _ in
-            let delete = UIAction(title: "Delete Card", image: UIImage(systemName: "trash"), attributes: .destructive, handler: {
-                _ in
-                ApplicationDB.shared.deleteCard(card: self.cards[indexPath.row])
-                self.cards.remove(at: indexPath.row)
-                collectionView.deleteItems(at: [indexPath])
-                self.cards = ApplicationDB.shared.getCards()
-                collectionView.reloadData()
-            })
-            return UIMenu(title: "Card Actions", children: [delete])
-        })
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        self.selectedCard = indexPath.row
-        collectionView.reloadData()
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: collectionView.frame.height + 50, height: collectionView.frame.height - 5)
-    }
-    
-    override func setupLayout() {
+    func setupLayout() {
         view.backgroundColor = UIColor(named: "background_color")
 
         paymentCardsCollectionView.dataSource = self
@@ -220,6 +184,14 @@ class PaymentViewController: CustomViewController, UICollectionViewDelegate, UIC
             cancelPayment.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8),
             cancelPayment.centerXAnchor.constraint(equalTo: view.centerXAnchor),
         ])
+        loadData()
+    }
+    
+    func loadData() {
+        cards = ApplicationDB.shared.getCards()
+        
+        
+        paymentCardsCollectionView.reloadData()
     }
     
     func titleLabel(text: String) -> UILabel {
@@ -274,25 +246,47 @@ class PaymentViewController: CustomViewController, UICollectionViewDelegate, UIC
     
     @objc
     func onCompletePayment() {
-        if cards.count < 1 {
-            Toast.shared.showToast(message: "Select a payment method", type: .error)
+        if let selectedGiftCard = selectedGiftCard {
+            if product != nil {
+                ApplicationDB.shared.checkoutProduct(product: product!, deliveryDate: Date().offset(by: 1), withGiftCard: selectedGiftCard)
+            } else if shoppingListData == nil {
+                ApplicationDB.shared.checkoutCart(deliveryDate: Date().offset(by: 1),withGiftCard: selectedGiftCard)
+            } else {
+                ApplicationDB.shared.checkoutShoppingList(list: shoppingListData!, deliveryDate: Date().offset(by: 1), withGiftCard: selectedGiftCard)
+            }
+            let vc = PaymentResultViewController()
+            vc.modalPresentationStyle = .fullScreen
+            self.present(vc, animated: true)
+        } else if let selectedCard = selectedCard  {
+            if product != nil {
+                ApplicationDB.shared.checkoutProduct(product: product!, deliveryDate: Date().offset(by: 1), withCard: selectedCard)
+            } else if shoppingListData == nil {
+                ApplicationDB.shared.checkoutCart(deliveryDate: Date().offset(by: 1), withCard: selectedCard)
+            } else {
+                ApplicationDB.shared.checkoutShoppingList(list: shoppingListData!, deliveryDate: Date().offset(by: 1), withCard: selectedCard)
+            }
+            let vc = PaymentResultViewController()
+            vc.modalPresentationStyle = .fullScreen
+            self.present(vc, animated: true)
+        } else {
+            Toast.shared.showToast(message: "Select a payment Method ")
             return
         }
-        if product != nil {
-            ApplicationDB.shared.checkoutProduct(product: product!, deliveryDate: Date().offset(by: 1))
-        } else if shoppingListData == nil {
-            ApplicationDB.shared.checkoutCart(deliveryDate: Date().offset(by: 1))
-        } else {
-            ApplicationDB.shared.checkoutShoppingList(list: shoppingListData!, deliveryDate: Date().offset(by: 1))
-        }
-        let vc = PaymentResultViewController()
-        vc.modalPresentationStyle = .fullScreen
-        self.present(vc, animated: true)
+
     }
     
     @objc
     func onUseGiftCard() {
-        print("Getting your gift cards...")
+        let selectGiftCardVC = SelectGiftCardViewController()
+        selectGiftCardVC.selectedCard = selectedGiftCard
+        if product != nil {
+            selectGiftCardVC.requiredAmount = Double(truncating: (product!.shipping_cost + product!.price) as NSDecimalNumber)
+        } else if shoppingListData == nil {
+            selectGiftCardVC.requiredAmount = cart.map({ item in return Double(truncating: (item.product.price+item.product.shipping_cost) as NSDecimalNumber) }).reduce(0, +)
+        } else {
+            selectGiftCardVC.requiredAmount = ApplicationDB.shared.getShoppingList(with: shoppingListData!.id).map({ item in return Double(truncating: (item.product.shipping_cost + item.product.price) as NSDecimalNumber) }).reduce(0, +)
+        }
+        self.present(selectGiftCardVC, animated: true, completion: nil)
     }
     
     @objc
@@ -302,13 +296,53 @@ class PaymentViewController: CustomViewController, UICollectionViewDelegate, UIC
 
 }
 
+extension PaymentViewController: UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return cards.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CardItemCollectionViewCell.cellID, for: indexPath) as! CardItemCollectionViewCell
+        cell.cardData = cards[indexPath.row]
+        cell.selectState = selectedCard?.id == cell.cardData?.id
+        return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        if cards[indexPath.row].id == selectedCard?.id {
+            return UIContextMenuConfiguration()
+        }
+        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil, actionProvider: {
+            _ in
+            let delete = UIAction(title: "Delete Card", image: UIImage(systemName: "trash"), attributes: .destructive, handler: {
+                _ in
+                ApplicationDB.shared.deleteCard(card: self.cards[indexPath.row])
+                self.cards.remove(at: indexPath.row)
+                collectionView.deleteItems(at: [indexPath])
+                self.loadData()
+            })
+            return UIMenu(title: "Card Actions", children: [delete])
+        })
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        self.selectedCard = cards[indexPath.row]
+        self.selectedGiftCard = nil
+        collectionView.reloadData()
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: collectionView.frame.height + 50, height: collectionView.frame.height - 5)
+    }
+}
+
 extension PaymentViewController: AddCardDelegate {
     
     func onAddClick(name: String, cardNumber: String, date: Date) {
         let cardNumber = cardNumber.replacingOccurrences(of: " - ", with: "")
         ApplicationDB.shared.addCard(name: name, date: date, cardNumber: cardNumber)
-        self.cards = ApplicationDB.shared.getCards()
-        self.paymentCardsCollectionView.reloadData()
+        self.loadData()
     }
 }
 

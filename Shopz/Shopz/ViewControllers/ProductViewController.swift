@@ -28,11 +28,7 @@ class ProductViewController: CustomViewController {
         return cv
     }()
     
-    var myReview: Review? {
-        willSet {
-            
-        }
-    }
+    var myReview: Review?
     
     var sellerVC: SellerHomeViewController?
     
@@ -90,7 +86,7 @@ class ProductViewController: CustomViewController {
     
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-        collectionView.layoutIfNeeded()
+        self.collectionView.layoutIfNeeded()
     }
     
     func loadData(with product: Product) {
@@ -98,9 +94,11 @@ class ProductViewController: CustomViewController {
         cells = [
             ImagesViewElement(images: product.image_media),
             DescriptionElement(description: product.description, title: product.product_name, cost: product.price, rating: product.rating, seller: StorageDB.getSellerData(of: product.seller_id)),
-            AddReviewElement(isEnabled: myReview == nil),
             ReviewElement(reviews: ApplicationDB.shared.getReviews(product: product))
         ]
+        if Auth.auth != nil && ApplicationDB.shared.userHasPurchased(product: product) {
+            cells.insert(AddReviewElement(), at: 2)
+        }
     }
     
 
@@ -142,8 +140,16 @@ extension ProductViewController: UICollectionViewDelegate, UICollectionViewDeleg
         
         if let item = cells[indexPath.row] as? ReviewElement {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ReviewsCollectionViewCell.cellID, for: indexPath) as! ReviewsCollectionViewCell
+            let list: [CGFloat] = item.reviews.map({ review in
+                let textviewHeight = review.review.height(withConstrainedWidth: collectionView.frame.width*0.63, font: .systemFont(ofSize: 12, weight: .semibold))
+                if !ApplicationDB.shared.getReviewMediaList(review: review).isEmpty {
+                    return textviewHeight + 220
+                }
+                return textviewHeight
+            })
             cell.reviewElementData = item
-            cell.cellFrame = CGSize(width: collectionView.frame.width, height: collectionView.frame.height)
+            cell.cellFrame = CGSize(width: collectionView.frame.width, height: list.reduce(0, +))
+            cell.reviewListCellHeight = list
             return cell
         }
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: DescriptionCollectionViewCell.cellID, for: indexPath) as! DescriptionCollectionViewCell
@@ -157,21 +163,27 @@ extension ProductViewController: UICollectionViewDelegate, UICollectionViewDeleg
     }
 }
 
-extension ProductViewController: ReviewElementDelegate, ImagesViewDelegate, DescriptionCellDelegate, ImageSlideShowDelegate {
+extension ProductViewController: ReviewElementDelegate, ImagesViewDelegate, DescriptionCellDelegate {
     
-    func addReview(review: String, rating: Int) {
+    func addReview(review: String, rating: Int, media: [ApplicationDB.ReviewMedia]) {
         if let productData = productData {
-            ApplicationDB.shared.addReview(review: review, rating: rating, productID: productData.product_id)
+            ApplicationDB.shared.addReview(review: review, rating: rating, productID: productData.product_id, media: media)
             self.loadData(with: productData)
         }
     }
     
-    func editReview(oldReview: Review, rating: Int, review: String) {
-        ApplicationDB.shared.editReview(oldReview: oldReview, rating: rating, review: review)
+    func editReview(oldReview: Review, rating: Int, review: String, media: [ApplicationDB.ReviewMedia]) {
+        ApplicationDB.shared.editReview(oldReview: oldReview, rating: rating, review: review, media: media)
+        guard let productData = productData else { return }
+        loadData(with: productData)
+        collectionView.reloadData()
     }
     
     func deleteReview(_ review: Review) {
         ApplicationDB.shared.deleteReview(review: review)
+        guard let productData = productData else { return }
+        loadData(with: productData)
+        collectionView.reloadData()
     }
     
     func reviewBeginEditing(frame: CGRect?) {
@@ -195,13 +207,14 @@ extension ProductViewController: ReviewElementDelegate, ImagesViewDelegate, Desc
                 imagePicker = UIImagePickerController()
                 imagePicker.allowsEditing = true
                 imagePicker.sourceType = .camera
+                imagePicker.mediaTypes = ["public.movie", "public.image"]
                 imagePicker.modalPresentationStyle = .overFullScreen
                 imagePicker.delegate = delegateSource
                 self.present(imagePicker, animated: true)
             }))
         }
         
-        alert.addAction(UIAlertAction(title: "Gallery", style: .default, handler: { _ in
+        alert.addAction(UIAlertAction(title: "Image", style: .default, handler: { _ in
             imagePicker = UIImagePickerController()
             imagePicker.allowsEditing = true
             imagePicker.sourceType = .photoLibrary
@@ -220,8 +233,6 @@ extension ProductViewController: ReviewElementDelegate, ImagesViewDelegate, Desc
             self.present(imagePicker, animated: true)
         }))
         
-        
-        
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         
         if UIDevice.current.userInterfaceIdiom == .pad {
@@ -232,11 +243,8 @@ extension ProductViewController: ReviewElementDelegate, ImagesViewDelegate, Desc
         present(alert, animated: true, completion: nil)
     }
     
-    func imagesChanged(_ hasImages: Bool, images: [UIImage]) {
-        collectionView.collectionViewLayout.invalidateLayout()
-        DispatchQueue.main.async {
-            self.collectionView.scrollToItem(at: IndexPath(row: 2, section: 0), at: .top, animated: true)
-        }
+    func imagesChanged(_ hasImages: Bool) {
+        self.collectionView.collectionViewLayout.invalidateLayout()
     }
     
     func displaySeller(sellerData: Seller) {
@@ -270,15 +278,7 @@ extension ProductViewController: ReviewElementDelegate, ImagesViewDelegate, Desc
     func displayImage(_ image: UIImage?) {
         let imageView = ImageSlideShow()
         imageView.image = image
-        imageView.delegate = self
-        self.view.addSubview(imageView)
-        self.navigationController?.isNavigationBarHidden = true
-        self.tabBarController?.tabBar.isHidden = true
-    }
-    
-    func onHide(_ imageSlideShow: ImageSlideShow) {
-        self.navigationController?.isNavigationBarHidden = false
-        self.tabBarController?.tabBar.isHidden = false
+        present(imageView, animated: true, completion: nil)
     }
 }
 
@@ -312,10 +312,7 @@ class DescriptionElement: ProductDetailElement {
 }
 
 class AddReviewElement: ProductDetailElement {
-    var isEditing: Bool
-    init(isEnabled: Bool) {
-        self.isEditing = isEnabled
-    }
+    
 }
 
 class ReviewElement: ProductDetailElement {

@@ -131,3 +131,7 @@ class MyTransition: NSObject, UIViewControllerAnimatedTransitioning {
         return nil
     }
 }
+
+class CustomTabbarItem: UIView {
+    
+}

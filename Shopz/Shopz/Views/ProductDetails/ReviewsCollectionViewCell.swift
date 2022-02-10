@@ -18,10 +18,19 @@ class ReviewsCollectionViewCell: UICollectionViewCell {
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.backgroundColor = .clear
         tableView.allowsSelection = false
+        tableView.isScrollEnabled = false
+        tableView.sizeToFit()
         tableView.register(ReviewItemTableViewCell.self, forCellReuseIdentifier: ReviewItemTableViewCell.cellID)
         return tableView
     }()
     
+    var reviewListCellHeight: [CGFloat] = [] {
+        didSet {
+            DispatchQueue.main.async {
+                self.reviewList.reloadData()
+            }
+        }
+    }
     
     let titleLabel: UILabel = {
         let label = UILabel()
@@ -46,13 +55,13 @@ class ReviewsCollectionViewCell: UICollectionViewCell {
     
     
     var reviewElementData: ReviewElement? {
-        didSet {
-            if reviewElementData != nil {
+        willSet {
+            if newValue != nil {
                 self.reviewList.reloadData()
-                self.setupLayout()
                 self.reviewList.selectRow(at: IndexPath(row: 0, section: 0), animated: true, scrollPosition: .top)
+                self.setupLayout()
             }
-            titleLabel.text = reviewElementData?.reviews.count ?? 0 > 0 ? "Reviews" : ""
+            titleLabel.text = newValue?.reviews.count ?? 0 > 0 ? "Reviews" : ""
         }
     }
     
@@ -73,16 +82,11 @@ class ReviewsCollectionViewCell: UICollectionViewCell {
             reviewList.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
         ])
     }
-
-    
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 100
-    }
     
     override func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
         let attr = layoutAttributes
         attr.size = cellFrame
-        attr.size.height = CGFloat((reviewElementData?.reviews.count ?? 1) * 170) + 50
+        attr.size.height = cellFrame.height + 50
         return attr
     }
 
@@ -94,15 +98,17 @@ extension ReviewsCollectionViewCell: UITableViewDataSource, UITableViewDelegate 
         return reviewElementData?.reviews.count ?? 0
     }
     
-//    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-//        <#code#>
-//    }
-    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: ReviewItemTableViewCell.cellID) as! ReviewItemTableViewCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: ReviewItemTableViewCell.cellID, for: indexPath) as! ReviewItemTableViewCell
         cell.review = reviewElementData?.reviews[indexPath.row]
-        cell.backgroundColor = UIColor.white
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        if indexPath.row < reviewListCellHeight.count {
+            return reviewListCellHeight[indexPath.row]
+        }
+        return 100
     }
     
 }

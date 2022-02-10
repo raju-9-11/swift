@@ -31,6 +31,30 @@ class ButtonElement: FormElement {
     }
 }
 
+class DropDownElement: FormElement {
+    
+    var optionArray: [String]
+    var error: String
+    var errorState: Bool
+    var index: Int
+    var tag: String
+    var text: String
+    
+    init(optionArray: [String], error: String, index: Int, errorState: Bool, tag: String, text: String) {
+        self.optionArray = optionArray
+        self.errorState = errorState
+        self.error = error
+        self.index = index
+        self.tag = tag
+        self.text = text
+    }
+    
+    func checkError() -> Bool {
+        self.errorState = !self.optionArray.contains(self.text) || self.text.isEmpty
+        return !self.optionArray.contains(self.text) || self.text.isEmpty
+    }
+}
+
 class TextFieldElement: FormElement {
     private var placeholder: String
     private var text: String
@@ -120,13 +144,14 @@ class TextFieldElement: FormElement {
         return text.count > 7
     }
     
-    func isSamePassword(other: TextFieldElement)  {
+    func isSamePassword(asElem other: TextFieldElement) ->Bool {
         if self.text != other.text {
             self.error = "Passwords do not match"
             other.error = "Passwords do not match"
             self.errorState = true
             other.errorState = true
         }
+        return !self.errorState
     }
     
     

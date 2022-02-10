@@ -43,7 +43,7 @@ class OrderHistoryItemCollectionViewCell: UICollectionViewCell {
                     [unowned self] image in
                     self.imageView.image = image
                 })
-                if newValue!.purchaseDate.getOffset(from: Date()) < 5 {
+                if let deliveryDate = newValue!.deliveryDate, Date().getOffset(from: deliveryDate) < 5 {
                     buttonsView.addArrangedSubview(returnProduct)
                 }
                 self.dateLabel.text = "Purchase Date: \(newValue!.purchaseDate.toString())"

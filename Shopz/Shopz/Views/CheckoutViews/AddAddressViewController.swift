@@ -99,6 +99,16 @@ class AddAddressViewController: UIViewController {
     }()
     
     var bottomConstraint: NSLayoutConstraint?
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+    }
+    
+    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+        self.modalPresentationStyle = .overCurrentContext
+        self.modalTransitionStyle = .crossDissolve
+    }
 
     override func viewDidLoad() {
         

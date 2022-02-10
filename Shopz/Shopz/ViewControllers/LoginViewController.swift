@@ -79,6 +79,7 @@ class LoginViewController: UIViewController, TextFieldWithErrorDelegate {
         let emailField = TextFieldWithError()
         emailField.translatesAutoresizingMaskIntoConstraints = false
         emailField.placeholder = "Enter Email"
+        emailField.keyBoardType = .emailAddress
         emailField.error = "Email cannot be empty"
         return emailField
     }()
@@ -117,6 +118,14 @@ class LoginViewController: UIViewController, TextFieldWithErrorDelegate {
         super.viewDidLoad()
         
         self.setupLayout()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        emailField.text = ""
+        passwordField.text = ""
+        emailField.errorState = false
+        passwordField.errorState = false
     }
     
     

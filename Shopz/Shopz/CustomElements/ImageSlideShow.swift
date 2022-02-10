@@ -8,13 +8,9 @@
 import UIKit
 
 
-class ImageSlideShow: UIView, UIScrollViewDelegate {
+class ImageSlideShow: UIViewController, UIScrollViewDelegate {
     
     weak var delegate: ImageSlideShowDelegate?
-    
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-    }
     
     var previousScale:CGFloat = 1.0
     
@@ -53,11 +49,21 @@ class ImageSlideShow: UIView, UIScrollViewDelegate {
         return scrollView
     }()
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+    }
+    
+    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
         
-        self.frame = UIScreen.main.bounds
-        self.backgroundColor = UIColor(named: "background_color")
+        self.modalPresentationStyle = .overFullScreen
+        self.modalTransitionStyle = .crossDissolve
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        self.view.backgroundColor = UIColor(named: "background_color")
         
         closeButton.addTarget(self, action: #selector(dismissFullscreenImage), for: .touchUpInside)
         
@@ -65,12 +71,12 @@ class ImageSlideShow: UIView, UIScrollViewDelegate {
         imageView.frame = zoomView.frame
         
         zoomView.addSubview(imageView)
-        self.addSubview(zoomView)
-        self.addSubview(closeButton)
+        view.addSubview(zoomView)
+        view.addSubview(closeButton)
         
         NSLayoutConstraint.activate([
-            closeButton.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor),
-            closeButton.centerXAnchor.constraint(equalTo: self.centerXAnchor)
+            closeButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            closeButton.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
     }
     
@@ -81,7 +87,7 @@ class ImageSlideShow: UIView, UIScrollViewDelegate {
     @objc
     func dismissFullscreenImage(_ sender: UITapGestureRecognizer) {
         self.delegate?.onHide(self)
-        self.removeFromSuperview()
+        self.dismiss(animated: true, completion: nil)
     }
     
     

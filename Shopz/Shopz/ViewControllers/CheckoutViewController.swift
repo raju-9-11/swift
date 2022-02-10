@@ -125,9 +125,7 @@ class CheckoutViewController: CustomViewController {
         return button
     }()
     
-    var addressListData: [Address] = {
-        return ApplicationDB.shared.getAddressList()
-    }()
+    var addressListData: [Address] = []
     
     var paymentVC: PaymentViewController?
 
@@ -138,8 +136,6 @@ class CheckoutViewController: CustomViewController {
     
     func onAddClick() {
         let addAddressVC = AddAddressViewController()
-        addAddressVC.modalPresentationStyle = .overCurrentContext
-        addAddressVC.modalTransitionStyle = .crossDissolve
         addAddressVC.delegate = self
         present(addAddressVC, animated: true)
     }
@@ -201,6 +197,12 @@ class CheckoutViewController: CustomViewController {
             continueButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             continueButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10),
         ])
+        self.loadData()
+    }
+    
+    func loadData() {
+        self.addressListData = ApplicationDB.shared.getAddressList()
+        self.addressList.reloadData()
     }
     
     deinit {
@@ -296,8 +298,6 @@ class CheckoutViewController: CustomViewController {
             }
             paymentVC?.shoppingListData = self.shoppingList
         }
-        paymentVC!.modalPresentationStyle = .fullScreen
-        paymentVC!.modalTransitionStyle = .coverVertical
         self.present(paymentVC!, animated: true)
     }
 
@@ -356,28 +356,18 @@ extension CheckoutViewController: UICollectionViewDelegate, UICollectionViewData
 extension CheckoutViewController: CheckBoxDelegate, TextFieldWithErrorDelegate, AddAddressDelegate {
     
     func onToggle(_ elem: CheckBox) {
-        if !elem.isOn {
-            UIView.animate(withDuration: 0.5, animations: {
-                self.giftWrapText.alpha = 1
-                self.giftWrapText.isHidden = false
-                self.view.layoutIfNeeded()
-                self.view.layoutSubviews()
-            })
-        } else {
-            UIView.animate(withDuration: 0.5, animations: {
-                self.giftWrapText.alpha = 0
-                self.giftWrapText.isHidden = true
-                self.view.layoutIfNeeded()
-                self.view.layoutSubviews()
-            })
-            self.view.endEditing(true)
-        }
+        UIView.animate(withDuration: 0.5, animations: {
+            self.giftWrapText.alpha = elem.isOn ? 1 : 0
+            self.giftWrapText.isHidden = !elem.isOn
+            self.view.layoutIfNeeded()
+            self.view.layoutSubviews()
+        })
+        self.view.endEditing(true)
     }
     
     func addAddressClick(_ address: Address) {
         ApplicationDB.shared.addAddress(address: address)
-        self.addressListData = ApplicationDB.shared.getAddressList()
-        self.addressList.reloadData()
+        self.loadData()
     }
 }
 
