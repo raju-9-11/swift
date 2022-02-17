@@ -21,7 +21,7 @@ class PaymentResultViewController: UIViewController {
     let goHome: UIButton = {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("Go Home", for: .normal)
+        button.setTitle("Continue Shopping", for: .normal)
         button.setTitleColor(UIColor(named: "text_color"), for: .normal)
         if #available(iOS 15, *) {
             var config = UIButton.Configuration.bordered()
@@ -29,10 +29,9 @@ class PaymentResultViewController: UIViewController {
             config.cornerStyle = .medium
             button.configuration = config
         } else {
-            button.layer.borderColor = UIColor(named: "AccentColor")?.cgColor
+            button.backgroundColor = UIColor(named: "AccentColor")
             button.contentEdgeInsets = UIEdgeInsets(top: 5, left: 10, bottom: 5, right: 10)
             button.layer.cornerRadius = 6
-            button.layer.borderWidth = 2
         }
         return button
     }()

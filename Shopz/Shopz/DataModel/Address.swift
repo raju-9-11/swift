@@ -13,6 +13,7 @@ struct Address {
     var addressLine2: String
     var pincode: String
     var city: String
+    var state: String
     var country: String
     var addressId: Int
     var userId: Int

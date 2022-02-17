@@ -192,7 +192,13 @@ class DescriptionCollectionViewCell: UICollectionViewCell, UIContextMenuInteract
         
         let contextMenuInteraction = UIContextMenuInteraction(delegate: self)
         shoppingListButton.addInteraction(contextMenuInteraction)
-        shoppingListButton.addTarget(self, action: #selector(onShoppingClick), for: .touchUpInside)
+        if #available(iOS 15, *) {
+            let menu = self.makeMenuActions()
+            shoppingListButton.showsMenuAsPrimaryAction = true
+            shoppingListButton.menu = UIMenu(title: "Add to Shopping List" , children: menu)
+        } else {
+            shoppingListButton.addTarget(self, action: #selector(onShoppingClick), for: .touchUpInside)
+        }
         
         addToCart.addTarget(self, action: #selector(onAddToCart), for: .touchUpInside)
         buyNow.addTarget(self, action: #selector(onBuy), for: .touchUpInside)
@@ -233,38 +239,55 @@ class DescriptionCollectionViewCell: UICollectionViewCell, UIContextMenuInteract
             textView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
         ])
         
-        
-//        stackView.addArrangedSubview(titleLabel)
-//        stackView.addArrangedSubview(costRatings)
-//        stackView.addArrangedSubview(sellerView)
-//        stackView.addArrangedSubview(buttonsView)
-//        stackView.addArrangedSubview(textView)
-//        contentView.addSubview(stackView)
-//        NSLayoutConstraint.activate([
-//            stackView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-//            stackView.topAnchor.constraint(equalTo: contentView.topAnchor),
-//            stackView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.9)
-//        ])
     }
     
     func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
         return UIContextMenuConfiguration(identifier: nil, previewProvider: nil, actionProvider: {
             suggActions in
-            let shoppingLists = ApplicationDB.shared.getShoppingLists()
-            if shoppingLists.isEmpty {
-                Toast.shared.showToast(message: "No shopping list found")
-            }
-            let menu = shoppingLists.map({ list in return UIAction(
-                title: list.name,
-                image: UIImage(systemName: "heart.fill"),
-                handler: { _ in
-                    self.delegate?.addToShoppingList(list: list)
-                    
-                })
-            })
+            let menu = self.makeMenuActions()
             return UIMenu(title: "Add to Shopping List" , children: menu)
             
         })
+    }
+    
+    func makeMenuActions() -> [UIAction] {
+        let shoppingLists = ApplicationDB.shared.getShoppingLists()
+        var menu = shoppingLists.map({ list in return UIAction(
+            title: list.name,
+            image: UIImage(systemName: "heart.fill"),
+            handler: { _ in
+                self.delegate?.addToShoppingList(list: list)
+                
+            })
+        })
+        let addAction = UIAction(
+            title: "Create Shopping list",
+            image: UIImage(systemName: "plus.circle"),
+            handler: { _ in
+                let alert = UIAlertController(title: "Create Shopping List", message: "Enter name for Shopping List: ", preferredStyle: .alert)
+                alert.addTextField(configurationHandler: { textfield in
+                    textfield.placeholder = "Enter name"
+                })
+                let action = UIAlertAction(title: "Create", style: .default, handler: {
+                    _ in
+                    let textField = alert.textFields![0]
+                    if let text = textField.text, text.isEmpty {
+                        Toast.shared.showToast(message: "Name cannot be empty!!")
+                        return
+                    }
+                    ApplicationDB.shared.addShoppingList(name: textField.text ?? "Untitled")
+                    if let vc = self.parentViewController as? ProductViewController {
+                        vc.collectionView.reloadData()
+                    }
+                })
+                let cancelAction = UIAlertAction(title: "Cancel", style: .destructive, handler: nil)
+                alert.addAction(action)
+                alert.addAction(cancelAction)
+                self.parentViewController?.present(alert, animated: true, completion: nil)
+            }
+        )
+        menu.append(addAction)
+        return menu
     }
     
     @objc

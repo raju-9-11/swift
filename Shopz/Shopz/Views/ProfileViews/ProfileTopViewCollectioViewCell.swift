@@ -75,9 +75,12 @@ class ProfileTopViewCollectioViewCell: UICollectionViewCell {
             if newValue != nil {
                 nameLabel.text = (Auth.auth != nil) ? "\(Auth.auth!.user.firstName) \(Auth.auth!.user.lastName) ": "Unknown"
                 self.setupLayout()
-                if newValue?.profileImageMedia != nil && newValue?.bgImageMedia != nil {
-                    bgImage.image = UIImage(data: (newValue?.bgImageMedia)!)
-                    profilePic.image = UIImage(data: (newValue?.profileImageMedia)!)
+                if let profileImage = newValue?.profileImageMediaURL {
+                    bgImage.image = UIImage(contentsOfFile: profileImage.path)
+                    profilePic.image = UIImage(contentsOfFile: profileImage.path)
+                } else {
+                    profilePic.image = UIImage(systemName: "person.circle.fill")
+                    bgImage.image = UIImage(systemName: "photo.fill")
                 }
             }
         }
@@ -86,7 +89,7 @@ class ProfileTopViewCollectioViewCell: UICollectionViewCell {
     var cellFrame = CGRect(x: 0, y: 0, width: 100, height: 100)
     
     func setupLayout() {
-        profilePic.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(onLongProfilePress)))
+        
         contentView.addSubview(bgImage)
         contentView.addSubview(profilePic)
         contentView.addSubview(editProfileButton)
@@ -111,11 +114,6 @@ class ProfileTopViewCollectioViewCell: UICollectionViewCell {
             nameLabel.topAnchor.constraint(equalTo: profilePic.bottomAnchor, constant: 5),
             nameLabel.centerXAnchor.constraint(equalTo: profilePic.centerXAnchor)
         ])
-    }
-    
-    @objc
-    func onLongProfilePress() {
-        delegate?.pickProfilePic(profilePic)
     }
     
     @objc
@@ -151,7 +149,6 @@ class ProfileTopViewCollectioViewCell: UICollectionViewCell {
 
 protocol ProfileImagesViewDelegate: AnyObject {
     func displayImage(_ image: UIImage?)
-    func pickProfilePic(_ sender: UIImageView)
     func editTapped()
 }
 

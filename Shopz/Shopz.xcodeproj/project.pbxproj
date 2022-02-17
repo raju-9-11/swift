@@ -65,6 +65,8 @@
 		9DA4681027B3DA2E002E3875 /* SelectGiftCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DA4680F27B3DA2E002E3875 /* SelectGiftCardViewController.swift */; };
 		9DA4681227B3EBDC002E3875 /* GiftCardCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DA4681127B3EBDC002E3875 /* GiftCardCollectionViewCell.swift */; };
 		9DA4681427B4FDA1002E3875 /* AddGiftCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DA4681327B4FDA1002E3875 /* AddGiftCardViewController.swift */; };
+		9DA4681627BA5D16002E3875 /* Countries.json in Resources */ = {isa = PBXBuildFile; fileRef = 9DA4681527BA5D16002E3875 /* Countries.json */; };
+		9DA4681A27BE88DE002E3875 /* SellerHomeSearchCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DA4681927BE88DE002E3875 /* SellerHomeSearchCell.swift */; };
 		9DA655D3276B55970006AB4C /* CartItemCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DA655D2276B55970006AB4C /* CartItemCollectionViewCell.swift */; };
 		9DA655D5276B5FA20006AB4C /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DA655D4276B5FA20006AB4C /* SearchViewController.swift */; };
 		9DA6942627A1496500947DA1 /* TabNavigationMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DA6942527A1496500947DA1 /* TabNavigationMenu.swift */; };
@@ -159,6 +161,8 @@
 		9DA4680F27B3DA2E002E3875 /* SelectGiftCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectGiftCardViewController.swift; sourceTree = "<group>"; };
 		9DA4681127B3EBDC002E3875 /* GiftCardCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftCardCollectionViewCell.swift; sourceTree = "<group>"; };
 		9DA4681327B4FDA1002E3875 /* AddGiftCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddGiftCardViewController.swift; sourceTree = "<group>"; };
+		9DA4681527BA5D16002E3875 /* Countries.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Countries.json; sourceTree = "<group>"; };
+		9DA4681927BE88DE002E3875 /* SellerHomeSearchCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SellerHomeSearchCell.swift; sourceTree = "<group>"; };
 		9DA655D2276B55970006AB4C /* CartItemCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartItemCollectionViewCell.swift; sourceTree = "<group>"; };
 		9DA655D4276B5FA20006AB4C /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		9DA6942527A1496500947DA1 /* TabNavigationMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabNavigationMenu.swift; sourceTree = "<group>"; };
@@ -300,6 +304,7 @@
 				9D54542727A2BDD500180C23 /* SellerHomeTitleViewCell.swift */,
 				9D54542927A2C1DF00180C23 /* SellerHomeBodyCell.swift */,
 				9D54542B27A2CC7900180C23 /* SellerDescriptionCell.swift */,
+				9DA4681927BE88DE002E3875 /* SellerHomeSearchCell.swift */,
 			);
 			path = SellerHomeViews;
 			sourceTree = "<group>";
@@ -363,6 +368,7 @@
 				9D3DD7DD277EEA3900AED9C7 /* ApplicationDB.swift */,
 				9D3DD7E0277EEA8C00AED9C7 /* StorageDB.swift */,
 				9D67187927A6A317006A7963 /* DataConfig.swift */,
+				9DA4681527BA5D16002E3875 /* Countries.json */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -535,6 +541,7 @@
 			files = (
 				9D9D9D8C276751CA00FD1D54 /* StaticData.json in Resources */,
 				9D5E29AE275F7B4B00ED86ED /* LaunchScreen.storyboard in Resources */,
+				9DA4681627BA5D16002E3875 /* Countries.json in Resources */,
 				9D5E29AB275F7B4B00ED86ED /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -573,6 +580,7 @@
 				9D9D9D902767525200FD1D54 /* CartViewController.swift in Sources */,
 				9D1429812772046A00BC82E6 /* ReviewItemTableViewCell.swift in Sources */,
 				9D9B16D027689C0600BE8456 /* FormButtonCollectionViewCell.swift in Sources */,
+				9DA4681A27BE88DE002E3875 /* SellerHomeSearchCell.swift in Sources */,
 				9D118E6027708D31004B2587 /* SellerHomeViewController.swift in Sources */,
 				9D3F48BA27A9C3BB0057E465 /* ProfileEditViewController.swift in Sources */,
 				9D9D9D8E2767523D00FD1D54 /* LoginViewController.swift in Sources */,

@@ -39,14 +39,16 @@ class DropDownElement: FormElement {
     var index: Int
     var tag: String
     var text: String
+    var placeholder: String
     
-    init(optionArray: [String], error: String, index: Int, errorState: Bool, tag: String, text: String) {
+    init(optionArray: [String], error: String, index: Int, errorState: Bool, tag: String, text: String, placeholder: String) {
         self.optionArray = optionArray
         self.errorState = errorState
         self.error = error
         self.index = index
         self.tag = tag
         self.text = text
+        self.placeholder = placeholder
     }
     
     func checkError() -> Bool {

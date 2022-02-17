@@ -15,6 +15,7 @@ struct User {
     var email: String
     var ph: String
     var country: String
+    var state: String
     var city: String
     var about: String
 }

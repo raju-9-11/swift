@@ -37,11 +37,15 @@ class ProfileEditViewController: UIViewController {
     
     let collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
+        layout.minimumLineSpacing = 5
+        layout.minimumInteritemSpacing = 5
+        layout.scrollDirection = .vertical
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
         cv.translatesAutoresizingMaskIntoConstraints = false
         cv.backgroundColor = .clear
         cv.register(FormButtonCollectionViewCell.self, forCellWithReuseIdentifier: FormButtonCollectionViewCell.buttonCellID)
         cv.register(FormTextFieldCollectionViewCell.self, forCellWithReuseIdentifier: FormTextFieldCollectionViewCell.textfieldCellID)
+        cv.showsVerticalScrollIndicator = false
         cv.register(FormPickerCollectionViewCell.self, forCellWithReuseIdentifier: FormPickerCollectionViewCell.pickerCellID)
         return cv
     }()
@@ -81,9 +85,6 @@ class ProfileEditViewController: UIViewController {
         containerView.addSubview(profileImage)
         containerView.addSubview(collectionView)
         
-        collectionViewBottomConstraint = collectionView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor)
-        collectionViewBottomConstraint?.isActive = true
-        
         NSLayoutConstraint.activate([
             containerView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.8),
             containerView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8),
@@ -99,6 +100,8 @@ class ProfileEditViewController: UIViewController {
             profileImage.widthAnchor.constraint(equalTo: containerView.widthAnchor, multiplier: 0.3),
             profileImage.heightAnchor.constraint(equalTo: containerView.widthAnchor, multiplier: 0.3),
         ])
+        collectionViewBottomConstraint = collectionView.bottomAnchor.constraint(equalTo: containerView.safeAreaLayoutGuide.bottomAnchor, constant: -10)
+        collectionViewBottomConstraint?.isActive = true
         self.loadData()
     }
     
@@ -118,17 +121,16 @@ class ProfileEditViewController: UIViewController {
             1: TextFieldElement(text: user.lastName, placeholder: "Enter last name", error: "Last name cannot be empty", index: 1, type: .plain, tag: "lname") ,
             2: TextFieldElement(text: user.email, placeholder: "Enter Email", error: "Email cannot be empty", index: 2, type: .email, tag: "email"),
             3: TextFieldElement(text: user.about, placeholder: "Enter About", error: "About cannot be empty", index: 3, type: .plain, tag: "about"),
-            4: DropDownElement(optionArray: self.getCountriesName(), error: "Enter valid country name", index:4, errorState: false, tag: "country", text: user.country),
-            
-            5: TextFieldElement(text: user.city, placeholder: "Enter City", error: "City cannot be empty", index: 5, type: .plain, tag: "city"),
-            6: ButtonElement(title: "Save", index: 6),
+            4: DropDownElement(optionArray: StorageDB.getCountries().map({ return $0.country }), error: "Enter valid country", index:4, errorState: false, tag: "country", text: user.country, placeholder: "Enter Country"),
+            5: DropDownElement(optionArray: StorageDB.getStates(country: user.country), error: "Enter valid state", index:5, errorState: false, tag: "state", text: user.state, placeholder: "Enter State"),
+            6: TextFieldElement(text: user.city, placeholder: "Enter City", error: "City cannot be empty", index: 6, type: .plain, tag: "city"),
+            7: ButtonElement(title: "Save", index: 7),
         ]
         collectionView.reloadData()
     }
     
     @objc
     func onImageClick() {
-        print("TEST")
         var imagePicker = UIImagePickerController()
         let alert = UIAlertController(title: "Add Image", message: nil, preferredStyle: .actionSheet)
         if UIImagePickerController.isSourceTypeAvailable(.camera) {
@@ -173,20 +175,6 @@ class ProfileEditViewController: UIViewController {
     @objc
     func keyboardWillHideNotification(notification: NSNotification) {
         self.collectionViewBottomConstraint?.constant = 0
-    }
-    
-    func getCountriesName() -> [String] {
-        var countriesData = [String]()
-
-        for code in NSLocale.isoCountryCodes  {
-            let id = NSLocale.localeIdentifier(fromComponents: [NSLocale.Key.countryCode.rawValue: code])
-
-            if let name = NSLocale(localeIdentifier: "en_IN").displayName(forKey: NSLocale.Key.identifier, value: id) {
-                countriesData.append(name)
-            }
-        }
-
-        return countriesData
     }
     
     @objc
@@ -276,7 +264,13 @@ extension ProfileEditViewController: TextFormElementDelegate, SubmitButtonDelega
     }
     
     func formPicker(_ picker: DropDownWithError, prop propChanged: DropDownElement) {
-        (elements[propChanged.index] as? DropDownElement)?.text = propChanged.text
+        if let dropDown = elements[propChanged.index] as? DropDownElement {
+            dropDown.text = propChanged.text
+            if dropDown.index == 4 {
+                (elements[5] as? DropDownElement)?.optionArray = StorageDB.getStates(country: propChanged.text)
+                collectionView.reloadItems(at: [IndexPath(row: 5, section: 0)])
+            }
+        }
     }
     
     func formPickerShouldReturn(_ picker: DropDownWithError, prop: DropDownElement) {
@@ -303,7 +297,8 @@ extension ProfileEditViewController: TextFormElementDelegate, SubmitButtonDelega
                let country = dict["country"],
                let city = dict["city"],
                let about = dict["about"],
-               ApplicationDB.shared.editUser(firstName: fname, lastName: lname, email: email, ph: "", country: country, city: city, about: about) {
+               let state = dict["state"],
+                ApplicationDB.shared.editUser(firstName: fname, lastName: lname, email: email, ph: "", country: country, stateName: state, city: city, about: about) {
                 Toast.shared.showToast(message: "Changes Saved", type: .success)
                 if let vc = navigationController?.presentingViewController as? ProfileViewController {
                     vc.loadData()

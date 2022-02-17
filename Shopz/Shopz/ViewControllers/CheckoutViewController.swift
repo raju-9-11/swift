@@ -275,8 +275,7 @@ class CheckoutViewController: CustomViewController {
         if let vc = self.parent as? CartViewController {
             vc.loadData()
         }
-        self.view.removeFromSuperview()
-        self.removeFromParent()
+        self.navigationController?.popToRootViewController(animated: true)
     }
     
     @objc

@@ -7,18 +7,15 @@
 
 import UIKit
 
-class SellerHomeViewController: UIViewController {
+class SellerHomeViewController: CustomViewController {
     
     var sellerData: Seller? {
         willSet {
             if newValue != nil {
                 self.loadData(with: newValue!)
-                self.title = "\(newValue!.seller_name)'s Shop"
             }
         }
     }
-    
-    var pvc: ProductViewController?
     
     var elements: [SellerHomeElement] = []
     
@@ -39,6 +36,7 @@ class SellerHomeViewController: UIViewController {
         tableView.backgroundColor = .clear
         tableView.allowsSelection = false
         tableView.register(SellerHomeTitleViewCell.self, forCellReuseIdentifier: SellerHomeTitleViewCell.cellID)
+        tableView.register(SellerHomeSearchCell.self, forCellReuseIdentifier: SellerHomeSearchCell.cellID)
         tableView.register(SellerDescriptionCell.self, forCellReuseIdentifier: SellerDescriptionCell.cellID)
         tableView.register(SellerHomeBodyCell.self, forCellReuseIdentifier: SellerHomeBodyCell.cellID)
         tableView.separatorStyle = .none
@@ -51,19 +49,34 @@ class SellerHomeViewController: UIViewController {
         self.setupLayout()
     }
     
-    deinit {
-        pvc = nil
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        if let newValue = sellerData {
+            self.title = "\(newValue.seller_name)'s Shop"
+        }
+    }
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        self.title = "Back"
+    }
+    
+    @objc
+    func onBack() {
+        self.navigationController?.popViewController(animated: true)
     }
     
     
+    
     // MARK: - Layout and other functions
-    func setupLayout() {
+    override func setupLayout() {
+        
         view.backgroundColor = UIColor(named: "background_color")
         
         tableView.delegate = self
         tableView.dataSource = self
         
         view.addSubview(tableView)
+        
         NSLayoutConstraint.activate([
             tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
@@ -76,27 +89,22 @@ class SellerHomeViewController: UIViewController {
         elements = [
             TitleElement(title: seller.seller_name),
             SellerDescriptionElement(description: seller.description),
+            SellerSearchElement(placeholder: seller.seller_name),
             BodyElement(products: StorageDB.getProducts(of: seller.seller_id))
         ]
         tableView.reloadData()
     }
     
-    func displayProduct(product: Product) {
-        pvc = nil
-        pvc = ProductViewController()
-        pvc!.productData = product
-        self.navigationController?.pushViewController(pvc!, animated: true)
-    }
-    
 }
 
-extension SellerHomeViewController: UITableViewDelegate, UITableViewDataSource {
+// MARK: - TableView Delegate
+extension SellerHomeViewController {
     
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return elements.count
     }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch(elements[indexPath.row]) {
         case let item as TitleElement:
             let cell = tableView.dequeueReusableCell(withIdentifier: SellerHomeTitleViewCell.cellID, for: indexPath) as! SellerHomeTitleViewCell
@@ -112,15 +120,20 @@ extension SellerHomeViewController: UITableViewDelegate, UITableViewDataSource {
             cell.delegate = self
             cell.productData = item.products
             return cell
+        case let item as SellerSearchElement:
+            let cell = tableView.dequeueReusableCell(withIdentifier: SellerHomeSearchCell.cellID, for: indexPath) as! SellerHomeSearchCell
+            cell.delegate = self
+            cell.placeholder = item.placeholder
+            return cell
         default:
             let cell = tableView.dequeueReusableCell(withIdentifier: SellerHomeBodyCell.cellID, for: indexPath)
             return cell
         }
     }
     
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        if indexPath.row == 2 {
-            let height = (itemSize.height + 5) * CGFloat(StorageDB.getProducts(of: sellerData?.seller_id ?? -1).count) + 10
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        if indexPath.row == 3 {
+            let height = (itemSize.height + 10) * CGFloat(max(StorageDB.getProducts(of: sellerData?.seller_id ?? -1).count / 3, 1)) + 20
             return height
         }
         return 100
@@ -128,7 +141,7 @@ extension SellerHomeViewController: UITableViewDelegate, UITableViewDataSource {
     
 }
 
-extension SellerHomeViewController: SellerHomeBodtCellDelegate {
+extension SellerHomeViewController: SellerHomeBodtCellDelegate, SellerHomeSearchDelegate {
     func onItemSelect(_ product: Product) {
         self.displayProduct(product: product)
     }
@@ -143,6 +156,14 @@ class TitleElement: SellerHomeElement {
     
     init(title: String) {
         self.title = title
+    }
+}
+
+class SellerSearchElement: SellerHomeElement {
+    var placeholder: String
+    
+    init(placeholder: String) {
+        self.placeholder = placeholder
     }
 }
 

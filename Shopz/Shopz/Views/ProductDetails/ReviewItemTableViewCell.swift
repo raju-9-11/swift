@@ -145,7 +145,7 @@ class ReviewItemTableViewCell: UITableViewCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
-        self.contentView.subviews.forEach({ view in view.removeFromSuperview() })
+        self.removeViews()
     }
 
 }

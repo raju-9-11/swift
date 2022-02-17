@@ -76,6 +76,25 @@ class StorageDB {
         return nil
     }
     
+    static func getCountries() -> [Country] {
+        if let path = Bundle.main.path(forResource: "Countries", ofType: "json") {
+            do {
+                let data = try Data(contentsOf: URL(fileURLWithPath: path), options: .mappedIfSafe)
+                let json = try JSONDecoder().decode(CountryJson.self, from: data)
+                return json.countries
+            }
+            catch {
+                print("JSON ERROR: \(error)")
+            }
+        }
+        return []
+    }
+    
+    static func getStates(country: String) -> [String] {
+        let countries = StorageDB.getCountries()
+        return countries.filter({ $0.country == country}).first?.states ?? []
+    }
+    
     static func getSellerData(of id: Int) -> Seller? {
         if let path = Bundle.main.path(forResource: "StaticData", ofType: "json") {
             do {

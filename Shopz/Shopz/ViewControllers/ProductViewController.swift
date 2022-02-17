@@ -19,7 +19,6 @@ class ProductViewController: CustomViewController {
         layout.minimumInteritemSpacing = 10
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
         cv.translatesAutoresizingMaskIntoConstraints = false
-        cv.backgroundColor = .clear
         cv.register(ProductDetailsTopCollectionViewCell.self, forCellWithReuseIdentifier: ProductDetailsTopCollectionViewCell.cellID)
         cv.register(DescriptionCollectionViewCell.self, forCellWithReuseIdentifier: DescriptionCollectionViewCell.cellID)
         cv.register(ReviewsCollectionViewCell.self, forCellWithReuseIdentifier: ReviewsCollectionViewCell.cellID)
@@ -35,28 +34,27 @@ class ProductViewController: CustomViewController {
     var productData: Product? {
         willSet {
             if newValue != nil {
+                self.title = "\(newValue!.product_name)"
                 self.loadData(with: newValue!)
             }
         }
     }
     
-    var cells: [ProductDetailElement] = [] {
-        willSet {
-            DispatchQueue.main.async {
-                self.collectionView.reloadData()
-                self.collectionView.layoutIfNeeded()
-            }
-        }
-    }
+    var cells: [ProductDetailElement] = []
+    
     var reviewImages: [UIImage] = []
     
     var cvc: CheckoutViewController?
     
-    override func loadView() {
-        super.loadView()
+    override func viewDidLoad() {
+        super.viewDidLoad()
         self.setupLayout()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.collectionView.reloadData()
+    }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesBegan(touches, with: event)
@@ -82,10 +80,6 @@ class ProductViewController: CustomViewController {
             collectionView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
         ])
         bottomConstraint?.isActive = true
-    }
-    
-    override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
         self.collectionView.layoutIfNeeded()
     }
     
@@ -99,6 +93,7 @@ class ProductViewController: CustomViewController {
         if Auth.auth != nil && ApplicationDB.shared.userHasPurchased(product: product) {
             cells.insert(AddReviewElement(), at: 2)
         }
+        self.collectionView.reloadData()
     }
     
 
@@ -109,7 +104,6 @@ extension ProductViewController: UICollectionViewDelegate, UICollectionViewDeleg
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return cells.count
     }
-    
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if let item = cells[indexPath.row] as? ImagesViewElement {
@@ -176,14 +170,12 @@ extension ProductViewController: ReviewElementDelegate, ImagesViewDelegate, Desc
         ApplicationDB.shared.editReview(oldReview: oldReview, rating: rating, review: review, media: media)
         guard let productData = productData else { return }
         loadData(with: productData)
-        collectionView.reloadData()
     }
     
     func deleteReview(_ review: Review) {
         ApplicationDB.shared.deleteReview(review: review)
         guard let productData = productData else { return }
         loadData(with: productData)
-        collectionView.reloadData()
     }
     
     func reviewBeginEditing(frame: CGRect?) {

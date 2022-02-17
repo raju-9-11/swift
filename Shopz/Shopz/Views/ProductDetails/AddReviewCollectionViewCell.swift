@@ -46,7 +46,7 @@ class AddReviewCollectionViewCell: UICollectionViewCell {
     var reviewMedia: [ApplicationDB.ReviewMedia] = [] {
         willSet {
             self.imagesView.isHidden = newValue.isEmpty
-            if self.reviewMedia.isEmpty != newValue.isEmpty && (addReviewView.superview != nil || editButton.title(for: .normal) == "Save") {
+            if self.reviewMedia.isEmpty != newValue.isEmpty {
                 self.layoutSubviews()
                 self.layoutIfNeeded()
                 self.delegate?.imagesChanged(newValue.isEmpty)

@@ -9,5 +9,6 @@ import Foundation
 
 struct CartItem {
     var product: Product
+    var count: Int
     var itemId: Int
 }

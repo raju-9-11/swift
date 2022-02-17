@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 
 
-class AddCategoryVC: CustomViewController {
+class AddCategoryVC: UIViewController {
     
     var categories: [Category] = [] {
         didSet {
@@ -22,7 +22,11 @@ class AddCategoryVC: CustomViewController {
     var selectedCategs: [IndexPath] = [] {
         willSet {
             addButton.isEnabled = !newValue.isEmpty
-            addButton.backgroundColor = !newValue.isEmpty ? .red.withAlphaComponent(0.8) : .gray
+            if #available(iOS 15.0, *) {
+                addButton.configuration?.baseBackgroundColor = !newValue.isEmpty ? .systemBlue.withAlphaComponent(0.8) : .gray
+            } else {
+                addButton.backgroundColor = !newValue.isEmpty ? .systemBlue.withAlphaComponent(0.8) : .gray
+            }
         }
     }
     
@@ -38,10 +42,16 @@ class AddCategoryVC: CustomViewController {
     let addButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.layer.cornerRadius = 6
         let title = "Add Categories"
+        if #available(iOS 15, *) {
+            var config = UIButton.Configuration.filled()
+            config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 5, bottom: 0, trailing: 5)
+            button.configuration = config
+        } else {
+            button.contentEdgeInsets = UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5)
+        }
+        button.layer.cornerRadius = 6
         let attrString = NSMutableAttributedString(string: title)
-        attrString.addAttribute(.font, value: UIFont.monospacedSystemFont(ofSize: 12, weight: .bold), range: NSRange(location: 0, length: title.count))
         button.isEnabled = false
         button.backgroundColor = .gray
         attrString.addAttribute(.foregroundColor, value: UIColor.white, range: NSRange(location: 0, length: title.count))
@@ -50,9 +60,8 @@ class AddCategoryVC: CustomViewController {
     }()
     
     let containerView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .clear
-        view.translatesAutoresizingMaskIntoConstraints = false
+        let view = UIView(frame: UIScreen.main.bounds)
+        view.backgroundColor = UIColor(named: "background_color")?.withAlphaComponent(0.5)
         return view
     }()
     
@@ -83,34 +92,63 @@ class AddCategoryVC: CustomViewController {
         return cv
     }()
     
+    let cancel: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        let title = "Cancel"
+        if #available(iOS 15, *) {
+            var config = UIButton.Configuration.filled()
+            config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 5, bottom: 0, trailing: 5)
+            button.configuration = config
+        } else {
+            button.contentEdgeInsets = UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5)
+        }
+        let attrString = NSMutableAttributedString(string: title)
+        button.backgroundColor = .red
+        button.layer.cornerRadius = 6
+        attrString.addAttribute(.foregroundColor, value: UIColor.white, range: NSRange(location: 0, length: title.count))
+        button.setAttributedTitle(attrString as NSAttributedString, for: .normal)
+        return button
+    }()
+    
+    lazy var buttonsView: UIStackView = {
+        let stack = UIStackView(arrangedSubviews: [cancel, addButton])
+        stack.axis = .horizontal
+        stack.spacing = 5
+        stack.distribution = .fillProportionally
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        return stack
+    }()
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+    }
+    
+    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+        self.modalPresentationStyle = .overFullScreen
+        self.modalTransitionStyle = .crossDissolve
+    }
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.setupLayout()
-    }
-    
-    override func setupLayout() {
-        
-        containerView.backgroundColor = UIColor(named: "background_color")?.withAlphaComponent(0.5)
+        view.backgroundColor = .clear
         
         collectionView.delegate = self
         collectionView.dataSource = self
-        
         view.addSubview(containerView)
         view.addSubview(backgroundView)
         view.addSubview(collectionView)
         view.addSubview(titleLabel)
-        view.addSubview(addButton)
+        view.addSubview(buttonsView)
         
         addButton.addTarget(self, action: #selector(onAdd), for: .touchUpInside)
-        backgroundView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: nil))
-        containerView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismissSearchBar)))
+        cancel.addTarget(self, action: #selector(onDismiss), for: .touchUpInside)
+        
+        containerView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(onDismiss)))
         
         NSLayoutConstraint.activate([
-            containerView.topAnchor.constraint(equalTo: view.topAnchor),
-            containerView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            containerView.leftAnchor.constraint(equalTo: view.leftAnchor),
-            containerView.rightAnchor.constraint(equalTo: view.rightAnchor),
             collectionView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             collectionView.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: 10),
             collectionView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.7),
@@ -121,10 +159,10 @@ class AddCategoryVC: CustomViewController {
             backgroundView.bottomAnchor.constraint(equalTo: addButton.bottomAnchor, constant: 20),
             titleLabel.topAnchor.constraint(equalTo: backgroundView.topAnchor, constant: 20),
             titleLabel.centerXAnchor.constraint(equalTo: backgroundView.centerXAnchor),
-            addButton.topAnchor.constraint(equalTo: collectionView.bottomAnchor),
-            addButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            addButton.widthAnchor.constraint(equalTo: collectionView.widthAnchor, multiplier: 0.9),
-            addButton.heightAnchor.constraint(equalToConstant: 30),
+            buttonsView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            buttonsView.topAnchor.constraint(equalTo: collectionView.bottomAnchor, constant: 10),
+            buttonsView.heightAnchor.constraint(equalToConstant: 30),
+            buttonsView.widthAnchor.constraint(equalTo: collectionView.widthAnchor, multiplier: 0.9)
             
         ])
     }
@@ -142,9 +180,7 @@ class AddCategoryVC: CustomViewController {
     
     @objc
     func onDismiss() {
-        self.willMove(toParent: nil)
-        self.view.removeFromSuperview()
-        self.removeFromParent()
+        self.dismiss(animated: true, completion: nil)
     }
 }
 

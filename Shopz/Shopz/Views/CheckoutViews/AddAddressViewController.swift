@@ -59,6 +59,14 @@ class AddAddressViewController: UIViewController {
         return textField
     }()
     
+    let statePicker: DropDownWithError = {
+        let textField = DropDownWithError()
+        textField.translatesAutoresizingMaskIntoConstraints = false
+        textField.placeholder = "Enter State"
+        textField.error = "Invalid state"
+        return textField
+    }()
+    
     let city: TextFieldWithError = {
         let textField = TextFieldWithError()
         textField.translatesAutoresizingMaskIntoConstraints = false
@@ -78,7 +86,7 @@ class AddAddressViewController: UIViewController {
     
     
     lazy var stackView: UIStackView = {
-        let stack = UIStackView(arrangedSubviews: [titleLabel, addressLine1, addressLine2, country, city, pincode, button])
+        let stack = UIStackView(arrangedSubviews: [titleLabel, addressLine1, addressLine2, country, statePicker, city, pincode, button])
         stack.axis = .vertical
         stack.distribution = .equalSpacing
         stack.spacing = 10
@@ -106,7 +114,7 @@ class AddAddressViewController: UIViewController {
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
-        self.modalPresentationStyle = .overCurrentContext
+        self.modalPresentationStyle = .overFullScreen
         self.modalTransitionStyle = .crossDissolve
     }
 
@@ -118,8 +126,11 @@ class AddAddressViewController: UIViewController {
         containerView.addSubview(stackView)
         
         button.addTarget(self, action: #selector(onAddAddress), for: .touchUpInside)
+        
         backgroundView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(onDismiss)))
         containerView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(onTextDismiss)))
+        country.delegate = self
+        
         NotificationCenter.default.addObserver(self, selector: #selector(onKeyboardShow), name: UIResponder.keyboardDidShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(onKeyboardHide), name: UIResponder.keyboardDidHideNotification, object: nil)
         
@@ -138,38 +149,12 @@ class AddAddressViewController: UIViewController {
             containerView.heightAnchor.constraint(equalTo: stackView.heightAnchor, multiplier: 1.3),
         ])
         
-        country.optionArray = getCountriesName()
-        country.optionImageArray = getCountriesFlags()
+        country.optionArray = StorageDB.getCountries().map({ return $0.country })
         
     }
     
     deinit {
         NotificationCenter.default.removeObserver(self)
-    }
-    
-    func getCountriesFlags() -> [String] {
-        var countriesData = [String]()
-
-        for code in NSLocale.isoCountryCodes  {
-            let flag = String.emojiFlag(for: code)
-            countriesData.append(flag!)
-        }
-
-        return countriesData
-    }
-    
-    func getCountriesName() -> [String] {
-        var countriesData = [String]()
-
-        for code in NSLocale.isoCountryCodes  {
-            let id = NSLocale.localeIdentifier(fromComponents: [NSLocale.Key.countryCode.rawValue: code])
-
-            if let name = NSLocale(localeIdentifier: "en_IN").displayName(forKey: NSLocale.Key.identifier, value: id) {
-                countriesData.append(name)
-            }
-        }
-
-        return countriesData
     }
     
     @objc
@@ -179,10 +164,11 @@ class AddAddressViewController: UIViewController {
         pincode.errorState = pincode.text.isEmpty
         city.errorState = city.text.isEmpty
         country.errorState = country.text.isEmpty
-        if addressLine1.text.isEmpty || addressLine2.text.isEmpty || pincode.text.isEmpty || city.text.isEmpty || country.errorState || country.text.isEmpty {
+        statePicker.errorState = statePicker.text.isEmpty
+        if addressLine1.text.isEmpty || addressLine2.text.isEmpty || pincode.text.isEmpty || city.text.isEmpty || country.errorState || country.text.isEmpty || statePicker.errorState || statePicker.text.isEmpty {
             return
         }
-        delegate?.addAddressClick(Address(addressLine1: addressLine1.text, addressLine2: addressLine2.text, pincode: pincode.text, city: city.text, country: country.text, addressId: -1, userId: Auth.auth?.user.id ?? -1))
+        delegate?.addAddressClick(Address(addressLine1: addressLine1.text, addressLine2: addressLine2.text, pincode: pincode.text, city: city.text, state: statePicker.text, country: country.text, addressId: -1, userId: Auth.auth?.user.id ?? -1))
         self.dismiss(animated: true, completion: nil)
         
     }
@@ -209,6 +195,17 @@ class AddAddressViewController: UIViewController {
         self.containerView.endEditing(true)
     }
 
+}
+
+extension AddAddressViewController: DropDownWithErrorDelegate {
+    
+    func valueChanged(_ dropDown: DropDownWithError, value: String) {
+        statePicker.optionArray = StorageDB.getStates(country: dropDown.text)
+    }
+    
+    func shouldReturn(_ dropDown: DropDownWithError) {
+        statePicker.optionArray = StorageDB.getStates(country: dropDown.text)
+    }
 }
 
 

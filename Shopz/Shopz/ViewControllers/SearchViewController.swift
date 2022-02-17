@@ -61,12 +61,6 @@ class SearchViewController: CustomViewController, CategoryItemDelegate, Category
         }
     }
     
-//    override func viewDidLoad() {
-//        super.viewDidLoad()
-//        if (requiresAuth && Auth.auth != nil) || ( !requiresAuth ){
-//            self.setupLayout()
-//        }
-//    }
     required init?(coder: NSCoder) {
         super.init(coder: coder)
     }
@@ -101,8 +95,9 @@ class SearchViewController: CustomViewController, CategoryItemDelegate, Category
     func removeCategory(category: Category) {
         for (index, val) in categoryListData.enumerated() {
             if val.id == category.id {
-                self.categoryList.deleteItems(at: [IndexPath(row: index, section: 0)])
                 self.categoryListData.remove(at: index)
+                self.categoryList.deleteItems(at: [IndexPath(row: index, section: 0)])
+                self.categoryList.reloadData()
                 return
             }
         }
@@ -111,10 +106,8 @@ class SearchViewController: CustomViewController, CategoryItemDelegate, Category
     func addCategory() {
         let avc = AddCategoryVC()
         avc.categories = StorageDB.getCategories().filter({ categ in return !categoryListData.contains(where: { category in return categ.id == category.id}) })
-        avc.willMove(toParent: self)
         avc.delegate = self
-        self.addChild(avc)
-        self.view.addSubview(avc.view)
+        self.present(avc, animated: true)
     }
     
     func onAddCategs(_ categories: [Category]) {
@@ -151,13 +144,11 @@ class SearchViewController: CustomViewController, CategoryItemDelegate, Category
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.searchBar.becomeFirstResponder()
+        if let _ = self.navigationController?.rootViewController as? SearchViewController {
+            self.searchBarAlwaysVisible = true
+        }
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        self.children.forEach({ child in child.view.removeFromSuperview(); child.removeFromParent()})
-    }
     
     func loadData(with categories: [Category] = []) {
         self.searchListData = StorageDB.getProducts()

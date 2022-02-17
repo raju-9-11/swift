@@ -16,8 +16,6 @@ class FormPickerCollectionViewCell: UICollectionViewCell {
     let picker: DropDownWithError = {
         let textField = DropDownWithError()
         textField.translatesAutoresizingMaskIntoConstraints = false
-        textField.placeholder = "Enter Country"
-        textField.error = "Invalid country"
         return textField
     }()
     
@@ -35,6 +33,8 @@ class FormPickerCollectionViewCell: UICollectionViewCell {
             if newValue != nil {
                 picker.optionArray = newValue!.optionArray
                 self.errorState = newValue!.errorState
+                picker.error = newValue!.error
+                picker.placeholder = newValue!.placeholder
                 picker.text = newValue!.text
             }
             self.setupLayout()
@@ -58,6 +58,7 @@ class FormPickerCollectionViewCell: UICollectionViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         self.removeViews()
+        self.picker.text = ""
     }
     
     func setupLayout() {
@@ -90,12 +91,12 @@ class FormPickerCollectionViewCell: UICollectionViewCell {
 extension FormPickerCollectionViewCell: DropDownWithErrorDelegate {
     func shouldReturn(_ dropDown: DropDownWithError) {
         guard let pickerProp = pickerProp else { return }
-        delegate?.formPickerShouldReturn(dropDown, prop: DropDownElement(optionArray: pickerProp.optionArray, error: pickerProp.error, index: pickerProp.index, errorState: dropDown.errorState, tag: pickerProp.tag, text: dropDown.text))
+        delegate?.formPickerShouldReturn(dropDown, prop: DropDownElement(optionArray: pickerProp.optionArray, error: pickerProp.error, index: pickerProp.index, errorState: dropDown.errorState, tag: pickerProp.tag, text: dropDown.text, placeholder: pickerProp.placeholder))
     }
     
     func valueChanged(_ dropDown: DropDownWithError, value: String) {
         guard let pickerProp = pickerProp else { return }
-        delegate?.formPicker(dropDown, prop: DropDownElement(optionArray: pickerProp.optionArray, error: pickerProp.error, index: pickerProp.index, errorState: dropDown.errorState, tag: pickerProp.tag, text: dropDown.text))
+        delegate?.formPicker(dropDown, prop: DropDownElement(optionArray: pickerProp.optionArray, error: pickerProp.error, index: pickerProp.index, errorState: dropDown.errorState, tag: pickerProp.tag, text: dropDown.text, placeholder: pickerProp.placeholder))
     }
     
     

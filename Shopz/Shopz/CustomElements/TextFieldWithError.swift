@@ -47,6 +47,24 @@ class TextFieldWithError: UIView, UITextFieldDelegate {
         }
     }
     
+    var autoCorrection: UITextAutocorrectionType {
+        get {
+            return textField.autocorrectionType
+        }
+        set {
+            textField.autocorrectionType = newValue
+        }
+    }
+    
+    var autoCapitalize: UITextAutocapitalizationType {
+        get {
+            return textField.autocapitalizationType
+        }
+        set {
+            textField.autocapitalizationType = newValue
+        }
+    }
+    
     var text: String {
         get {
             return textField.text ?? ""
@@ -110,6 +128,8 @@ class TextFieldWithError: UIView, UITextFieldDelegate {
 
     private let textField: UITextField = {
         let textField = UITextField()
+        textField.autocapitalizationType = .none
+        textField.autocorrectionType = .no
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.borderStyle = .roundedRect
         textField.layer.borderColor = UIColor.gray.cgColor

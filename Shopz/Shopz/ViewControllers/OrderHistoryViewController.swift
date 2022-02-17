@@ -73,6 +73,7 @@ class OrderHistoryViewController: CustomViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.title = "Order history"
         NotificationCenter.default.addObserver(self, selector: #selector(onLogout), name: .userLogout, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(onLogin), name: .userLogin, object: nil)
         if (requiresAuth && Auth.auth != nil) || ( !requiresAuth ){

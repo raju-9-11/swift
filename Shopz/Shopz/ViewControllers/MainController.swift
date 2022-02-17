@@ -40,6 +40,7 @@ class MainController: UITabBarController, UITextFieldDelegate, UISearchBarDelega
 
         view.backgroundColor = UIColor(named: "background_color")
         self.delegate = self
+        self.tabBar.isTranslucent = false
         self.tabBar.backgroundColor = UIColor(named: "tabbar_color")?.withAlphaComponent(0.5)
         self.tabBar.tintColor = UIColor(named: "tabbar_text_color")
         self.tabBar.unselectedItemTintColor = UIColor(named: "tabbar_unselected_color")

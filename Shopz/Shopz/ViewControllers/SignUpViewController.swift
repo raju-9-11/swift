@@ -55,11 +55,12 @@ class SignUpViewController: CustomViewController {
         2: TextFieldElement(text: "", placeholder: "Enter Email", error: "Email cannot be empty", index: 2, type: .email, tag: "email"),
         3: TextFieldElement(text: "", placeholder: "Enter Password", error: "Password should contain atleast 8 characters", index: 3, type: .password, tag: "cpassword"),
         4: TextFieldElement(text: "", placeholder: "Confirm Password", error: "Password should contain atleast 8 characters", index: 4, type: .password, tag: "password"),
-        5: DropDownElement(optionArray: self.getCountriesName(), error: "Enter valid country name", index: 5, errorState: false, tag: "country", text: ""),
+        5: DropDownElement(optionArray: StorageDB.getCountries().map({ return $0.country }), error: "Enter valid country name", index: 5, errorState: false, tag: "country", text: "", placeholder: "Enter Country"),
+        6: DropDownElement(optionArray: [], error: "Enter valid state", index: 6, errorState: false, tag: "state", text: "", placeholder: "Enter State"),
         
-        6: TextFieldElement(text: "", placeholder: "Enter City", error: "City cannot be empty", index: 6, type: .plain, tag: "city"),
-        7: ButtonElement(title: "Sign up", index: 7),
-        8: PlainElement(index: 8)
+        7: TextFieldElement(text: "", placeholder: "Enter City", error: "City cannot be empty", index: 7, type: .plain, tag: "city"),
+        8: ButtonElement(title: "Sign up", index: 8),
+        9: PlainElement(index: 9)
         
     ]
     
@@ -71,20 +72,6 @@ class SignUpViewController: CustomViewController {
     
     deinit {
         NotificationCenter.default.removeObserver(self)
-    }
-    
-    func getCountriesName() -> [String] {
-        var countriesData = [String]()
-
-        for code in NSLocale.isoCountryCodes  {
-            let id = NSLocale.localeIdentifier(fromComponents: [NSLocale.Key.countryCode.rawValue: code])
-
-            if let name = NSLocale(localeIdentifier: "en_IN").displayName(forKey: NSLocale.Key.identifier, value: id) {
-                countriesData.append(name)
-            }
-        }
-
-        return countriesData
     }
     
     @objc
@@ -188,7 +175,13 @@ extension SignUpViewController: TextFormElementDelegate, SubmitButtonDelegate, S
     }
     
     func formPicker(_ picker: DropDownWithError, prop propChanged: DropDownElement) {
-        (elements[propChanged.index] as? DropDownElement)?.text = propChanged.text
+        if let dropDown = elements[propChanged.index] as? DropDownElement {
+            dropDown.text = propChanged.text
+            if dropDown.index == 5 {
+                (elements[6] as? DropDownElement)?.optionArray = StorageDB.getStates(country: propChanged.text)
+                collectionView.reloadItems(at: [IndexPath(row: 6, section: 0)])
+            }
+        }
     }
     
     func formPickerShouldReturn(_ picker: DropDownWithError, prop: DropDownElement) {
@@ -215,7 +208,8 @@ extension SignUpViewController: TextFormElementDelegate, SubmitButtonDelegate, S
                let country = dict["country"],
                let city = dict["city"],
                let password = dict["password"],
-               ApplicationDB.shared.addUser(firstName: fname, lastName: lname, email: email, ph: "", country: country, city: city, password: password) {
+               let state = dict["state"],
+               ApplicationDB.shared.addUser(firstName: fname, lastName: lname, email: email, ph: "", country: country, stateName: state, city: city, password: password) {
                 Toast.shared.showToast(message: "User Created", type: .success)
                 self.onSignup()
             }

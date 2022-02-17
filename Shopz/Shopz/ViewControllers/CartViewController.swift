@@ -17,6 +17,7 @@ class CartViewController: CustomViewController {
             if listDetails != nil {
                 self.cartTitle = listDetails?.name ?? "Untitled"
                 buttonsView = .all
+                self.title = "\(self.cartTitle)"
                 label.text = "\(self.cartTitle) is Empty"
             }
             self.loadData()
@@ -26,10 +27,10 @@ class CartViewController: CustomViewController {
     weak var delegate: ShoppingListViewDelegate?
     
     var listItems: [CartItem] = [] {
-        willSet {
-            self.navigationController?.tabBarItem.badgeValue = "\(newValue.count)"
-            self.collectionView.isHidden = newValue.isEmpty
-            self.placeholderView.isHidden = !newValue.isEmpty
+        didSet {
+            self.updateBadge()
+            self.collectionView.isHidden = listItems.isEmpty
+            self.placeholderView.isHidden = !listItems.isEmpty
         }
     }
     
@@ -88,8 +89,8 @@ class CartViewController: CustomViewController {
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
         DispatchQueue.main.async {
-            if Auth.auth != nil, let count = ApplicationDB.shared.getCartCount() {
-                self.navigationController?.tabBarItem.badgeValue = "\(count)"
+            if Auth.auth != nil {
+                self.updateBadge()
             }
         }
         self.requiresAuth = true
@@ -164,7 +165,7 @@ class CartViewController: CustomViewController {
     @objc
     override func onLogin() {
         super.onLogin()
-        self.navigationController?.tabBarItem.badgeValue = "\(listItems.count)"
+        self.updateBadge()
         self.setupLayout()
     }
     
@@ -181,8 +182,10 @@ class CartViewController: CustomViewController {
     
     @objc
     func updateBadge() {
-        if let count = ApplicationDB.shared.getCartCount() {
+        if let count = ApplicationDB.shared.getCartCount(), listDetails == nil {
             self.navigationController?.tabBarItem.badgeValue = "\(count)"
+        } else {
+            self.navigationController?.tabBarItem.badgeColor = nil
         }
     }
     
@@ -244,9 +247,7 @@ extension CartViewController: CartItemDelegate, ButtonsViewDelegate {
             return
         }
         delegate?.deleteListClicked(list: listDetails)
-        self.willMove(toParent: nil)
-        self.view.removeFromSuperview()
-        self.removeFromParent()
+        self.navigationController?.popViewController(animated: true)
     }
     
     

@@ -18,6 +18,7 @@ class CartItemCollectionViewCell: UICollectionViewCell {
     var itemData: CartItem? {
         willSet {
             if newValue != nil {
+                countLabel.text = "\(newValue!.count)"
                 nameLabel.text = newValue?.product.product_name
                 costLabel.text = "$ \(newValue?.product.price ?? 0) "
                 self.cancellable = self.loadImage(for: newValue!.product.image_media[0]).sink(receiveValue: {
@@ -29,12 +30,21 @@ class CartItemCollectionViewCell: UICollectionViewCell {
         }
     }
     
+    let countLabel: UITextField = {
+        let textField = UITextField()
+        textField.translatesAutoresizingMaskIntoConstraints = false
+        textField.borderStyle = .roundedRect
+        textField.textAlignment = .center
+        textField.isEnabled = false
+        return textField
+    }()
+    
     let nameLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "Item name"
         label.textColor = UIColor(named: "text_color")
-        label.numberOfLines = 3
+        label.numberOfLines = 2
         return label
     }()
     
@@ -77,6 +87,7 @@ class CartItemCollectionViewCell: UICollectionViewCell {
         contentView.addSubview(costLabel)
         contentView.addSubview(closeButton)
 //        contentView.addSubview(bottomLine)
+        contentView.addSubview(countLabel)
         contentView.backgroundColor = UIColor(named: "thumbnail_color")
         closeButton.addTarget(self, action: #selector(onDelete), for: .touchUpInside)
         
@@ -93,6 +104,8 @@ class CartItemCollectionViewCell: UICollectionViewCell {
             closeButton.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             closeButton.widthAnchor.constraint(equalToConstant: 20),
             closeButton.rightAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.rightAnchor, constant: -20),
+            countLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            countLabel.leftAnchor.constraint(equalTo: imageView.rightAnchor, constant: 20),
 //            bottomLine.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
 //            bottomLine.leftAnchor.constraint(equalTo: imageView.rightAnchor),
 //            bottomLine.heightAnchor.constraint(equalToConstant: 1),

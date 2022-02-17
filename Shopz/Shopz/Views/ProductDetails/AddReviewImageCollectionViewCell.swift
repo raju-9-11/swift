@@ -71,7 +71,6 @@ class AddReviewImageCollectionViewCell: UICollectionViewCell {
     
     var media: ApplicationDB.ReviewMedia? {
         willSet {
-            
             if newValue != nil {
                 switch newValue!.type {
                 case .video:
@@ -79,20 +78,19 @@ class AddReviewImageCollectionViewCell: UICollectionViewCell {
                     videoPlayer.player = AVPlayer(url: newValue!.mediaUrl)
                     let imageGenerator = AVAssetImageGenerator(asset: AVAsset(url: newValue!.mediaUrl))
                     let time = CMTime(seconds: 0, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
-                    let image = try! imageGenerator.copyCGImage(at: time, actualTime: nil)
-                    videoView.image = UIImage(cgImage: image)
-                    imageView.isHidden = true
-                    videoView.isHidden = false
+                    do {
+                        let image = try imageGenerator.copyCGImage(at: time, actualTime: nil)
+                        videoView.image = UIImage(cgImage: image).resized(toWidth: min(self.contentView.frame.height, self.contentView.frame.width))
+                        imageView.isHidden = true
+                        videoView.isHidden = false
+                    }
+                    catch {
+                        print(error)
+                    }
                 case .image:
                     imageView.isHidden = false
                     videoView.isHidden = true
-                    
-                    do {
-                        imageView.image = try UIImage(data: Data(contentsOf: newValue!.mediaUrl))
-                    }
-                    catch {
-                        print("DATA error \(error)")
-                    }
+                    imageView.image = UIImage(contentsOfFile: newValue!.mediaUrl.path)?.resized(toWidth: min(self.contentView.frame.height, self.contentView.frame.width))
                 }
             }
             self.setupLayout()
@@ -130,7 +128,11 @@ class AddReviewImageCollectionViewCell: UICollectionViewCell {
     @objc
     func onImageClick() {
         let imageSlideShow = ImageSlideShow()
-        imageSlideShow.image = imageView.image
+        if let media = media {
+            imageSlideShow.image = UIImage(contentsOfFile: media.mediaUrl.path)
+        } else {
+            imageSlideShow.image = UIImage(systemName: "photo.fill")
+        }
         self.parentViewController?.present(imageSlideShow, animated: true)
     }
     
@@ -165,4 +167,23 @@ extension AddReviewImageCollectionViewCell: AVPlayerViewControllerDelegate {
 
 protocol AddReviewImageDelegate: AnyObject {
     func deleteImage(at index: IndexPath)
+}
+
+extension UIImage {
+    func resized(withPercentage percentage: CGFloat, isOpaque: Bool = true) -> UIImage? {
+        let canvas = CGSize(width: size.width * percentage, height: size.height * percentage)
+        let format = imageRendererFormat
+        format.opaque = isOpaque
+        return UIGraphicsImageRenderer(size: canvas, format: format).image {
+            _ in draw(in: CGRect(origin: .zero, size: canvas))
+        }
+    }
+    func resized(toWidth width: CGFloat, isOpaque: Bool = true) -> UIImage? {
+        let canvas = CGSize(width: width, height: CGFloat(ceil(width/size.width * size.height)))
+        let format = imageRendererFormat
+        format.opaque = isOpaque
+        return UIGraphicsImageRenderer(size: canvas, format: format).image {
+            _ in draw(in: CGRect(origin: .zero, size: canvas))
+        }
+    }
 }

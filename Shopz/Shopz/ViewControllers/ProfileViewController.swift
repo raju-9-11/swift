@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ProfileViewController: CustomViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+class ProfileViewController: CustomViewController {
     
     let containerView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -60,66 +60,6 @@ class ProfileViewController: CustomViewController, UIImagePickerControllerDelega
         present(imageView, animated: true, completion: nil)
     }
     
-    func pickProfilePic(_ sender: UIImageView) {
-        let alert = UIAlertController(title: "Choose Image", message: nil, preferredStyle: .actionSheet)
-        
-        if UIImagePickerController.isSourceTypeAvailable(.camera) {
-            alert.addAction(UIAlertAction(title: "Camera", style: .default, handler: { _ in
-                self.imagePicker = UIImagePickerController()
-                self.imagePicker.allowsEditing = true
-                self.imagePicker.sourceType = .camera
-                self.imagePicker.modalPresentationStyle = .overFullScreen
-                self.imagePicker.delegate = self
-                self.present(self.imagePicker, animated: true)
-            }))
-        }
-        
-        alert.addAction(UIAlertAction(title: "Gallery", style: .default, handler: { _ in
-            self.imagePicker = UIImagePickerController()
-            self.imagePicker.allowsEditing = true
-            self.imagePicker.sourceType = .photoLibrary
-            self.imagePicker.modalPresentationStyle = .overFullScreen
-            self.imagePicker.delegate = self
-            self.present(self.imagePicker, animated: true)
-        }))
-        
-        if UIDevice.current.userInterfaceIdiom == .pad {
-            alert.popoverPresentationController?.sourceView = sender
-            alert.popoverPresentationController?.sourceRect = sender.bounds
-            alert.popoverPresentationController?.permittedArrowDirections = [.down, .up]
-        }
-        
-        alert.addAction(UIAlertAction.init(title: "Cancel", style: .cancel, handler: nil))
-        
-            
-        self.present(alert, animated: true, completion: nil)
-
-    }
-    
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        
-        let info = convertFromUIImagePickerControllerInfoKeyDictionary(info)
-        
-        guard let image = info[convertFromUIImagePickerControllerInfoKey(UIImagePickerController.InfoKey.originalImage)] as? UIImage else { return }
-        elements[0] = ProfileData(bgImageMedia: image.jpegData(compressionQuality: 1), profileImageMedia: image.jpegData(compressionQuality: 1))
-        containerView.reloadData()
-        imagePicker.dismiss(animated: true, completion: nil)
-    }
-    
-    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-        imagePicker.dismiss(animated: true, completion: nil)
-    }
-    
-    private func convertFromUIImagePickerControllerInfoKeyDictionary(_ input: [UIImagePickerController.InfoKey: Any]) -> [String: Any] {
-        return Dictionary(uniqueKeysWithValues: input.map { key, value in (key.rawValue, value) })
-    }
-
-    
-    private func convertFromUIImagePickerControllerInfoKey(_ input: UIImagePickerController.InfoKey) -> String {
-        return input.rawValue
-    }
-
-    
     override func setupLayout() {
 
         self.title = "Profile"
@@ -144,6 +84,12 @@ class ProfileViewController: CustomViewController, UIImagePickerControllerDelega
         self.loadData()
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        self.elements[0] = ProfileData(bgImageMediaURL: nil, profileImageMediaURL: nil)
+        self.containerView.reloadData()
+    }
+    
     func loadData() {
         guard let user = Auth.auth?.user else { return }
         elements = [
@@ -152,21 +98,15 @@ class ProfileViewController: CustomViewController, UIImagePickerControllerDelega
             ProfileFooterElement()
         ]
         if let profileImageURL = ApplicationDB.shared.getProfileMedia(userId: user.id) {
-            do {
-                try elements.insert(ProfileData(
-                    bgImageMedia: Data(contentsOf: profileImageURL),
-                    profileImageMedia: Data(contentsOf: profileImageURL)), at: 0)
-            }
-            catch {
-                elements.insert(ProfileData(
-                    bgImageMedia: UIImage(systemName: "photo.fill")?.pngData(),
-                    profileImageMedia: UIImage(systemName: "person.circle.fill")?.pngData()), at: 0)
-                print(error)
-            }
+            elements.insert(ProfileData(
+                bgImageMediaURL: profileImageURL,
+                profileImageMediaURL: profileImageURL
+            ), at: 0)
         } else {
             elements.insert(ProfileData(
-                bgImageMedia: UIImage(systemName: "photo.fill")?.pngData(),
-                profileImageMedia: UIImage(systemName: "person.circle.fill")?.pngData()), at: 0)
+                bgImageMediaURL: nil,
+                profileImageMediaURL: nil
+            ), at: 0)
         }
             
         
@@ -343,12 +283,12 @@ class ProfileViewElement {
 
 final class ProfileData: ProfileViewElement {
     
-    var bgImageMedia: Data?
-    var profileImageMedia: Data?
+    var bgImageMediaURL: URL?
+    var profileImageMediaURL: URL?
     
-    init(bgImageMedia: Data?, profileImageMedia: Data?) {
-        self.bgImageMedia = bgImageMedia
-        self.profileImageMedia = profileImageMedia
+    init(bgImageMediaURL: URL?, profileImageMediaURL: URL?) {
+        self.bgImageMediaURL = bgImageMediaURL
+        self.profileImageMediaURL = profileImageMediaURL
     }
 }
 
