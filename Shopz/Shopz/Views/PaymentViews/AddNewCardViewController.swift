@@ -79,7 +79,7 @@ class AddNewCardViewController: UIViewController {
     let addButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Add Card", for: .normal)
-        button.backgroundColor = .systemBlue.withAlphaComponent(0.5)
+        button.backgroundColor = .systemBlue
         button.layer.cornerRadius = 6
         button.setTitleColor(.white, for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false

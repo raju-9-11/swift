@@ -147,6 +147,7 @@ class CheckoutViewController: CustomViewController {
     
     override func setupLayout() {
         view.backgroundColor = UIColor(named: "background_color")
+        self.title = "Checkout"
         
         giftWrapText.delegate = self
         continueButton.addTarget(self, action: #selector(onContinue), for: .touchUpInside)

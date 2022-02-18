@@ -103,7 +103,7 @@ class AddGiftCardViewController: UIViewController {
         let button = UIButton()
         button.setTitle("Purchase", for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.backgroundColor = .systemBlue.withAlphaComponent(0.5)
+        button.backgroundColor = .systemBlue
         button.layer.cornerRadius = 6
         button.setTitleColor(.white, for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false

@@ -104,8 +104,14 @@ class CustomViewController: UIViewController {
     let searchButton: UIBarButtonItem = {
         let button = UIBarButtonItem()
         button.image = UIImage(systemName: "magnifyingglass.circle")
-        button.tintColor = .systemBlue
         return button
+    }()
+    
+    let leftButton: UIBarButtonItem = {
+        let leftButton = UIBarButtonItem()
+        leftButton.image = UIImage(systemName: "chevron.left")
+        leftButton.title = ""
+        return leftButton
     }()
     
     lazy var searchBar: UISearchBar = {
@@ -114,12 +120,42 @@ class CustomViewController: UIViewController {
         return searchBar
     }()
     
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        if self == self.navigationController?.rootViewController {
+            self.leftButton.image = nil
+        } else {
+            self.leftButton.image = UIImage(systemName: "chevron.left")
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor(named: "background_color")
         
+        leftButton.target = self
+        leftButton.action = #selector(onBack)
+        self.navigationItem.leftBarButtonItem = leftButton
         self.navigationItem.rightBarButtonItem = searchButton
         self.navigationController?.navigationBar.isTranslucent = false
+        
+        
+        if self.navigationController?.rootViewController != self {
+
+            if #available(iOS 14, *) {
+                var actions = self.navigationController?.viewControllers.map({
+                    vc in
+                    return UIAction(title: vc.title ?? "Back", handler: {
+                        _ in
+                        self.navigationController?.popToViewController(vc, animated: true)
+                    })
+                })
+                actions?.removeLast()
+                leftButton.menu = UIMenu(children: actions ?? [] )
+            }
+            
+        }
+
         searchButton.target = self
         searchButton.action = #selector(onSearchButtonClick)
         
@@ -142,6 +178,11 @@ class CustomViewController: UIViewController {
         searchVC = nil
         lvc = nil
         NotificationCenter.default.removeObserver(self)
+    }
+    
+    @objc
+    func onBack() {
+        self.navigationController?.popViewController(animated: true)
     }
     
     @objc

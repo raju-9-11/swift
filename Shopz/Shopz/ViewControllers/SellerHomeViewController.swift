@@ -10,9 +10,10 @@ import UIKit
 class SellerHomeViewController: CustomViewController {
     
     var sellerData: Seller? {
-        willSet {
-            if newValue != nil {
-                self.loadData(with: newValue!)
+        didSet {
+            if sellerData != nil {
+                self.loadData(with: sellerData!)
+                self.title = sellerData!.seller_name
             }
         }
     }
@@ -49,23 +50,6 @@ class SellerHomeViewController: CustomViewController {
         self.setupLayout()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        if let newValue = sellerData {
-            self.title = "\(newValue.seller_name)'s Shop"
-        }
-    }
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        self.title = "Back"
-    }
-    
-    @objc
-    func onBack() {
-        self.navigationController?.popViewController(animated: true)
-    }
-    
-    
     
     // MARK: - Layout and other functions
     override func setupLayout() {
@@ -93,6 +77,23 @@ class SellerHomeViewController: CustomViewController {
             BodyElement(products: StorageDB.getProducts(of: seller.seller_id))
         ]
         tableView.reloadData()
+    }
+    
+    func loadData(with seller: Seller, products: [Product]) {
+        elements = [
+            TitleElement(title: seller.seller_name),
+            SellerDescriptionElement(description: seller.description),
+            SellerSearchElement(placeholder: seller.seller_name),
+            BodyElement(products: products)
+        ]
+        tableView.reloadRows(at: [IndexPath(row: 3, section: 0)], with: .automatic)
+
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesBegan(touches, with: event)
+        print("TEST")
+        self.view.endEditing(true)
     }
     
 }
@@ -133,17 +134,31 @@ extension SellerHomeViewController {
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if indexPath.row == 3 {
-            let height = (itemSize.height + 10) * CGFloat(max(StorageDB.getProducts(of: sellerData?.seller_id ?? -1).count / 3, 1)) + 20
+            let numberofItems = StorageDB.getProducts(of: sellerData?.seller_id ?? -1).count
+            let height = (itemSize.height + 10) * CGFloat(max(numberofItems/3 + (numberofItems%3 > 0 ? 1 : 0), 1)) + 20
             return height
         }
         return 100
     }
     
+    
 }
 
 extension SellerHomeViewController: SellerHomeBodtCellDelegate, SellerHomeSearchDelegate {
+    
     func onItemSelect(_ product: Product) {
         self.displayProduct(product: product)
+    }
+    
+    func onSearch(_ query: String) {
+        guard let sellerData = sellerData else { return }
+        let products: [Product] = StorageDB.getProducts(of: sellerData.seller_id).filter({ prod in return prod.product_name.lowercased().fuzzyMatch(query.lowercased()) })
+        self.loadData(with: sellerData, products: products)
+    }
+    
+    func onCancel() {
+        guard let sellerData = sellerData else { return }
+        self.loadData(with: sellerData)
     }
 }
 

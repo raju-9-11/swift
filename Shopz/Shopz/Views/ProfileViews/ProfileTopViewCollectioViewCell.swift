@@ -60,12 +60,12 @@ class ProfileTopViewCollectioViewCell: UICollectionViewCell {
             var config = UIButton.Configuration.filled()
             config.contentInsets = NSDirectionalEdgeInsets(top: 5, leading: 10, bottom: 5, trailing: 10)
             config.cornerStyle = .medium
-            config.baseBackgroundColor = .systemBlue.withAlphaComponent(0.5)
+            config.baseBackgroundColor = .systemBlue
             button.configuration = config
         } else {
             button.layer.cornerRadius = 6
             button.contentEdgeInsets = UIEdgeInsets(top: 5, left: 10, bottom: 5, right: 10)
-            button.backgroundColor = .systemBlue.withAlphaComponent(0.5)
+            button.backgroundColor = .systemBlue
         }
         return button
     }()

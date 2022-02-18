@@ -120,7 +120,7 @@ class SearchViewController: CustomViewController, CategoryItemDelegate, Category
         view.backgroundColor = UIColor(named: "background_color")
         searchList.dataSource = self
         searchList.delegate = self
-        
+        self.title = "Search"
         categoryList.dataSource = self
         categoryList.delegate = self
         if let layout = categoryList.collectionViewLayout as? UICollectionViewFlowLayout {

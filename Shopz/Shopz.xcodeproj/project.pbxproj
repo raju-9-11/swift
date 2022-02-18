@@ -260,8 +260,6 @@
 				9D118E642770AACC004B2587 /* AddressItemCollectionViewCell.swift */,
 				9DA99A1027719C6F00B8053B /* AddAddressCollectionViewCell.swift */,
 				9D67187B27A6A382006A7963 /* AddAddressViewController.swift */,
-				9DA4680F27B3DA2E002E3875 /* SelectGiftCardViewController.swift */,
-				9DA4681327B4FDA1002E3875 /* AddGiftCardViewController.swift */,
 			);
 			path = CheckoutViews;
 			sourceTree = "<group>";
@@ -432,6 +430,8 @@
 		9DA99A142771A1E100B8053B /* PaymentViews */ = {
 			isa = PBXGroup;
 			children = (
+				9DA4680F27B3DA2E002E3875 /* SelectGiftCardViewController.swift */,
+				9DA4681327B4FDA1002E3875 /* AddGiftCardViewController.swift */,
 				9DA99A152771A1FF00B8053B /* CardItemCollectionViewCell.swift */,
 				9DFB3CF8279FCB9B00A27215 /* AddNewCardViewController.swift */,
 				9DA4681127B3EBDC002E3875 /* GiftCardCollectionViewCell.swift */,

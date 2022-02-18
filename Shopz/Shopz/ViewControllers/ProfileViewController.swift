@@ -79,7 +79,7 @@ class ProfileViewController: CustomViewController {
         self.loadData()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.loadData()
     }

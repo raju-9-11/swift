@@ -27,6 +27,17 @@ class DropDownWithError: UIView {
         }
     }
     
+    var placeholderColor: UIColor = .darkGray {
+        willSet {
+            textField.attributedPlaceholder = NSAttributedString(
+                string: textField.placeholder ?? "",
+                attributes: [
+                    NSAttributedString.Key.foregroundColor: newValue
+                ]
+            )
+        }
+    }
+    
     var optionImageArray: [String] {
         get {
             return self.textField.optionImageArray
@@ -57,7 +68,12 @@ class DropDownWithError: UIView {
     
     var placeholder: String = "" {
         willSet {
-            textField.placeholder = newValue
+            textField.attributedPlaceholder = NSAttributedString(
+                string: newValue,
+                attributes: [
+                    NSAttributedString.Key.foregroundColor: placeholderColor
+                ]
+            )
         }
     }
     
