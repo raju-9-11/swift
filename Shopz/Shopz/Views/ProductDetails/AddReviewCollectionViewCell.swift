@@ -59,7 +59,7 @@ class AddReviewCollectionViewCell: UICollectionViewCell {
     
     let titleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor(named: "text_color")
+        label.textColor = UIColor.appTextColor
         label.font = .systemFont(ofSize: 15, weight: .heavy)
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "Your Review"
@@ -101,7 +101,7 @@ class AddReviewCollectionViewCell: UICollectionViewCell {
         let button = UIButton(type: .system)
         button.setImage(UIImage(systemName: "xmark.square"), for: .normal)
         button.setTitle("Cancel", for: .normal)
-        button.tintColor = UIColor(named: "text_color")
+        button.tintColor = UIColor.appTextColor
         button.setContentMode(mode: .scaleAspectFit)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
@@ -121,7 +121,7 @@ class AddReviewCollectionViewCell: UICollectionViewCell {
     let addImageButton: UIButton = {
         let button = UIButton(type: .system)
         button.setImage(UIImage(systemName: "photo.fill"), for: .normal)
-        button.tintColor = UIColor(named: "text_color")
+        button.tintColor = UIColor.appTextColor
         button.setContentMode(mode: .scaleAspectFit)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
@@ -133,7 +133,7 @@ class AddReviewCollectionViewCell: UICollectionViewCell {
         button.setImage(UIImage(systemName: "pencil.circle.fill"), for: .normal)
         button.setTitle("Edit Review", for: .normal)
         button.setContentMode(mode: .scaleAspectFit)
-        button.tintColor = UIColor(named: "text_color")
+        button.tintColor = UIColor.appTextColor
         return button
     }()
     
@@ -143,7 +143,7 @@ class AddReviewCollectionViewCell: UICollectionViewCell {
         button.setImage(UIImage(systemName: "delete.left"), for: .normal)
         button.setTitle("Delete", for: .normal)
         button.setContentMode(mode: .scaleAspectFit)
-        button.tintColor = UIColor(named: "text_color")
+        button.tintColor = UIColor.appTextColor
         return button
     }()
     
@@ -175,7 +175,7 @@ class AddReviewCollectionViewCell: UICollectionViewCell {
         deleteButton.addTarget(self, action: #selector(deleteReview), for: .touchUpInside)
         cancelButton.addTarget(self, action: #selector(onCancelClick), for: .touchUpInside)
         
-        contentView.backgroundColor = UIColor(named: "thumbnail_color")
+        contentView.backgroundColor = UIColor.thumbNailColor
         
         NotificationCenter.default.addObserver(self, selector: #selector(onKeyboardAppear), name: UIResponder.keyboardDidShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(onKeyboardDisappear), name: UIResponder.keyboardDidHideNotification, object: nil)
@@ -191,7 +191,7 @@ class AddReviewCollectionViewCell: UICollectionViewCell {
         contentView.addSubview(stackView)
         NSLayoutConstraint.activate([
             stackView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            stackView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            stackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
             addReviewTextView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.9),
             addReviewTextView.heightAnchor.constraint(equalToConstant: 80),
             rating.heightAnchor.constraint(equalToConstant: RatingElement.defHeight),
@@ -219,7 +219,7 @@ class AddReviewCollectionViewCell: UICollectionViewCell {
     
     override func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
         let attr = layoutAttributes
-        layoutAttributes.frame.size = CGSize(width: cellFrame.width, height: stackView.frame.height)
+        layoutAttributes.frame.size = CGSize(width: cellFrame.width, height: stackView.frame.height + 30)
         return attr
     }
     

@@ -28,7 +28,7 @@ class SearchbarTableViewCell: UITableViewCell {
     lazy var label: UILabel = {
         let label = UILabel()
         label.text = ""
-        label.textColor = UIColor(named: "text_color")
+        label.textColor = UIColor.appTextColor
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .monospacedSystemFont(ofSize: 15, weight: .regular)
         return label

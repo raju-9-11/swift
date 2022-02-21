@@ -37,7 +37,7 @@ class OrderHistoryViewController: CustomViewController {
         label.text = "No Items Bought yet"
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .monospacedSystemFont(ofSize: 10, weight: .regular)
-        label.textColor = UIColor(named: "thumbnail_text_color")
+        label.textColor = UIColor.thumbNailTextColor
         return label
     }()
     
@@ -58,7 +58,7 @@ class OrderHistoryViewController: CustomViewController {
             label.topAnchor.constraint(equalTo: imageView.centerYAnchor, constant: 50),
             label.centerXAnchor.constraint(equalTo: imageView.centerXAnchor),
         ])
-        view.backgroundColor = UIColor(named: "background_color")
+        view.backgroundColor = UIColor.shopzBackGroundColor
         return view
     }()
     
@@ -97,7 +97,7 @@ class OrderHistoryViewController: CustomViewController {
     
     override func setupLayout() {
         
-        view.backgroundColor = UIColor(named: "background_color")
+        view.backgroundColor = UIColor.shopzBackGroundColor
         self.loadData()
         collectionView.dataSource = self
         collectionView.delegate = self
@@ -142,6 +142,10 @@ extension OrderHistoryViewController: UICollectionViewDataSource, UICollectionVi
         return listItems.count
     }
     
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        self.displayProduct(product: listItems[indexPath.row].product)
+    }
+    
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: OrderHistoryItemCollectionViewCell.cellID, for: indexPath) as! OrderHistoryItemCollectionViewCell
         cell.itemData = listItems[indexPath.row]
@@ -174,6 +178,36 @@ extension OrderHistoryViewController: OrderHistoryItemDelegate {
         })
         
         alert.addAction(UIAlertAction(title: "Return", style: .default, handler: {
+            _ in
+            let textfield = alert.textFields![0]
+            print(textfield.text ?? "")
+            if textfield.text?.count ?? 0 > 0 {
+                ApplicationDB.shared.removeFromOrderHistory(item: item)
+                for (index,histitem) in self.listItems.enumerated() {
+                    if item.itemId == histitem.itemId {
+                        self.listItems.remove(at: index)
+                        self.collectionView.deleteItems(at: [IndexPath(row: index, section: 0)])
+                        break
+                    }
+                }
+            }
+        }))
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: .destructive, handler: nil))
+        
+        self.present(alert, animated: true)
+        
+        
+    }
+    
+    func cancelProduct(item: OrderHistItem, sender: UIButton) {
+        let alert = UIAlertController(title: "Are you Sure?", message: "Please enter reason for Cancel", preferredStyle: .alert)
+        
+        alert.addTextField(configurationHandler: { textfield in
+            textfield.placeholder = "Enter Reason"
+        })
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: .destructive, handler: {
             _ in
             let textfield = alert.textFields![0]
             print(textfield.text ?? "")

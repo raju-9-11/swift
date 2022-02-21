@@ -16,7 +16,7 @@ class CheckBox: UIButton {
         view.translatesAutoresizingMaskIntoConstraints = false
         view.layer.cornerRadius = 4
         view.layer.borderWidth = 5
-        view.layer.borderColor = UIColor(named: "text_color")?.cgColor
+        view.layer.borderColor = UIColor.appTextColor.cgColor
         return view
     }()
     
@@ -37,7 +37,7 @@ class CheckBox: UIButton {
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
-        checkBox.layer.borderColor = UIColor(named: "text_color")?.cgColor
+        checkBox.layer.borderColor = UIColor.appTextColor.cgColor
     }
     
     func setupLayout() {

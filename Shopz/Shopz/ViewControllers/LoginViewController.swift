@@ -21,7 +21,7 @@ class LoginViewController: UIViewController, TextFieldWithErrorDelegate {
     let containerView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = UIColor(named: "background_color")
+        view.backgroundColor = UIColor.shopzBackGroundColor
         view.layer.cornerRadius = 6
         return view
     }()
@@ -39,7 +39,7 @@ class LoginViewController: UIViewController, TextFieldWithErrorDelegate {
     let signupLabel: UILabel = {
         let label = UILabel()
         label.text = "Don't have an account? "
-        label.textColor = UIColor(named: "text_color")
+        label.textColor = UIColor.appTextColor
         label.translatesAutoresizingMaskIntoConstraints = false
         label.contentMode = .center
         label.adjustsFontSizeToFitWidth = true
@@ -60,7 +60,7 @@ class LoginViewController: UIViewController, TextFieldWithErrorDelegate {
         let label = UILabel()
         label.text = "Sign In"
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.textColor = UIColor(named: "text_color")
+        label.textColor = UIColor.appTextColor
         label.font = .systemFont(ofSize: 36, weight: .heavy)
         return label
     }()

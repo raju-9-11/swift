@@ -36,7 +36,7 @@ class ReviewItemTableViewCell: UITableViewCell {
     let nameLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.textColor = UIColor(named: "text_color")
+        label.textColor = UIColor.appTextColor
         label.font = .systemFont(ofSize: 12, weight: .semibold)
         return label
     }()
@@ -44,7 +44,7 @@ class ReviewItemTableViewCell: UITableViewCell {
     let reviewView: UITextView = {
         let textview = UITextView()
         textview.translatesAutoresizingMaskIntoConstraints = false
-        textview.textColor = UIColor(named: "subtitle_text")
+        textview.textColor = UIColor.subtitleTextColor
         textview.isEditable = false
         textview.font = .systemFont(ofSize: 12, weight: .regular)
         textview.isSelectable = false
@@ -104,7 +104,7 @@ class ReviewItemTableViewCell: UITableViewCell {
     }
     
     func setupLayout() {
-        contentView.backgroundColor = UIColor(named: "thumbnail_color")
+        contentView.backgroundColor = UIColor.thumbNailColor
         imagesView.delegate = self
         imagesView.dataSource = self
         

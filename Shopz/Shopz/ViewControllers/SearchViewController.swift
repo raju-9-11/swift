@@ -117,7 +117,7 @@ class SearchViewController: CustomViewController, CategoryItemDelegate, Category
     
     
     override func setupLayout() {
-        view.backgroundColor = UIColor(named: "background_color")
+        view.backgroundColor = UIColor.shopzBackGroundColor
         searchList.dataSource = self
         searchList.delegate = self
         self.title = "Search"

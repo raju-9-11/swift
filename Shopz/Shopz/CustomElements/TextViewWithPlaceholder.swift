@@ -34,7 +34,7 @@ class TextViewWithPlaceHolder: UIView, UITextViewDelegate {
     }
     
     
-    var placeholderColor: UIColor? = UIColor(named: "subtitle_text") {
+    var placeholderColor: UIColor? = UIColor.subtitleTextColor {
         willSet {
             if textField.textColor == placeholderColor {
                 textField.textColor = newValue
@@ -42,7 +42,7 @@ class TextViewWithPlaceHolder: UIView, UITextViewDelegate {
         }
     }
     
-    var textViewTextColor: UIColor? = UIColor(named: "text_color") {
+    var textViewTextColor: UIColor? = UIColor.appTextColor {
         willSet {
             if textField.textColor == textViewTextColor {
                 textField.textColor = newValue
@@ -116,7 +116,7 @@ class TextViewWithPlaceHolder: UIView, UITextViewDelegate {
     private let textField: UITextView = {
         let textview = UITextView()
         textview.layer.cornerRadius = 6
-        textview.textColor =  UIColor(named: "text_color")
+        textview.textColor =  UIColor.appTextColor
         textview.layer.borderColor = UIColor.darkGray.cgColor
         textview.layer.borderWidth = 1
         textview.translatesAutoresizingMaskIntoConstraints = false

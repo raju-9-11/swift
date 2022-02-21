@@ -36,7 +36,7 @@ class AboutCollectionViewCell: UICollectionViewCell {
     var aboutLabel: UILabel = {
         let label = UILabel()
         label.text = "About"
-        label.textColor = UIColor(named: "thumbnail_text_color")
+        label.textColor = UIColor.thumbNailTextColor
         label.font = .systemFont(ofSize: 15, weight: .bold)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -53,7 +53,7 @@ class AboutCollectionViewCell: UICollectionViewCell {
         contentView.addSubview(aboutLabel)
         contentView.addSubview(aboutView)
         aboutView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(onClick)))
-        contentView.backgroundColor = UIColor(named: "thumbnail_color")
+        contentView.backgroundColor = UIColor.thumbNailColor
         contentView.addSubview(containerView)
         
         NSLayoutConstraint.activate([

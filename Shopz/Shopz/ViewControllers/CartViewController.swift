@@ -39,7 +39,7 @@ class CartViewController: CustomViewController {
         label.text = "Cart is Empty"
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .monospacedSystemFont(ofSize: 10, weight: .regular)
-        label.textColor = UIColor(named: "subtitle_text")
+        label.textColor = UIColor.subtitleTextColor
         return label
     }()
     
@@ -130,7 +130,7 @@ class CartViewController: CustomViewController {
     
     override func setupLayout() {
         
-        view.backgroundColor = UIColor(named: "background_color")
+        view.backgroundColor = UIColor.shopzBackGroundColor
         
         self.loadData()
         collectionView.dataSource = self
@@ -241,6 +241,16 @@ extension CartViewController: UICollectionViewDataSource, UICollectionViewDelega
 extension CartViewController: CartItemDelegate, ButtonsViewDelegate {
     
     
+    func addItem(item: CartItem) {
+        if listDetails == nil {
+            ApplicationDB.shared.addToCart(item: item.product)
+            self.updateBadge()
+        } else {
+            ApplicationDB.shared.addToShoppingList(item: item.product, list: listDetails!)
+        }
+        self.loadData()
+    }
+    
     func onDelete() {
         self.listItems.removeAll()
         guard let listDetails = listDetails else {
@@ -250,12 +260,12 @@ extension CartViewController: CartItemDelegate, ButtonsViewDelegate {
         self.navigationController?.popViewController(animated: true)
     }
     
-    
-    func removeItem(item: CartItem) {
+    func deleteProduct(item: CartItem) {
         if listDetails == nil {
-            ApplicationDB.shared.removeFromCart(item: item)
+            ApplicationDB.shared.removeFromCart(item: item.product)
+            self.updateBadge()
         } else {
-            ApplicationDB.shared.removeFromShoppingList(list: listDetails!, item: item)
+            ApplicationDB.shared.removeFromShoppingList(list: listDetails!, item: item.product)
         }
         for (index, listItem ) in listItems.enumerated() {
             if item.itemId == listItem.itemId {
@@ -264,6 +274,17 @@ extension CartViewController: CartItemDelegate, ButtonsViewDelegate {
                 break
             }
         }
+        self.loadData()
+    }
+    
+    func removeItem(item: CartItem) {
+        if listDetails == nil {
+            ApplicationDB.shared.removeFromCart(item: item)
+            self.updateBadge()
+        } else {
+            ApplicationDB.shared.removeFromShoppingList(list: listDetails!, item: item)
+        }
+        self.loadData()
     }
     
 }

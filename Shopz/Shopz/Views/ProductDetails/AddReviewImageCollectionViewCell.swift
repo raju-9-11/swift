@@ -34,7 +34,7 @@ class AddReviewImageCollectionViewCell: UICollectionViewCell {
         imageView.layer.cornerRadius = 5
         imageView.clipsToBounds = true
         imageView.isUserInteractionEnabled = true
-        imageView.backgroundColor = UIColor(named: "text_color")
+        imageView.backgroundColor = UIColor.appTextColor
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.image = UIImage(systemName: "photo.fill")
         return imageView
@@ -42,7 +42,7 @@ class AddReviewImageCollectionViewCell: UICollectionViewCell {
     
     let videoView: UIImageView = {
         let view = UIImageView()
-        view.backgroundColor = UIColor(named: "text_color")
+        view.backgroundColor = UIColor.appTextColor
         view.contentMode = .scaleAspectFit
         view.translatesAutoresizingMaskIntoConstraints = false
         let imageView = UIImageView(image: UIImage(systemName: "play.circle.fill")?.withRenderingMode(.alwaysTemplate).withTintColor(.white))

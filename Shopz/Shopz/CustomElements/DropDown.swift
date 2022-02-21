@@ -113,8 +113,8 @@ open class DropDown : UITextField {
         self.layer.borderColor = UIColor.gray.cgColor
         self.layer.borderWidth = 1
         self.layer.cornerRadius = 5
-        self.tintColor = UIColor(named: "subtitle_text")
-        self.textColor = UIColor(named: "text_color")
+        self.tintColor = UIColor.subtitleTextColor
+        self.textColor = UIColor.appTextColor
         self.delegate = self
     }
 
@@ -542,7 +542,7 @@ extension UIView {
 
     func dropShadow(scale: Bool = true) {
         layer.masksToBounds = false
-        layer.shadowColor = UIColor(named: "text_color")?.cgColor
+        layer.shadowColor = UIColor.appTextColor.cgColor
         layer.shadowOpacity = 0.5
         layer.shadowOffset = CGSize(width: 1, height: 1)
         layer.shadowRadius = 2

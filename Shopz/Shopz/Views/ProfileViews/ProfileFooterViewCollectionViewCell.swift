@@ -21,7 +21,7 @@ class ProfileFooterViewCollectionViewCell: UICollectionViewCell {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Logout", for: .normal)
-        button.setTitleColor(UIColor(named: "text_color") , for: .normal)
+        button.setTitleColor(UIColor.appTextColor , for: .normal)
         if #available(iOS 15, *) {
             var config = UIButton.Configuration.filled()
             config.contentInsets = NSDirectionalEdgeInsets(top: 5, leading: 10, bottom: 5, trailing: 10)
@@ -38,7 +38,7 @@ class ProfileFooterViewCollectionViewCell: UICollectionViewCell {
     
     func setupLayout() {
         contentView.addSubview(logout)
-        contentView.backgroundColor = UIColor(named: "thumbnail_color")
+        contentView.backgroundColor = UIColor.thumbNailColor
         
         logout.addTarget(self, action: #selector(onLogout), for: .touchUpInside)
         

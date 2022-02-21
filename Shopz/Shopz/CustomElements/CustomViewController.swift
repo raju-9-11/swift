@@ -17,67 +17,42 @@ class CustomViewController: UIViewController {
     
     var searchBarIsVisible: Bool = false {
         willSet {
+            self.searchBar.text = ""
             UIView.animate(withDuration: 0.2,animations: {
                 self.navigationItem.titleView = nil
                 if newValue {
                     self.navigationItem.titleView = self.searchBar
-                    self.searchButton.image = nil
-                    self.searchButton.title = "Cancel"
-                    self.searchBarIsEditing = true
+                    self.searchBar.becomeFirstResponder()
                 } else {
                     self.searchButton.image = UIImage(systemName: "magnifyingglass.circle")
                     self.searchButton.title = ""
-                    self.searchBarIsEditing = false
+                    self.searchBar.resignFirstResponder()
+                    self.searchBarList.removeFromSuperview()
+                    self.maskView.removeFromSuperview()
                 }
-            })
-            
-            DispatchQueue.main.async {
                 if self.searchBarAlwaysVisible {
                     self.navigationItem.titleView = self.searchBar
                 }
-            }
+            }, completion: {
+                _ in
+                self.navigationController?.navigationBar.layoutSubviews()
+            })
+            
             
         }
     }
     
     var searchBarAlwaysVisible: Bool =  false {
         willSet {
-            if newValue {
-                self.searchBarIsVisible = true
-            }
-        }
-    }
-    
-    var searchBarIsEditing: Bool = false {
-        willSet {
-            if newValue {
-                searchBar.becomeFirstResponder()
-                self.view.addSubview(maskView)
-                self.view.addSubview(searchBarList)
-                maskView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismissSearchBar)))
-                
-                NSLayoutConstraint.activate([
-                    maskView.heightAnchor.constraint(equalTo: self.view.heightAnchor),
-                    maskView.widthAnchor.constraint(equalTo: self.view.widthAnchor),
-                    maskView.centerYAnchor.constraint(equalTo: self.view.centerYAnchor),
-                    maskView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-                    searchBarList.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-                    searchBarList.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor),
-                    searchBarList.widthAnchor.constraint(equalTo: self.view.widthAnchor),
-                ])
-                searchBarListHeight = searchBarList.heightAnchor.constraint(equalToConstant: 0)
-                searchBarListHeight?.isActive = true
-            } else {
-                searchBar.resignFirstResponder()
-                searchBarList.removeFromSuperview()
-                maskView.removeFromSuperview()
-            }
+            self.searchBarIsVisible = newValue
         }
     }
     
     var searchListDataFiltered: [Product] = [] {
-        willSet {
-            searchBarListHeight?.constant = min(CGFloat(newValue.count*50), self.view.frame.height*0.6)
+        didSet {
+            searchBarListHeight?.isActive = false
+            searchBarListHeight = searchBarList.heightAnchor.constraint(equalToConstant: min(CGFloat(searchListDataFiltered.count*50), self.view.frame.height*0.6))
+            searchBarListHeight?.isActive = true
         }
     }
     
@@ -87,14 +62,14 @@ class CustomViewController: UIViewController {
     
     let maskView: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor(named: "background_color")?.withAlphaComponent(0.5)
+        view.backgroundColor = UIColor.shopzBackGroundColor
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
     
     let searchBarList: UITableView = {
         let tv = UITableView()
-        tv.backgroundColor = UIColor(named: "background_color")
+        tv.backgroundColor = UIColor.shopzBackGroundColor
         tv.register(SearchbarTableViewCell.self, forCellReuseIdentifier: SearchbarTableViewCell.cellID)
         tv.isScrollEnabled = true
         tv.translatesAutoresizingMaskIntoConstraints = false
@@ -129,9 +104,14 @@ class CustomViewController: UIViewController {
         }
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        self.searchBarIsVisible = false
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = UIColor(named: "background_color")
+        view.backgroundColor = UIColor.shopzBackGroundColor
         
         leftButton.target = self
         leftButton.action = #selector(onBack)
@@ -222,14 +202,12 @@ class CustomViewController: UIViewController {
     func displayProducts(with products: [Product]) {
         searchVC = nil
         searchVC = SearchViewController(products: products)
-        searchVC?.searchBar.text = self.searchBar.text
         self.navigationController?.pushViewController(searchVC!, animated: true)
     }
     
     func displayProducts(with categories: [Category]) {
         searchVC = nil
         searchVC = SearchViewController(categories: categories)
-        searchVC?.searchBar.text = self.searchBar.text
         self.navigationController?.pushViewController(searchVC!, animated: true)
     }
     
@@ -264,22 +242,40 @@ extension CustomViewController: UISearchBarDelegate {
     
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         
-        searchBarIsEditing = true
+        self.searchButton.image = nil
+        self.searchButton.title = "Cancel"
         
-        if let searchText = searchBar.text {
-            if searchText.isEmpty {
-                searchListDataFiltered = []
-            } else {
-                self.searchListDataFiltered = StorageDB.getProducts().filter({ prod in return prod.product_name.lowercased().fuzzyMatch(searchText.lowercased()) })
-            }
-        }
+        self.view.addSubview(maskView)
+        self.view.addSubview(searchBarList)
+        maskView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismissSearchBar)))
         
+        NSLayoutConstraint.activate([
+            maskView.heightAnchor.constraint(equalTo: view.heightAnchor),
+            maskView.widthAnchor.constraint(equalTo: view.widthAnchor),
+            maskView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            maskView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            searchBarList.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            searchBarList.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            searchBarList.widthAnchor.constraint(equalTo: view.widthAnchor),
+        ])
+        searchBarListHeight?.isActive = false
+        searchBarListHeight = searchBarList.heightAnchor.constraint(equalToConstant: 0)
+        searchBarListHeight?.isActive = true
+        
+        
+        self.searchListDataFiltered = []
         searchBarList.reloadData()
+    }
+    
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+        if !searchBarAlwaysVisible {
+            self.searchBar.text = ""
+            self.searchBarIsVisible = false
+        }
     }
     
     @objc
     func dismissSearchBar() {
-        self.searchBarIsEditing = false
         self.searchBarIsVisible = false
     }
 }
@@ -306,7 +302,7 @@ extension CustomViewController: UITableViewDelegate, UITableViewDataSource {
         }
         pvc?.productData = searchListDataFiltered[indexPath.row]
         self.navigationController?.pushViewController(pvc!, animated: true)
-        searchBarIsEditing = false
+        searchBarIsVisible = false
     }
 }
 

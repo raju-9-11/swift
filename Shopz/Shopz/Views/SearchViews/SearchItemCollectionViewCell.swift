@@ -19,7 +19,7 @@ class SearchItemCollectionViewCell: UICollectionViewCell {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.numberOfLines = 3
-        label.textColor = UIColor(named: "text_color")
+        label.textColor = UIColor.appTextColor
         label.font = .italicSystemFont(ofSize: 15)
         label.lineBreakMode = .byWordWrapping
         return label
@@ -37,21 +37,21 @@ class SearchItemCollectionViewCell: UICollectionViewCell {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "$ 0"
-        label.textColor = UIColor(named: "subtitle_text")
+        label.textColor = UIColor.subtitleTextColor
         label.font = .italicSystemFont(ofSize: 16)
         return label
     }()
     
     let bottomLine: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor(named: "subtitle_text")
+        view.backgroundColor = UIColor.subtitleTextColor
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
     
     let ratingLabel: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor(named: "thumbnail_text_color")
+        label.textColor = UIColor.thumbNailTextColor
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .italicSystemFont(ofSize: 10)
         label.text = "0.0/5.0"

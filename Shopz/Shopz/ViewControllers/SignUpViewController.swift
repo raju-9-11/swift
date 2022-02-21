@@ -14,7 +14,7 @@ class SignUpViewController: CustomViewController {
     let containerView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = UIColor(named: "background_color")
+        view.backgroundColor = UIColor.shopzBackGroundColor
         view.layer.cornerRadius = 10
         return view
     }()
@@ -22,7 +22,7 @@ class SignUpViewController: CustomViewController {
     let signUpLabel: UILabel = {
         let label = UILabel()
         label.text = "Sign Up"
-        label.textColor = UIColor(named: "text_color")
+        label.textColor = UIColor.appTextColor
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .systemFont(ofSize: 36, weight: .heavy)
         return label

@@ -36,7 +36,6 @@ class RatingElement: UIView {
     
     let ratingButton: UIButton = {
         let button = UIButton(type: .system)
-        button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Set Rating", for: .normal)
         button.setTitleColor(.white, for: .normal)
         if #available(iOS 15, *) {
@@ -65,7 +64,7 @@ class RatingElement: UIView {
         let stack = UIStackView(arrangedSubviews: [])
         stack.axis = .horizontal
         stack.distribution = .fillEqually
-        stack.spacing = 0
+        stack.spacing = 2
         stack.translatesAutoresizingMaskIntoConstraints = false
         return stack
     }()
@@ -90,18 +89,7 @@ class RatingElement: UIView {
             stackView.centerYAnchor.constraint(equalTo: self.centerYAnchor),
             starView.heightAnchor.constraint(equalTo: self.heightAnchor)
         ])
-//        self.addSubview(ratingButton)
-//        self.addSubview(starView)
-//
-//        NSLayoutConstraint.activate([
-//            starView.topAnchor.constraint(equalTo: self.topAnchor),
-//            starView.heightAnchor.constraint(equalTo: ratingButton.heightAnchor),
-//            starView.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -5),
-//            starView.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: 0.6),
-//            ratingButton.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 5),
-//            ratingButton.topAnchor.constraint(equalTo: self.topAnchor),
-//            ratingButton.heightAnchor.constraint(equalTo: self.heightAnchor)
-//        ])
+
         self.currentUserRating = 1
     }
     

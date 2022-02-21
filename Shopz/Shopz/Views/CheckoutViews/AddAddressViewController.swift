@@ -13,14 +13,14 @@ class AddAddressViewController: UIViewController {
     
     let backgroundView: UIView = {
         let view = UIView(frame: UIScreen.main.bounds)
-        view.backgroundColor = UIColor(named: "background_color")?.withAlphaComponent(0.5)
+        view.backgroundColor = .shopzBackGroundColor.withAlphaComponent(0.5)
         return view
     }()
     
     let containerView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = UIColor(named: "background_color")
+        view.backgroundColor = UIColor.shopzBackGroundColor
         view.layer.cornerRadius = 10
         view.layer.borderColor = UIColor.darkGray.cgColor
         view.layer.borderWidth = 1

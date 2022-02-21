@@ -29,7 +29,7 @@ class ItemThumbNailCollectionViewCell: UICollectionViewCell {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.sizeToFit()
-        label.textColor = UIColor(named: "thumbnail_text_color")
+        label.textColor = UIColor.thumbNailTextColor
         label.font = .systemFont(ofSize: 10, weight: .medium)
         label.text = "Text"
         return label
@@ -56,7 +56,7 @@ class ItemThumbNailCollectionViewCell: UICollectionViewCell {
         
         contentView.addSubview(imageView)
         contentView.addSubview(label)
-        contentView.backgroundColor = UIColor(named: "thumbnail_color")
+        contentView.backgroundColor = UIColor.thumbNailColor
         contentView.layer.cornerRadius = 6
         contentView.layer.shadowOpacity = 1
         contentView.layer.shadowColor = UIColor.darkGray.cgColor

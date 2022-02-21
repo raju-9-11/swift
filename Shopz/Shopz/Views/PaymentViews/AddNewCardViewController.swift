@@ -24,14 +24,14 @@ class AddNewCardViewController: UIViewController {
     
     let maskView: UIView = {
         let view = UIView(frame: UIScreen.main.bounds)
-        view.backgroundColor = UIColor(named: "background_color")?.withAlphaComponent(0.5)
+        view.backgroundColor = UIColor.shopzBackGroundColor.withAlphaComponent(0.5)
         return view
     }()
     
     let backGroundView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = UIColor(named: "background_color")
+        view.backgroundColor = UIColor.shopzBackGroundColor
         view.layer.cornerRadius = 10
         view.layer.borderColor = UIColor.darkGray.cgColor
         view.layer.borderWidth = 1
@@ -94,7 +94,7 @@ class AddNewCardViewController: UIViewController {
     }
     
     func setupLayout() {
-        view.backgroundColor = UIColor(named: "background_color")?.withAlphaComponent(0.5)
+        view.backgroundColor = UIColor.shopzBackGroundColor.withAlphaComponent(0.5)
         
         view.addSubview(backGroundView)
         view.addSubview(containerView)

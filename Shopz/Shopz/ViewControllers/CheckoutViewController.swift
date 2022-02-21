@@ -146,7 +146,7 @@ class CheckoutViewController: CustomViewController {
     }
     
     override func setupLayout() {
-        view.backgroundColor = UIColor(named: "background_color")
+        view.backgroundColor = UIColor.shopzBackGroundColor
         self.title = "Checkout"
         
         giftWrapText.delegate = self
@@ -222,17 +222,17 @@ class CheckoutViewController: CustomViewController {
     
     func bind(with cart: [CartItem]) {
         self.cart = cart
-        billingLabels[0].text = "\(cart.count)"
+        billingLabels[0].text = "\((cart.map({ item in return item.count }).reduce(0, +)))"
         billingLabels[1].text = "$ \((cart.map({ item in return item.product.shipping_cost }).reduce(0, +)))"
-        billingLabels[2].text = "$ \(cart.map({ item in return item.product.price }).reduce(0, +))"
+        billingLabels[2].text = "$ \(cart.map({ item in return item.product.price*Decimal(item.count) }).reduce(0, +))"
     }
     
     func bind(with list: [CartItem], shoppingList: ShoppingList) {
         self.shoppingList = shoppingList
         self.cart = list
-        billingLabels[0].text = "\(list.count)"
+        billingLabels[0].text = "\((list.map({ item in return item.count }).reduce(0, +)))"
         billingLabels[1].text = "$ \((list.map({ item in return item.product.shipping_cost }).reduce(0, +)))"
-        billingLabels[2].text = "$ \(list.map({ item in return item.product.price }).reduce(0, +))"
+        billingLabels[2].text = "$ \(list.map({ item in return item.product.price*Decimal(item.count) }).reduce(0, +))"
     }
     
     func newStackView(views: [UIView]) -> UIStackView {

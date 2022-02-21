@@ -13,7 +13,7 @@ class PaymentResultViewController: UIViewController {
         let label = UILabel()
         label.font = .monospacedSystemFont(ofSize: 25, weight: .regular)
         label.text = "Payment Success"
-        label.textColor = UIColor(named: "text_color")
+        label.textColor = UIColor.appTextColor
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -22,14 +22,14 @@ class PaymentResultViewController: UIViewController {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Continue Shopping", for: .normal)
-        button.setTitleColor(UIColor(named: "text_color"), for: .normal)
+        button.setTitleColor(UIColor.appTextColor, for: .normal)
         if #available(iOS 15, *) {
             var config = UIButton.Configuration.bordered()
-            config.baseBackgroundColor = UIColor(named: "AccentColor")
+            config.baseBackgroundColor = UIColor.systemRed
             config.cornerStyle = .medium
             button.configuration = config
         } else {
-            button.backgroundColor = UIColor(named: "AccentColor")
+            button.backgroundColor = UIColor.systemRed
             button.contentEdgeInsets = UIEdgeInsets(top: 5, left: 10, bottom: 5, right: 10)
             button.layer.cornerRadius = 6
         }
@@ -48,7 +48,7 @@ class PaymentResultViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = UIColor(named: "background_color")
+        view.backgroundColor = UIColor.shopzBackGroundColor
         
         goHome.addTarget(self, action: #selector(onGoHome), for: .touchUpInside)
         

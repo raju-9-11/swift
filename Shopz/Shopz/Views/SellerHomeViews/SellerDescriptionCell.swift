@@ -20,7 +20,7 @@ class SellerDescriptionCell: UITableViewCell {
     
     let descriptionView: TextViewWithPlaceHolder = {
         let label = TextViewWithPlaceHolder()
-        label.textViewTextColor = UIColor(named: "text_color")
+        label.textViewTextColor = UIColor.appTextColor
         label.font = .monospacedDigitSystemFont(ofSize: 15, weight: .bold)
         label.textAlignment = .center
         label.isUserInteractionEnabled = false

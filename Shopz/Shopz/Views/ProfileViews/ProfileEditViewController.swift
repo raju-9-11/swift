@@ -11,14 +11,14 @@ class ProfileEditViewController: UIViewController {
     
     let maskView: UIView = {
         let view = UIView(frame: UIScreen.main.bounds)
-        view.backgroundColor = UIColor(named: "background_color")?.withAlphaComponent(0.5)
+        view.backgroundColor = UIColor.shopzBackGroundColor.withAlphaComponent(0.5)
         return view
     }()
     
     let containerView: UIView = {
         let view = UIView()
         view.layer.cornerRadius = 10
-        view.backgroundColor = UIColor(named: "background_color")
+        view.backgroundColor = UIColor.shopzBackGroundColor
         view.translatesAutoresizingMaskIntoConstraints = false
         view.layer.borderColor = UIColor.darkGray.cgColor
         view.layer.borderWidth = 1

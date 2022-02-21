@@ -67,6 +67,7 @@
 		9DA4681427B4FDA1002E3875 /* AddGiftCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DA4681327B4FDA1002E3875 /* AddGiftCardViewController.swift */; };
 		9DA4681627BA5D16002E3875 /* Countries.json in Resources */ = {isa = PBXBuildFile; fileRef = 9DA4681527BA5D16002E3875 /* Countries.json */; };
 		9DA4681A27BE88DE002E3875 /* SellerHomeSearchCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DA4681927BE88DE002E3875 /* SellerHomeSearchCell.swift */; };
+		9DA4681C27C379BC002E3875 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DA4681B27C379BC002E3875 /* Colors.swift */; };
 		9DA655D3276B55970006AB4C /* CartItemCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DA655D2276B55970006AB4C /* CartItemCollectionViewCell.swift */; };
 		9DA655D5276B5FA20006AB4C /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DA655D4276B5FA20006AB4C /* SearchViewController.swift */; };
 		9DA6942627A1496500947DA1 /* TabNavigationMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DA6942527A1496500947DA1 /* TabNavigationMenu.swift */; };
@@ -163,6 +164,7 @@
 		9DA4681327B4FDA1002E3875 /* AddGiftCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddGiftCardViewController.swift; sourceTree = "<group>"; };
 		9DA4681527BA5D16002E3875 /* Countries.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Countries.json; sourceTree = "<group>"; };
 		9DA4681927BE88DE002E3875 /* SellerHomeSearchCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SellerHomeSearchCell.swift; sourceTree = "<group>"; };
+		9DA4681B27C379BC002E3875 /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		9DA655D2276B55970006AB4C /* CartItemCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartItemCollectionViewCell.swift; sourceTree = "<group>"; };
 		9DA655D4276B5FA20006AB4C /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		9DA6942527A1496500947DA1 /* TabNavigationMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabNavigationMenu.swift; sourceTree = "<group>"; };
@@ -367,6 +369,7 @@
 				9D3DD7E0277EEA8C00AED9C7 /* StorageDB.swift */,
 				9D67187927A6A317006A7963 /* DataConfig.swift */,
 				9DA4681527BA5D16002E3875 /* Countries.json */,
+				9DA4681B27C379BC002E3875 /* Colors.swift */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -602,6 +605,7 @@
 				9D894135278DBF32004DDDDF /* CategoryThumbnailCollectionViewCell.swift in Sources */,
 				9D54542E27A2DA8300180C23 /* ProfileFooterViewCollectionViewCell.swift in Sources */,
 				9D9D9D9C27675F9A00FD1D54 /* MainController.swift in Sources */,
+				9DA4681C27C379BC002E3875 /* Colors.swift in Sources */,
 				9D9B16C827685F8A00BE8456 /* Auth.swift in Sources */,
 				9DA6943127A1CB6300947DA1 /* ImageCache.swift in Sources */,
 				9D1F09342770478D000BF602 /* ProductViewCellCollectionViewCell.swift in Sources */,

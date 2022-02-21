@@ -84,7 +84,7 @@ class TextFieldWithError: UIView, UITextFieldDelegate {
     private let eyeIcon: UIButton = {
         let button = UIButton(type: .system)
         button.setImage(UIImage(systemName: "eye")?.withRenderingMode(.alwaysTemplate), for: .normal)
-        button.tintColor = UIColor(named: "text_color")
+        button.tintColor = UIColor.appTextColor
         button.setContentMode(mode: .scaleAspectFit)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.isHidden = true
@@ -135,8 +135,8 @@ class TextFieldWithError: UIView, UITextFieldDelegate {
         textField.layer.borderColor = UIColor.gray.cgColor
         textField.layer.borderWidth = 1
         textField.layer.cornerRadius = 5
-        textField.tintColor = UIColor(named: "subtitle_text")
-        textField.textColor = UIColor(named: "text_color")
+        textField.tintColor = UIColor.subtitleTextColor
+        textField.textColor = UIColor.appTextColor
         textField.backgroundColor = .clear
         return textField
     }()

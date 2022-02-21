@@ -34,7 +34,7 @@ class ReviewsCollectionViewCell: UICollectionViewCell {
     
     let titleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor(named: "text_color")
+        label.textColor = UIColor.appTextColor
         label.font = .systemFont(ofSize: 15, weight: .heavy)
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "Reviews"
@@ -71,7 +71,7 @@ class ReviewsCollectionViewCell: UICollectionViewCell {
         reviewList.dataSource = self
         contentView.addSubview(reviewList)
         contentView.addSubview(titleLabel)
-        contentView.backgroundColor = UIColor(named: "thumbnail_color")
+        contentView.backgroundColor = UIColor.thumbNailColor
         
         NSLayoutConstraint.activate([
             titleLabel.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor),

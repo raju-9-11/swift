@@ -8,9 +8,7 @@
 import UIKit
 import Combine
 
-class ProductDetailsTopCollectionViewCell: UICollectionViewCell, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
-    
-    var delegate: ImagesViewDelegate?
+class ProductDetailsTopCollectionViewCell: UICollectionViewCell {
     
     var imageData = ImagesViewElement(images: []) {
         willSet {
@@ -47,12 +45,37 @@ class ProductDetailsTopCollectionViewCell: UICollectionViewCell, UICollectionVie
         contentView.addSubview(collectionView)
         
         NSLayoutConstraint.activate([
-            collectionView.widthAnchor.constraint(equalTo: contentView.widthAnchor),
-            collectionView.heightAnchor.constraint(equalTo: contentView.heightAnchor),
+            collectionView.widthAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.widthAnchor),
+            collectionView.heightAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.heightAnchor),
             collectionView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             collectionView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
         ])
     }
+    
+    func loadImage(for url: String) -> AnyPublisher<UIImage?, Never> {
+        return Just(url)
+            .flatMap({ poster -> AnyPublisher<UIImage?, Never> in
+                let url = URL(string: url)!
+                return ImageLoader.shared.loadImage(from: url)
+                
+            })
+           .eraseToAnyPublisher()
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        self.removeViews()
+        cancellable?.cancel()
+    }
+    
+    override func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
+        let attr = layoutAttributes
+        attr.size = cellFrame
+        return attr
+    }
+}
+
+extension ProductDetailsTopCollectionViewCell: UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return imageData.images.count
@@ -72,35 +95,9 @@ class ProductDetailsTopCollectionViewCell: UICollectionViewCell, UICollectionVie
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         self.cancellable = self.loadImage(for: imageData.images[indexPath.row]).sink(receiveValue: {
             [unowned self] image in
-            self.delegate?.displayImage(image)
+            let imageView = ImageSlideShow()
+            imageView.image = image
+            self.parentViewController?.present(imageView, animated: true)
         })
     }
-    
-    func loadImage(for url: String) -> AnyPublisher<UIImage?, Never> {
-        return Just(url)
-            .flatMap({ poster -> AnyPublisher<UIImage?, Never> in
-                let url = URL(string: url)!
-                return ImageLoader.shared.loadImage(from: url)
-                
-            })
-           .eraseToAnyPublisher()
-    }
-    
-    
-    
-    override func prepareForReuse() {
-        super.prepareForReuse()
-        self.removeViews()
-        cancellable?.cancel()
-    }
-    
-    override func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
-        let attr = layoutAttributes
-        attr.size = cellFrame
-        return attr
-    }
-}
-
-protocol ImagesViewDelegate: AnyObject {
-    func displayImage(_ image: UIImage?)
 }

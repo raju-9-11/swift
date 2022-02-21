@@ -14,8 +14,8 @@ class AddAddressCollectionViewCell: UICollectionViewCell {
     let addButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(systemName: "plus")?.withRenderingMode(.alwaysTemplate), for: .normal)
-        button.tintColor = UIColor(named: "text_color")
-        button.backgroundColor = UIColor(named: "background_color")
+        button.tintColor = UIColor.appTextColor
+        button.backgroundColor = UIColor.shopzBackGroundColor
         button.isUserInteractionEnabled = false
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
@@ -25,7 +25,7 @@ class AddAddressCollectionViewCell: UICollectionViewCell {
         let textView = UITextView()
         textView.isEditable = false
         textView.isSelectable = false
-        textView.textColor = UIColor(named: "text_color")
+        textView.textColor = UIColor.appTextColor
         textView.contentMode = .center
         textView.textAlignment = .center
         textView.backgroundColor = .clear

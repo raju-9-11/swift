@@ -63,7 +63,7 @@ class ProfileViewController: CustomViewController {
     override func setupLayout() {
 
         self.title = "Profile"
-        view.backgroundColor = UIColor(named: "profile_background")
+        view.backgroundColor = UIColor.profileBackGroundColor
 
         containerView.delegate = self
         containerView.dataSource = self

@@ -54,7 +54,7 @@ class SellerHomeViewController: CustomViewController {
     // MARK: - Layout and other functions
     override func setupLayout() {
         
-        view.backgroundColor = UIColor(named: "background_color")
+        view.backgroundColor = UIColor.shopzBackGroundColor
         
         tableView.delegate = self
         tableView.dataSource = self
@@ -102,10 +102,16 @@ class SellerHomeViewController: CustomViewController {
 extension SellerHomeViewController {
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return elements.count
+        if tableView == self.tableView {
+            return elements.count
+        }
+        return super.tableView(tableView, numberOfRowsInSection: section)
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if tableView != self.tableView {
+            return super.tableView(tableView, cellForRowAt: indexPath)
+        }
         switch(elements[indexPath.row]) {
         case let item as TitleElement:
             let cell = tableView.dequeueReusableCell(withIdentifier: SellerHomeTitleViewCell.cellID, for: indexPath) as! SellerHomeTitleViewCell
@@ -133,6 +139,9 @@ extension SellerHomeViewController {
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        if tableView != self.tableView {
+            return super.tableView(tableView, heightForRowAt: indexPath)
+        }
         if indexPath.row == 3 {
             let numberofItems = StorageDB.getProducts(of: sellerData?.seller_id ?? -1).count
             let height = (itemSize.height + 10) * CGFloat(max(numberofItems/3 + (numberofItems%3 > 0 ? 1 : 0), 1)) + 20

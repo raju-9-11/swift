@@ -67,7 +67,7 @@ class ProductViewController: CustomViewController {
     }
     
     override func setupLayout() {
-        view.backgroundColor = UIColor(named: "background_color")
+        view.backgroundColor = UIColor.shopzBackGroundColor
         
         collectionView.dataSource = self
         collectionView.delegate = self
@@ -109,7 +109,6 @@ extension ProductViewController: UICollectionViewDelegate, UICollectionViewDeleg
         if let item = cells[indexPath.row] as? ImagesViewElement {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProductDetailsTopCollectionViewCell.cellID, for: indexPath) as! ProductDetailsTopCollectionViewCell
             cell.imageData = item
-            cell.delegate = self
             cell.cellFrame = CGSize(width: collectionView.frame.width, height: collectionView.frame.height*0.35)
             return cell
         }
@@ -157,7 +156,7 @@ extension ProductViewController: UICollectionViewDelegate, UICollectionViewDeleg
     }
 }
 
-extension ProductViewController: ReviewElementDelegate, ImagesViewDelegate, DescriptionCellDelegate {
+extension ProductViewController: ReviewElementDelegate, DescriptionCellDelegate {
     
     func addReview(review: String, rating: Int, media: [ApplicationDB.ReviewMedia]) {
         if let productData = productData {
@@ -265,12 +264,6 @@ extension ProductViewController: ReviewElementDelegate, ImagesViewDelegate, Desc
         if let productData = productData {
             ApplicationDB.shared.addToShoppingList(item: productData, list: list)
         }
-    }
-    
-    func displayImage(_ image: UIImage?) {
-        let imageView = ImageSlideShow()
-        imageView.image = image
-        present(imageView, animated: true, completion: nil)
     }
 }
 

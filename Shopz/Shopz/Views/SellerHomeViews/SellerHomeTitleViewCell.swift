@@ -20,7 +20,7 @@ class SellerHomeTitleViewCell: UITableViewCell {
     
     let titleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor(named: "text_color")
+        label.textColor = UIColor.appTextColor
         label.font = .monospacedDigitSystemFont(ofSize: 30, weight: .bold)
         label.numberOfLines = 2
         label.contentMode = .center

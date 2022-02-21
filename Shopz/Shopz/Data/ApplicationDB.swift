@@ -541,7 +541,22 @@ class ApplicationDB {
             Toast.shared.showToast(message: "Unable to delete", type: .error)
             return
         }
-        Toast.shared.showToast(message: "Deleted item \(item.product.product_name)", type: .success)
+        Toast.shared.showToast(message: "Deleted item", type: .error)
+        closeDB()
+        
+    }
+    
+    func removeFromCart(item: Product) {
+        
+        guard Auth.auth != nil else { return }
+        guard initDB() else { return }
+        if sqlite3_exec(db, "delete from cart_items where product_id=\(item.product_id) ", nil, nil, nil) != SQLITE_OK {
+            print("Error: \(String(cString: sqlite3_errmsg(db)))")
+            closeDB()
+            Toast.shared.showToast(message: "Unable to delete", type: .error)
+            return
+        }
+        Toast.shared.showToast(message: "Item removed", type: .error)
         closeDB()
         
     }
@@ -597,7 +612,23 @@ class ApplicationDB {
             Toast.shared.showToast(message: "Unable to delete", type: .error)
             return
         }
-        Toast.shared.showToast(message: "Deleted item \(item.product.product_name)", type: .success)
+        Toast.shared.showToast(message: "Deleted item \(item.product.product_name)", type: .error)
+        closeDB()
+        
+    }
+    
+    
+    func removeFromShoppingList(list: ShoppingList, item: Product) {
+        
+        guard Auth.auth != nil else { return }
+        guard initDB() else { return }
+        if sqlite3_exec(db, "delete from shopping_list_items where product_id=\(item.product_id) ", nil, nil, nil) != SQLITE_OK {
+            print("Error: \(String(cString: sqlite3_errmsg(db)))")
+            closeDB()
+            Toast.shared.showToast(message: "Unable to delete", type: .error)
+            return
+        }
+        Toast.shared.showToast(message: "Item Removed", type: .error)
         closeDB()
         
     }
@@ -685,11 +716,13 @@ class ApplicationDB {
         let deliveryDateString = deliveryDate.toString()
         
         list.forEach({ item in
-            if sqlite3_exec(db, "insert into order_history (product_id, purchase_date, user_id, delivery_date) values (\(item.product.product_id), '\(dateString)', \(auth.user.id), '\(deliveryDateString)')", nil, nil, nil) != SQLITE_OK{
-                print("Error: \(String(cString: sqlite3_errmsg(db)))")
-                closeDB()
-                Toast.shared.showToast(message: "Unable to Checkout")
-                return
+            for _ in 0..<list.count {
+                if sqlite3_exec(db, "insert into order_history (product_id, purchase_date, user_id, delivery_date) values (\(item.product.product_id), '\(dateString)', \(auth.user.id), '\(deliveryDateString)')", nil, nil, nil) != SQLITE_OK{
+                    print("Error: \(String(cString: sqlite3_errmsg(db)))")
+                    closeDB()
+                    Toast.shared.showToast(message: "Unable to Checkout")
+                    return
+                }
             }
         })
         closeDB()

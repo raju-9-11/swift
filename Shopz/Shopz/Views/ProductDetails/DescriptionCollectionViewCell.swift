@@ -26,7 +26,7 @@ class DescriptionCollectionViewCell: UICollectionViewCell, UIContextMenuInteract
         label.contentMode = .center
         label.textAlignment = .center
         label.isScrollEnabled = false
-        label.textColor = UIColor(named: "text_color")
+        label.textColor = UIColor.appTextColor
         label.isUserInteractionEnabled = false
         return label
     }()
@@ -34,7 +34,7 @@ class DescriptionCollectionViewCell: UICollectionViewCell, UIContextMenuInteract
     let costlabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.textColor = UIColor(named: "subtitle_text")
+        label.textColor = UIColor.subtitleTextColor
         label.text = "$50"
         return label
     }()
@@ -49,7 +49,7 @@ class DescriptionCollectionViewCell: UICollectionViewCell, UIContextMenuInteract
     let ratingsLabel: UILabel = {
         let label = UILabel()
         label.text = "Rating:"
-        label.textColor = UIColor(named: "subtitle_text")
+        label.textColor = UIColor.subtitleTextColor
         label.contentMode = .left
         label.translatesAutoresizingMaskIntoConstraints = false 
         label.font = .italicSystemFont(ofSize: 10)
@@ -59,7 +59,7 @@ class DescriptionCollectionViewCell: UICollectionViewCell, UIContextMenuInteract
     let textView: UITextView = {
         let textView = UITextView()
         textView.translatesAutoresizingMaskIntoConstraints = false
-        textView.textColor = UIColor(named: "subtitle_text")
+        textView.textColor = UIColor.subtitleTextColor
         textView.text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed semper ex nec ultrices efficitur. Cras maximus pulvinar mi, ullamcorper bibendum arcu bibendum id. Proin interdum accumsan turpis. Quisque aliquam magna a consequat auctor. Maecenas semper tortor laoreet ipsum tincidunt, non tristique ligula molestie. Phasellus mattis nisl eget congue faucibus. Fusce diam urna, pulvinar congue vehicula in, cursus at felis."
         textView.isEditable = false
         textView.isSelectable = false
@@ -71,7 +71,7 @@ class DescriptionCollectionViewCell: UICollectionViewCell, UIContextMenuInteract
     
     let soldByLabel: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor(named: "text_color")
+        label.textColor = UIColor.appTextColor
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "SOLD BY "
         return label
@@ -107,7 +107,7 @@ class DescriptionCollectionViewCell: UICollectionViewCell, UIContextMenuInteract
     let shoppingListButton: UIButton = {
         let button = UIButton(frame: CGRect(origin: .zero, size: CGSize(width: 20, height: 20)))
         button.setImage(UIImage(systemName: "cart.fill"), for: .normal)
-        button.tintColor = UIColor(named: "text_color")
+        button.tintColor = UIColor.appTextColor
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()

@@ -31,19 +31,23 @@ class MainController: UITabBarController, UITextFieldDelegate, UISearchBarDelega
         searchVC.tabBarItem = UITabBarItem(title: "Search", image: UIImage(systemName: "magnifyingglass"), tag: 3)
         let orderhistVC = UINavigationController(rootViewController: OrderHistoryViewController())
         orderhistVC.tabBarItem = UITabBarItem(title: "Order history", image: UIImage(systemName: "photo.fill"), tag: 4)
-        self.viewControllers = [homeVC, profileVC, cartVC, searchVC, orderhistVC]
+        let searchV = UINavigationController(rootViewController: SearchViewController())
+        searchV.tabBarItem = UITabBarItem(title: "Search", image: UIImage(systemName: "magnifyingglass"), tag: 3)
+        let orderhistV = UINavigationController(rootViewController: OrderHistoryViewController())
+        orderhistV.tabBarItem = UITabBarItem(title: "Order history", image: UIImage(systemName: "photo.fill"), tag: 4)
+        self.viewControllers = [homeVC, profileVC, cartVC, searchVC, orderhistVC, searchV, orderhistV]
         self.selectedViewController = homeVC
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = UIColor(named: "background_color")
+        view.backgroundColor = UIColor.shopzBackGroundColor
         self.delegate = self
         self.tabBar.isTranslucent = false
-        self.tabBar.backgroundColor = UIColor(named: "tabbar_color")?.withAlphaComponent(0.5)
-        self.tabBar.tintColor = UIColor(named: "tabbar_text_color")
-        self.tabBar.unselectedItemTintColor = UIColor(named: "tabbar_unselected_color")
+        self.tabBar.backgroundColor = UIColor.shopzBackGroundColor.withAlphaComponent(0.5)
+        self.tabBar.tintColor = UIColor.appTextColor
+        self.tabBar.unselectedItemTintColor = UIColor.tabbarUnselectedColor
         
     }
     

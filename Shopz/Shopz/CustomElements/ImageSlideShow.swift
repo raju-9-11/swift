@@ -63,7 +63,7 @@ class ImageSlideShow: UIViewController, UIScrollViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.view.backgroundColor = UIColor(named: "background_color")
+        self.view.backgroundColor = UIColor.shopzBackGroundColor
         
         closeButton.addTarget(self, action: #selector(dismissFullscreenImage), for: .touchUpInside)
         

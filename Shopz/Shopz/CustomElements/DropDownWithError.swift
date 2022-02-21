@@ -99,8 +99,8 @@ class DropDownWithError: UIView {
         textField.layer.borderColor = UIColor.gray.cgColor
         textField.layer.borderWidth = 1
         textField.layer.cornerRadius = 5
-        textField.tintColor = UIColor(named: "subtitle_text")
-        textField.textColor = UIColor(named: "text_color")
+        textField.tintColor = UIColor.subtitleTextColor
+        textField.textColor = UIColor.appTextColor
         textField.backgroundColor = .clear
         return textField
     }()

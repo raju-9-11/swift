@@ -65,7 +65,7 @@ class OrderHistoryItemCollectionViewCell: UICollectionViewCell {
     
     let nameLabel: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor(named: "text_color")
+        label.textColor = UIColor.appTextColor
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "Item name"
         return label
@@ -75,7 +75,7 @@ class OrderHistoryItemCollectionViewCell: UICollectionViewCell {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "$ 20"
-        label.textColor = UIColor(named: "subtitle_text")
+        label.textColor = UIColor.subtitleTextColor
         label.font = .boldSystemFont(ofSize: 20)
         return label
     }()
@@ -85,7 +85,7 @@ class OrderHistoryItemCollectionViewCell: UICollectionViewCell {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "24/01/2020"
         label.font = .italicSystemFont(ofSize: 12)
-        label.textColor = UIColor(named: "subtitle_text")
+        label.textColor = UIColor.subtitleTextColor
         return label
     }()
     
@@ -140,7 +140,9 @@ class OrderHistoryItemCollectionViewCell: UICollectionViewCell {
         contentView.addSubview(buttonsView)
         contentView.addSubview(dateLabel)
         contentView.addSubview(statusLabel)
-        contentView.backgroundColor = UIColor(named: "thumbnail_color")
+        
+        contentView.backgroundColor = UIColor.thumbNailColor
+        
         addReview.addTarget(self, action: #selector(onAddReview), for: .touchUpInside)
         returnProduct.addTarget(self, action: #selector(onReturn), for: .touchUpInside)
         
@@ -184,6 +186,10 @@ class OrderHistoryItemCollectionViewCell: UICollectionViewCell {
     @objc
     func onReturn() {
         guard let itemData = self.itemData else { return }
+        if returnProduct.title(for: .normal) == "Cancel" {
+            delegate?.cancelProduct(item: itemData, sender: returnProduct)
+            return
+        }
         delegate?.returnProduct(item: itemData, sender: returnProduct)
     }
     
@@ -248,4 +254,5 @@ extension Date {
 protocol OrderHistoryItemDelegate {
     func addReview(item: Product)
     func returnProduct(item: OrderHistItem, sender: UIButton)
+    func cancelProduct(item: OrderHistItem, sender: UIButton)
 }

@@ -37,7 +37,7 @@ class ProfileTopViewCollectioViewCell: UICollectionViewCell {
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.image = UIImage(systemName: "photo.fill")
         imageView.isUserInteractionEnabled = true
-        imageView.layer.backgroundColor = UIColor(named: "background_color")?.withAlphaComponent(0.5).cgColor
+        imageView.layer.backgroundColor = UIColor.shopzBackGroundColor.withAlphaComponent(0.5).cgColor
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
         return imageView
@@ -45,7 +45,7 @@ class ProfileTopViewCollectioViewCell: UICollectionViewCell {
     
     let nameLabel: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor(named: "text_color")
+        label.textColor = UIColor.appTextColor
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .systemFont(ofSize: 12, weight: .bold)
         return label
@@ -94,7 +94,7 @@ class ProfileTopViewCollectioViewCell: UICollectionViewCell {
         contentView.addSubview(profilePic)
         contentView.addSubview(editProfileButton)
         contentView.addSubview(nameLabel)
-        contentView.backgroundColor = UIColor(named: "thumbnail_color")
+        contentView.backgroundColor = UIColor.thumbNailColor
         bgImage.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(onBgClick)))
         profilePic.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(onProfileClick)))
         editProfileButton.addTarget(self, action: #selector(onEdit), for: .touchUpInside)

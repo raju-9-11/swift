@@ -35,7 +35,7 @@ class SellerHomeSearchCell: UITableViewCell {
         search.placeholder = "Search"
         search.searchBarStyle = .minimal
         search.isTranslucent = false
-        search.barTintColor = UIColor(named: "background_color")
+        search.barTintColor = UIColor.shopzBackGroundColor
         return search
     }()
     

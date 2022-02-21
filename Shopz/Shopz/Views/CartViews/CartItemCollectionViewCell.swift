@@ -39,11 +39,12 @@ class CartItemCollectionViewCell: UICollectionViewCell {
         return textField
     }()
     
+    
     let nameLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "Item name"
-        label.textColor = UIColor(named: "text_color")
+        label.textColor = UIColor.appTextColor
         label.numberOfLines = 2
         return label
     }()
@@ -52,7 +53,7 @@ class CartItemCollectionViewCell: UICollectionViewCell {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "$ 20"
-        label.textColor = UIColor(named: "subtitle_text")
+        label.textColor = UIColor.subtitleTextColor
         return label
     }()
     
@@ -68,7 +69,7 @@ class CartItemCollectionViewCell: UICollectionViewCell {
     let bottomLine: UIView = {
         let view = UIView()
         view.layer.cornerRadius = 1
-        view.backgroundColor = UIColor(named: "text_color")
+        view.backgroundColor = UIColor.appTextColor
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -81,15 +82,40 @@ class CartItemCollectionViewCell: UICollectionViewCell {
         return button
     }()
     
+    let addButton: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setImage(UIImage(systemName: "plus"), for: .normal)
+        return button
+    }()
+    
+    let removeButton: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setImage(UIImage(systemName: "minus"), for: .normal)
+        return button
+    }()
+    
+    lazy var countStack: UIStackView = {
+        let stackView = UIStackView(arrangedSubviews: [addButton, countLabel, removeButton])
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.axis = .horizontal
+        stackView.distribution = .fillEqually
+        stackView.spacing = 2
+        return stackView
+    }()
+    
     func setupLayout() {
         contentView.addSubview(imageView)
         contentView.addSubview(nameLabel)
         contentView.addSubview(costLabel)
         contentView.addSubview(closeButton)
-//        contentView.addSubview(bottomLine)
-        contentView.addSubview(countLabel)
-        contentView.backgroundColor = UIColor(named: "thumbnail_color")
+        contentView.addSubview(countStack)
+        contentView.backgroundColor = UIColor.thumbNailColor
+        
+        addButton.addTarget(self, action: #selector(onAdd), for: .touchUpInside)
         closeButton.addTarget(self, action: #selector(onDelete), for: .touchUpInside)
+        removeButton.addTarget(self, action: #selector(onRemove), for: .touchUpInside)
         
         NSLayoutConstraint.activate([
             imageView.leftAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.leftAnchor),
@@ -104,12 +130,10 @@ class CartItemCollectionViewCell: UICollectionViewCell {
             closeButton.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             closeButton.widthAnchor.constraint(equalToConstant: 20),
             closeButton.rightAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.rightAnchor, constant: -20),
-            countLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
-            countLabel.leftAnchor.constraint(equalTo: imageView.rightAnchor, constant: 20),
-//            bottomLine.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
-//            bottomLine.leftAnchor.constraint(equalTo: imageView.rightAnchor),
-//            bottomLine.heightAnchor.constraint(equalToConstant: 1),
-//            bottomLine.rightAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.rightAnchor),
+//            countLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+//            countLabel.leftAnchor.constraint(equalTo: imageView.rightAnchor, constant: 20),
+            countStack.leftAnchor.constraint(equalTo: imageView.rightAnchor, constant: 20),
+            countStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
         ])
     }
     
@@ -126,7 +150,21 @@ class CartItemCollectionViewCell: UICollectionViewCell {
     @objc
     func onDelete() {
         guard let itemData = self.itemData else { return }
+        delegate?.deleteProduct(item: itemData)
+    }
+    
+    @objc
+    func onAdd() {
+        guard let itemData = self.itemData else { return }
+        delegate?.addItem(item: itemData)
+//        self.countLabel.text = "\(itemData.count + 1)"
+    }
+    
+    @objc
+    func onRemove() {
+        guard let itemData = self.itemData else { return }
         delegate?.removeItem(item: itemData)
+//        self.countLabel.text = "\(itemData.count - 1)"
     }
     
     override func prepareForReuse() {
@@ -140,4 +178,6 @@ class CartItemCollectionViewCell: UICollectionViewCell {
 
 protocol CartItemDelegate {
     func removeItem(item: CartItem)
+    func addItem(item: CartItem)
+    func deleteProduct(item: CartItem)
 }

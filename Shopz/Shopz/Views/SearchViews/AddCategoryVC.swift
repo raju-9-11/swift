@@ -34,7 +34,7 @@ class AddCategoryVC: UIViewController {
         let label = UILabel()
         label.text = "Add Category"
         label.font = .monospacedSystemFont(ofSize: 20, weight: .bold)
-        label.textColor = UIColor(named: "text_color")
+        label.textColor = UIColor.appTextColor
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -61,7 +61,7 @@ class AddCategoryVC: UIViewController {
     
     let containerView: UIView = {
         let view = UIView(frame: UIScreen.main.bounds)
-        view.backgroundColor = UIColor(named: "background_color")?.withAlphaComponent(0.5)
+        view.backgroundColor = UIColor.shopzBackGroundColor.withAlphaComponent(0.5)
         return view
     }()
     
@@ -70,7 +70,7 @@ class AddCategoryVC: UIViewController {
         view.layer.cornerRadius = 10
         view.layer.borderWidth = 1
         view.layer.borderColor = UIColor.darkGray.cgColor
-        view.backgroundColor = UIColor(named: "background_color")
+        view.backgroundColor = UIColor.shopzBackGroundColor
         view.isUserInteractionEnabled = true
         view.translatesAutoresizingMaskIntoConstraints = false
         return view

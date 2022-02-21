@@ -19,7 +19,7 @@ class PaymentViewController: UIViewController {
     
     var cart: [CartItem] = [] {
         willSet {
-            totalLabelCost.text = "$ \(newValue.map({ item in return item.product.price+item.product.shipping_cost }).reduce(0, +))"
+            totalLabelCost.text = "$ \(newValue.map({ item in return item.product.price*Decimal(item.count)+item.product.shipping_cost }).reduce(0, +))"
         }
     }
     
@@ -132,7 +132,7 @@ class PaymentViewController: UIViewController {
     }
     
     func setupLayout() {
-        view.backgroundColor = UIColor(named: "background_color")
+        view.backgroundColor = UIColor.shopzBackGroundColor
 
         paymentCardsCollectionView.dataSource = self
         paymentCardsCollectionView.delegate = self

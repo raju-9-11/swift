@@ -42,7 +42,7 @@ class HomeViewController: CustomViewController, UICollectionViewDataSource, UICo
     let popularItemsLabel: UILabel = {
         let label = UILabel()
         label.text = "Popular Items"
-        label.textColor = UIColor(named: "text_color")
+        label.textColor = UIColor.appTextColor
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .systemFont(ofSize: 12, weight: .bold)
         return label
@@ -79,7 +79,7 @@ class HomeViewController: CustomViewController, UICollectionViewDataSource, UICo
     let categoryLabel: UILabel = {
         let label = UILabel()
         label.text = "Categories"
-        label.textColor = UIColor(named: "text_color")
+        label.textColor = UIColor.appTextColor
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .systemFont(ofSize: 12, weight: .bold)
         return label
@@ -129,7 +129,7 @@ class HomeViewController: CustomViewController, UICollectionViewDataSource, UICo
     override func setupLayout() {
         self.loadData()
         self.title = "Home"
-        view.backgroundColor = UIColor(named: "background_color")
+        view.backgroundColor = UIColor.shopzBackGroundColor
         
         popularItemsList.delegate = self
         popularItemsList.dataSource = self
