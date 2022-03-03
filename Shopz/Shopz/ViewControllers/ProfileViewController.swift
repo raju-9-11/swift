@@ -86,7 +86,9 @@ class ProfileViewController: CustomViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        self.elements[0] = ProfileData(bgImageMediaURL: nil, profileImageMediaURL: nil)
+        if !elements.isEmpty {
+            self.elements[0] = ProfileData(bgImageMediaURL: nil, profileImageMediaURL: nil)
+        }
         self.containerView.reloadData()
     }
     

@@ -31,11 +31,7 @@ class MainController: UITabBarController, UITextFieldDelegate, UISearchBarDelega
         searchVC.tabBarItem = UITabBarItem(title: "Search", image: UIImage(systemName: "magnifyingglass"), tag: 3)
         let orderhistVC = UINavigationController(rootViewController: OrderHistoryViewController())
         orderhistVC.tabBarItem = UITabBarItem(title: "Order history", image: UIImage(systemName: "photo.fill"), tag: 4)
-        let searchV = UINavigationController(rootViewController: SearchViewController())
-        searchV.tabBarItem = UITabBarItem(title: "Search", image: UIImage(systemName: "magnifyingglass"), tag: 3)
-        let orderhistV = UINavigationController(rootViewController: OrderHistoryViewController())
-        orderhistV.tabBarItem = UITabBarItem(title: "Order history", image: UIImage(systemName: "photo.fill"), tag: 4)
-        self.viewControllers = [homeVC, profileVC, cartVC, searchVC, orderhistVC, searchV, orderhistV]
+        self.viewControllers = [homeVC, profileVC, cartVC, searchVC, orderhistVC]
         self.selectedViewController = homeVC
     }
     
