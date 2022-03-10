@@ -112,6 +112,7 @@ class CustomViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor.shopzBackGroundColor
+        self.navigationController?.interactivePopGestureRecognizer?.delegate = self
         
         leftButton.target = self
         leftButton.action = #selector(onBack)
@@ -175,12 +176,14 @@ class CustomViewController: UIViewController {
     func onLogin() {
         self.navigationController?.popToRootViewController(animated: true)
         self.navigationController?.isNavigationBarHidden = false
+        self.navigationController?.interactivePopGestureRecognizer?.isEnabled = true
         self.lvc = nil
     }
     
     func displayLogin() {
         if self.requiresAuth {
             self.navigationController?.isNavigationBarHidden = true
+            self.navigationController?.interactivePopGestureRecognizer?.isEnabled = false
             lvc = nil
             lvc = LoginViewController()
             self.navigationController?.pushViewController(lvc!, animated: true)
@@ -303,6 +306,12 @@ extension CustomViewController: UITableViewDelegate, UITableViewDataSource {
         pvc?.productData = searchListDataFiltered[indexPath.row]
         self.navigationController?.pushViewController(pvc!, animated: true)
         searchBarIsVisible = false
+    }
+}
+
+extension CustomViewController: UIGestureRecognizerDelegate {
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldBeRequiredToFailBy otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        return true
     }
 }
 
